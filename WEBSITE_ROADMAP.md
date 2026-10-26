@@ -200,3 +200,7 @@ The cross-platform shared sign-in is called **Randbeck ID** behind the customer-
 
 ## EVA — approved Randbeck assistant identity
 The owner selected **EVA — Enhanced Virtual Assistant** as the friendly conversational assistant name across Randbeck and Area 33. Use an original robot personality and appearance; disclose that EVA is AI. The initial use case is a telephone receptionist that resolves approved questions, gathers callback details and logs leads in Randbeck Executive Suite, with AT&T cellular no-answer forwarding evaluated before deployment. Voice agent, carrier routing, costs and publication are **not yet implemented/approved**. See `EVA_VOICE_ASSISTANT_ROADMAP.md`.
+
+
+## Ten connected product capabilities and immediate build priority
+Add **#9 Customer Journey Tracker** (permissioned evidence-based status updates across inquiries, service and orders) and **#10 Randbeck Business Autopilot** (owner briefings, risks, proposed actions and review queue). The complete ten-feature plan and a scoped **EVA intake → shared Action Engine → Randbeck Executive Suite follow-up inbox** vertical slice are documented in `RANDBECK_TEN_FEATURE_BUILD_PLAN.md`. These are staged roadmap capabilities, not completed or live features. Keep any customer-facing statuses/quotes grounded in validated events, retain approval gates, and make multi-tenant isolation fundamental.
