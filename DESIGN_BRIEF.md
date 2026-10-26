@@ -46,3 +46,18 @@ Name, safe approved imagery, accurately classified type, sourced specifications,
 - Logo selection completed: preserve the original horizontal identity with red 33 and adaptive light/dark wordmarks.
 - Verify public contact details and claims.
 - Choose the first showroom/search experience to ship.
+
+## Visual-first catalog design (confirmed priority)
+
+Visitors should be able to browse visually **like a modern product store**, not just read text results. The website's page structure must reserve space for photos from its first iteration, even while image coverage is incomplete.
+
+- **Discovery cards:** prominent primary product image; concise manufacturer/model; correct normalized type/category; useful key specs; clear link to detailed information. Avoid crowded, text-only rows.
+- **Detail view:** prominent hero photo plus optional gallery/alternate views; source-specific or manufacturer-provided descriptions only when rights and quality are appropriate; structured product specifications; honest missing-data labels; clearly distinguished product models/variants.
+- **Category exploration:** compelling but authentic category imagery. Separate category illustrations from images of particular inventory items; never imply stock from an editorial image.
+- **Reliable association:** attach photos to canonical product identifiers (UPC/MPN/model/variant), with provider, image URL/asset, usage rights/license, product association, last checked, display priority and alt text. Do not match imagery from fuzzy name similarity alone.
+- **Data boundaries:** Randbeck manages identity, confidence and product facts; public website only receives approved image metadata and public-safe specifications. No leaked internal supplier feeds or prices.
+- **Image quality:** correct cropping and aspect ratios, fast responsive formats/sizes, lazy loading below the fold, accessible text alternatives and a deliberate placeholder where no approved photo exists.
+- **Rights:** use manufacturer/distributor images only with confirmed permitted website use or one's own rights-cleared photos; never scrape and republish random retailer images.
+- **Staging:** design image cards and galleries **now**. Populate verified licensed images progressively as catalog identities and feeds improve. A product may remain viewable without a photo; never invent an image of the exact SKU.
+
+**Experience benchmark:** attractive, informative and easy to scan, without imitating stock ecommerce templates or mistaking reference records for verified inventory.
