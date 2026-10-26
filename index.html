@@ -1,86 +1,220 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Area 33 Armory | Under Construction</title>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0b0d">
+  <meta name="description" content="Area 33 Armory is a veteran-owned Missouri firearms business focused on personal service, clear answers, and responsible sourcing.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Area 33 Armory | Equipping Patriots • Supporting Heroes">
+  <meta property="og:description" content="Veteran-owned. Missouri-based. Built on service and straight answers.">
+  <meta property="og:url" content="https://area33armory.com/">
+  <title>Area 33 Armory | Veteran-Owned • Missouri</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    :root {
+      color-scheme: dark;
+      --bg: #09090b; --surface: #121215; --raised: #19191d;
+      --text: #f6f6f6; --soft: #b7b6ba; --muted: #83838b;
+      --line: #323237; --accent: #d23536; --max: 1180px;
     }
-
-    body {
-      background: #0b0b0b;
-      color: #ffffff;
-      font-family: Arial, Helvetica, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 30px;
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, "Segoe UI", Arial, sans-serif; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid #fff; outline-offset: 5px; }
+    .container { width: min(var(--max), calc(100% - 48px)); margin-inline: auto; }
+    .eyebrow { color: var(--soft); font-size: .75rem; font-weight: 750; letter-spacing: .19em; text-transform: uppercase; }
+    .accent { color: #ff6666; }
+    .bar { width: 56px; height: 3px; background: var(--accent); }
+    header { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(18px); background: rgba(9,9,11,.92); border-bottom: 1px solid rgba(255,255,255,.09); }
+    .nav { height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .identity { display: inline-flex; align-items: center; gap: 12px; font-size: .96rem; font-weight: 850; letter-spacing: .10em; line-height: 1.15; }
+    .mark { width: 46px; height: 46px; border: 1px solid #66666d; border-radius: 9px; display: grid; place-items: center; font-size: 1.18rem; letter-spacing: -.08em; font-weight: 900; position: relative; }
+    .mark::after { position: absolute; content: ""; left: 11px; right: 11px; bottom: -2px; height: 3px; background: var(--accent); }
+    .desktop-nav { display: flex; gap: 30px; align-items: center; }
+    .desktop-nav a { color: var(--soft); font-size: .88rem; font-weight: 650; transition: color .18s; }
+    .desktop-nav a:hover, .footer-links a:hover { color: white; }
+    .small-cta, .button { display: inline-flex; justify-content: center; align-items: center; gap: 10px; border-radius: 8px; font-weight: 760; }
+    .small-cta { border: 1px solid #5b5b61; padding: 11px 17px; font-size: .84rem; }
+    .small-cta:hover { background: #232328; }
+    .mobile-menu { display: none; }
+    .site-logo { width: clamp(170px,17vw,240px); height: auto; display: block; }
+    .hero-logo { position: relative; width: min(85%, 550px); height: auto; display: block; }
+    .about-mark { display: grid; gap: 32px; }
+    .about-logo { display: block; width: min(100%,510px); height: auto; }
+    .hero { position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid var(--line); }
+    .hero::before { content: ""; position: absolute; z-index: -1; inset: 0; opacity: .27; background: repeating-linear-gradient(125deg, transparent 0px, transparent 64px, #ffffff0a 65px, transparent 66px), radial-gradient(ellipse 650px 500px at 74% 52%, #a91e2831, transparent 70%); }
+    .hero-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(320px,.85fr); min-height: 640px; align-items: center; gap: 56px; padding-block: 110px; }
+    .hero h1 { max-width: 780px; margin: 20px 0 26px; font-size: clamp(3.3rem, 6vw, 6.6rem); letter-spacing: -.065em; line-height: .99; font-weight: 850; }
+    .hero p { margin: 0; max-width: 540px; font-size: clamp(1.06rem,1.5vw,1.24rem); color: var(--soft); }
+    .actions { display: flex; flex-wrap: wrap; gap: 13px; margin-top: 34px; }
+    .button { min-height: 52px; padding: 13px 22px; font-size: .92rem; }
+    .button-primary { background: #f2f2f2; color: #111; }
+    .button-primary:hover { background: #d2d2d2; }
+    .button-secondary { background: transparent; border: 1px solid #595960; }
+    .button-secondary:hover { background: #202025; }
+    .hero-visual { position: relative; min-height: 405px; display: grid; place-items: center; overflow: hidden; border-radius: 18px; border: 1px solid #333338; background: linear-gradient(150deg,#1a1a1f,#111114 62%,#181317); }
+    .hero-visual::before { content: ""; position: absolute; width: 390px; height: 390px; border: 1px solid #35353d; border-radius: 50%; box-shadow: 0 0 0 55px #ffffff05, 0 0 0 110px #ffffff03; }
+    .hero-visual::after { content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg,transparent,#ac2528 35%,#ac2528 65%, transparent); }
+    .visual-number { position: relative; font-size: clamp(10rem,18vw,17rem); line-height: 1; font-weight: 900; letter-spacing: -.13em; padding-right: .13em; color: #e9e9eb; text-shadow: 0 20px 80px #0009; }
+    .visual-label { position: absolute; bottom: 26px; left: 28px; font-size: .68rem; font-weight: 760; color: #a9a8af; letter-spacing: .18em; text-transform: uppercase; }
+    .values { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; border-bottom: 1px solid var(--line); background: var(--line); }
+    .value { padding: 28px max(24px, calc((100vw - var(--max)) / 2)); background: #101013; }
+    .values .value { padding-inline: clamp(22px,4vw,55px); }
+    .values .value:first-child { padding-left: max(24px, calc((100vw - var(--max)) / 2)); }
+    .values .value:last-child { padding-right: max(24px, calc((100vw - var(--max)) / 2)); }
+    .value strong { display: block; font-size: .96rem; }
+    .value span { font-size: .78rem; color: var(--muted); }
+    section { padding-block: 104px; }
+    .section-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 25px; margin-bottom: 32px; }
+    h2 { font-size: clamp(2.1rem,4vw,3.5rem); letter-spacing: -.052em; line-height: 1.09; margin: 14px 0 0; }
+    .section-lede { max-width: 450px; color: var(--soft); margin: 0 0 5px; }
+    .service-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
+    .service-card { display: flex; flex-direction: column; min-height: 287px; padding: 30px; border: 1px solid var(--line); border-radius: 13px; background: #131316; }
+    .service-card .count { color: #e35a5a; font-size: .78rem; font-weight: 820; letter-spacing: .12em; }
+    .service-card h3 { margin: 32px 0 10px; font-size: 1.38rem; line-height: 1.22; letter-spacing: -.025em; }
+    .service-card p { margin: 0; color: var(--soft); font-size: .92rem; }
+    .about { background: #f0f0f0; color: #111114; }
+    .about .eyebrow { color: #57575e; }
+    .about-grid { display: grid; grid-template-columns: .9fr 1fr; gap: 12%; align-items: center; }
+    .about h2 { margin-bottom: 22px; }
+    .about p { color: #505058; font-size: 1.04rem; }
+    .about .statement { margin: 0; padding: 28px 0 28px 26px; border-left: 3px solid #b82529; color: #18181b; font-size: clamp(1.35rem,2.4vw,2.15rem); font-weight: 730; letter-spacing: -.035em; line-height: 1.35; }
+    .process-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; margin-top: 30px; }
+    .process-item { border-top: 1px solid #484850; padding-top: 22px; }
+    .process-item span { color: #ee6666; font-size: .76rem; font-weight: 800; }
+    .process-item h3 { margin: 11px 0 9px; font-size: 1.18rem; }
+    .process-item p { margin: 0; font-size: .93rem; color: var(--soft); }
+    .intelligence { border-block: 1px solid var(--line); background: linear-gradient(120deg, #17171b, #101014); }
+    .intelligence-inner { display: grid; grid-template-columns: 1fr .8fr; gap: 10%; align-items: center; }
+    .intelligence p { max-width: 640px; color: var(--soft); }
+    .coming { padding: 32px; border: 1px solid #515159; border-radius: 14px; background: #0f0f12; }
+    .coming .eyebrow { color: #e27f80; }
+    .coming strong { display: block; font-size: 1.5rem; margin: 14px 0; }
+    .coming small { color: var(--muted); line-height: 1.65; }
+    .contact-wrap { border-radius: 17px; border: 1px solid #424248; padding: clamp(28px,6vw,62px); background: #18181d; display: flex; justify-content: space-between; align-items: center; gap: 38px; }
+    .contact-wrap h2 { max-width: 590px; }
+    .contact-wrap p { color: var(--soft); max-width: 560px; margin-bottom: 0; }
+    .contact-actions { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+    .contact-note { color: var(--muted); font-size: .78rem; }
+    footer { border-top: 1px solid var(--line); padding-block: 34px; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 25px; flex-wrap: wrap; }
+    .footer-brand { font-size: .94rem; font-weight: 850; letter-spacing: .08em; }
+    .footer-links { display: flex; gap: 22px; color: var(--soft); font-size: .84rem; }
+    footer p { margin: 8px 0 0; color: var(--muted); font-size: .77rem; }
+    @media (max-width: 900px) {
+      .desktop-nav { gap: 17px; } .hero-grid { gap: 30px; }
+      .service-card { padding: 24px; }
+      .about-grid { gap: 7%; } .intelligence-inner { gap: 6%; }
     }
-
-    .container {
-      max-width: 800px;
+    @media (max-width: 720px) {
+      .container { width: min(var(--max), calc(100% - 36px)); }
+      .nav { height: 70px; }
+      .desktop-nav { display: none; }
+      .mobile-menu { display: block; position: relative; color: var(--soft); }
+      .mobile-menu summary { cursor: pointer; list-style: none; border: 1px solid #5b5b61; padding: 8px 14px; border-radius: 7px; font-weight: 700; }
+      .mobile-menu summary::-webkit-details-marker { display: none; }
+      .mobile-menu nav { position: absolute; right: 0; top: 46px; min-width: 200px; display: grid; gap: 10px; padding: 18px; background: #1b1b20; border: 1px solid #484850; border-radius: 10px; box-shadow: 0 20px 50px #0009; }
+      .hero-grid { grid-template-columns: 1fr; padding-block: 68px; min-height: auto; }
+      .hero-visual { min-height: 290px; }
+      .visual-number { font-size: 12rem; }
+      .values, .service-grid, .process-grid, .about-grid, .intelligence-inner { grid-template-columns: 1fr; }
+      .values .value, .values .value:first-child, .values .value:last-child { padding: 18px; }
+      section { padding-block: 70px; }
+      .section-top { align-items: flex-start; flex-direction: column; }
+      .service-card { min-height: auto; }
+      .service-card h3 { margin-top: 21px; }
+      .contact-wrap { flex-direction: column; align-items: flex-start; }
+      .contact-actions { width: 100%; } .contact-actions .button { width: 100%; }
     }
-
-    h1 {
-      font-size: clamp(2.7rem, 8vw, 5.5rem);
-      letter-spacing: 4px;
-      margin-bottom: 10px;
-    }
-
-    .line {
-      width: 90px;
-      height: 3px;
-      background: #8b0000;
-      margin: 25px auto;
-    }
-
-    h2 {
-      font-size: clamp(1.5rem, 5vw, 2.5rem);
-      letter-spacing: 5px;
-      font-weight: 400;
-      margin-bottom: 25px;
-    }
-
-    p {
-      color: #bdbdbd;
-      font-size: 1.1rem;
-      line-height: 1.7;
-    }
-
-    .slogan {
-      margin-top: 35px;
-      font-size: 0.95rem;
-      letter-spacing: 2px;
-      color: #888888;
-      text-transform: uppercase;
-    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   </style>
 </head>
-
 <body>
-  <div class="container">
-    <h1>AREA 33 ARMORY</h1>
-
-    <div class="line"></div>
-
-    <h2>UNDER CONSTRUCTION</h2>
-
-    <p>
-      We're rebuilding our website.<br>
-      Please check back soon.
-    </p>
-
-    <div class="slogan">
-      Equipping Patriots • Supporting Heroes
+  <header>
+    <div class="container nav">
+      <a class="identity" href="#top" aria-label="Area 33 Armory home"><img class="site-logo" src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="240" height="57"></a>
+      <nav class="desktop-nav" aria-label="Main navigation">
+        <a href="explore.html">Explore & Learn</a><a href="catalog.html">Product Catalog</a><a href="explore.html">Explore & Learn</a><a href="catalog.html">Product Catalog</a><a href="experience-lab.html">Experience Lab</a><a href="#services">What we do</a><a href="#about">About us</a><a href="#process">How it works</a><a href="explore.html">Discovery guides</a>
+        <a class="small-cta" href="#contact">Get in touch</a>
+      </nav>
+      <details class="mobile-menu">
+        <summary>Menu</summary>
+        <nav aria-label="Mobile navigation">
+          <a href="#services">What we do</a><a href="#about">About us</a><a href="#process">How it works</a><a href="#intelligence">Product search</a><a href="#contact">Contact</a>
+        </nav>
+      </details>
     </div>
-  </div>
+  </header>
+  <main id="top">
+    <div class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><span class="accent">●</span> Veteran-owned · Missouri-based</div>
+          <h1>Built on service.<br>Driven by <span class="accent">trust.</span></h1>
+          <p>Welcome to Area 33 Armory. Straight answers, personal attention, and a commitment to serving our community with integrity.</p>
+          <div class="actions"><a class="button button-primary" href="#contact">Contact Area 33 <span aria-hidden="true">↗</span></a><a class="button button-secondary" href="explore.html">Explore & Learn</a><a href="catalog.html">Product Catalog</a><a href="experience-lab.html">Experience Lab</a></div>
+        </div>
+        <div class="hero-visual" aria-label="Area 33 Armory brand">
+          <img class="hero-logo" src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="550" height="129">
+          <span class="visual-label">Equipping Patriots · Supporting Heroes</span>
+        </div>
+      </div>
+    </div>
+    <div class="values" aria-label="What sets us apart">
+      <div class="value"><strong>Veteran-owned</strong><span>Service is part of who we are.</span></div>
+      <div class="value"><strong>Personal attention</strong><span>Real conversations, clear next steps.</span></div>
+      <div class="value"><strong>Responsible business</strong><span>Integrity before promises.</span></div>
+    </div>
+    <section id="services">
+      <div class="container">
+        <div class="section-top"><div><div class="eyebrow">What we do</div><h2>Service without<br>the runaround.</h2></div><p class="section-lede">We are building a more useful way to connect customers with product information and knowledgeable service. Reach out to discuss your specific needs.</p></div>
+        <div class="service-grid">
+          <article class="service-card"><span class="count">01 / SOURCING</span><h3>Product inquiries</h3><p>Tell us what you're looking for. We'll discuss the details and what can be confirmed through available sources.</p></article>
+          <article class="service-card"><span class="count">02 / SERVICE</span><h3>Gunsmithing inquiries</h3><p>Ask about service needs and next steps. Area 33 Armory works in collaboration with 4 Cs Gunsmithing.</p></article>
+          <article class="service-card"><span class="count">03 / SUPPORT</span><h3>Individual attention</h3><p>Questions about a product, a request, or our process? We'll help you find a clear starting point.</p></article>
+        </div>
+      </div>
+    </section>
+    <section class="about" id="about">
+      <div class="container about-grid">
+        <div><div class="eyebrow">About Area 33</div><h2>More than a name.</h2><p>Area 33 Armory is a veteran-owned Missouri business shaped by the values of service, accountability, and doing the work the right way.</p><p>We're improving how we research products and communicate with customers, but the foundation stays the same: treat people fairly and give them information they can trust.</p></div>
+        <div class="about-mark"><img class="about-logo" src="assets/area33-logo-light.svg" alt="Area 33 Armory, red 33 with black wordmark" width="510" height="120"><p class="statement">“Equipping Patriots.<br>Supporting Heroes.”</p></div>
+      </div>
+    </section>
+    <section id="process">
+      <div class="container">
+        <div class="eyebrow">How it works</div><h2>Start with a conversation.</h2>
+        <div class="process-grid">
+          <div class="process-item"><span>01</span><h3>Tell us your needs</h3><p>Send a message with the product or service question you're trying to answer.</p></div>
+          <div class="process-item"><span>02</span><h3>We review the details</h3><p>We distinguish confirmed information from anything that still needs to be checked.</p></div>
+          <div class="process-item"><span>03</span><h3>Discuss next steps</h3><p>We'll explain what we can offer and any applicable procedures or requirements.</p></div>
+        </div>
+      </div>
+    </section>
+    <section class="intelligence" id="intelligence">
+      <div class="container intelligence-inner">
+        <div><div class="eyebrow">Coming to Area 33</div><h2>Smarter product discovery.</h2><p>We're developing an improved way to explore product information, compare supported specifications, and understand when supplier data was last recorded.</p><p>Future catalog information will be clearly distinguished from confirmed availability and approved customer pricing.</p></div>
+        <div class="coming"><div class="eyebrow">In development</div><strong>Product Intelligence</strong><p><a href="catalog.html" style="color:#fff;text-decoration:underline">Preview catalog interface →</a></p><div class="bar"></div><p>Search tools designed to make product questions easier to answer.</p><small>The public catalog is not open yet. No live stock or prices are being advertised on this page.</small></div>
+      </div>
+    </section>
+    <section id="contact">
+      <div class="container">
+        <div class="contact-wrap">
+          <div><div class="eyebrow">Connect with us</div><h2>Have a question?<br>Start here.</h2><p>Send us a note and let us know what you're looking for. We'll discuss availability, services, and next steps based on what can actually be confirmed.</p></div>
+          <div class="contact-actions"><a class="button button-primary" href="mailto:area33armory@mail.com?subject=Area%2033%20Armory%20Inquiry">Email Area 33 <span aria-hidden="true">↗</span></a><span class="contact-note">area33armory@mail.com</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="container">
+      <div class="footer-inner"><div class="footer-brand">AREA 33 ARMORY</div><nav class="footer-links" aria-label="Footer navigation"><a href="explore.html">Explore & Learn</a><a href="catalog.html">Product Catalog</a><a href="experience-lab.html">Experience Lab</a><a href="#services">Services</a><a href="#about">About</a><a href="#contact">Contact</a></nav></div>
+      <p>Equipping Patriots • Supporting Heroes</p>
+      <p>All regulated services and transactions are subject to applicable laws and requirements. This website does not process purchases or verify inventory.</p>
+      <p>© <span id="year">2026</span> Area 33 Armory. All rights reserved.</p>
+    </div>
+  </footer>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 </body>
 </html>
