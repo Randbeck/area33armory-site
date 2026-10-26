@@ -196,3 +196,7 @@ Area 33 Account — Powered by Randbeck becomes the shared optional login for sa
 
 ## Approved integration — Randbeck ID and Passport offer
 The cross-platform shared sign-in is called **Randbeck ID** behind the customer-facing **Area 33 Account**. Connect **My Vault** (saved interests), **My Loadout** (product selections and quote inquiries), **My Workbench** (projects) and separately authorized **My Passport** (service history). After an actual verified purchase and transfer, offer an optional item-specific, user-authorized Passport onboarding prompt. A quote request is **not checkout or a completed purchase**, so it must not trigger a Passport enrollment record. See `RANDBECK_ID_PASSPORT_FLOW.md`; implementation and production publishing require later approval and review.
+
+
+## EVA — approved Randbeck assistant identity
+The owner selected **EVA — Enhanced Virtual Assistant** as the friendly conversational assistant name across Randbeck and Area 33. Use an original robot personality and appearance; disclose that EVA is AI. The initial use case is a telephone receptionist that resolves approved questions, gathers callback details and logs leads in Randbeck Executive Suite, with AT&T cellular no-answer forwarding evaluated before deployment. Voice agent, carrier routing, costs and publication are **not yet implemented/approved**. See `EVA_VOICE_ASSISTANT_ROADMAP.md`.
