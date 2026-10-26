@@ -35,6 +35,11 @@ function showFrame(next){
   image.hidden=false;image.src=frame.url;image.alt=frame.alt;
   el("media-empty").hidden=true;refreshControls();
 }
+const requestedProduct=(new URLSearchParams(location.search)).get("product");
+if(requestedProduct && requestedProduct.length<=200 && /^[A-Za-z0-9_-]+$/.test(requestedProduct)){
+  const back=document.getElementById("return-catalog");back.href="catalog.html?product="+encodeURIComponent(requestedProduct);
+  const note=document.getElementById("requested-product-note");note.hidden=false;note.textContent="Requested product: "+requestedProduct+" · media availability has not been confirmed.";
+}
 function choose(id){
   selected=items.find(item=>item.id===id)||null;
   if(!selected){resetViewer("No approved product media selected.");return;}
@@ -67,6 +72,7 @@ async function load(){
   for(const item of items)select.add(new Option([item.manufacturer,item.model,item.variant].filter(Boolean).join(" "),item.id));
   el("media-status").textContent=items.length?items.length+" approved media set(s)":"No approved product media published";
   resetViewer(items.length?"Choose an approved media set to explore its views.":"No approved product media is published yet. The viewer is ready for reviewed assets.");
+  if(requestedProduct && items.some(item=>item.id===requestedProduct)){select.value=requestedProduct;choose(requestedProduct);}else if(requestedProduct){el("media-explanation").textContent="There is no approved interactive media for the requested public product. You can return to standard browsing."; }
  }catch{el("media-status").textContent="Media unavailable";resetViewer("The approved media manifest could not be loaded. No fictional product images will be shown.");}
 }
 load();
