@@ -184,3 +184,7 @@ Standard catalog browsing is the default, with conventional product images, read
 
 ## Stage 7 — Standard/interactive continuity and async correctness
 Opt-in product links now pass an opaque public ID into the Experience Lab and provide an explicit return to standard browsing. The Experience Lab only selects that product's media if a separately approved manifest entry exists; otherwise it states the media is unavailable. No automatic compatibility claim is generated. Catalog requests now invalidate prior asynchronous results before they modify the visible result state, protecting search/filter changes against stale responses. Standard browsing remains the default, and the public API stays disabled pending security review.
+
+
+## Approved expansion — Area 33 Workshop — Powered by Randbeck
+The owner approved **Area 33 Workshop — Powered by Randbeck** as the customer-facing name and direction. Build it as a distinct opt-in experience alongside normal browsing. Three connected capabilities are planned: source-grounded gunsmithing educational Q&A and learning, a private Project Companion for safe planning/documentation, and an explicitly permissioned Firearms Passport service-history bridge. All share Randbeck product identity, provenance and authorization logic, while separate backend services enforce privacy and safety. See **WORKSHOP_PRODUCT_ROADMAP.md** for substantial W1–W5 increments and release gates. This is approved **for development planning**, not a production feature or publication authorization.
