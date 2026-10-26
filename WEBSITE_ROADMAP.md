@@ -192,3 +192,7 @@ The owner approved **Area 33 Workshop — Powered by Randbeck** as the customer-
 
 ## Approved roadmap extension — Customer Accounts + Marketing Consent
 Area 33 Account — Powered by Randbeck becomes the shared optional login for saved product research, comparisons, Experience Lab interests, Workshop projects, and permissioned Passport records. Maintain guest browsing. Marketing signup is voluntary, separately consented, auditable and removable; signup for an account must never imply promotional opt-in. Prioritize identity groundwork **before private Project Companion persistence or Passport account linking**. See `CUSTOMER_IDENTITY_MARKETING_ROADMAP.md` for I1–I5 stages, provider-review gates, privacy separation and release criteria. Provider choice and production implementation are not approved by this planning update.
+
+
+## Approved integration — Randbeck ID and Passport offer
+The cross-platform shared sign-in is called **Randbeck ID** behind the customer-facing **Area 33 Account**. Connect **My Vault** (saved interests), **My Loadout** (product selections and quote inquiries), **My Workbench** (projects) and separately authorized **My Passport** (service history). After an actual verified purchase and transfer, offer an optional item-specific, user-authorized Passport onboarding prompt. A quote request is **not checkout or a completed purchase**, so it must not trigger a Passport enrollment record. See `RANDBECK_ID_PASSPORT_FLOW.md`; implementation and production publishing require later approval and review.

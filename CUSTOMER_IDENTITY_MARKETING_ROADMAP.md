@@ -38,3 +38,7 @@
 Security review; service provider firearm-category acceptable-use confirmation; applicable email/privacy legal review (including CAN-SPAM and relevant state laws); full consent audit and opt-out test; accessible forms; abuse/rate-limit tests; email deliverability; user/tenant permission tests; recovery and data deletion; owner approval. No live collection until implementation and policies approved.
 
 **Deployment:** all work in `site-refresh-v1` until explicit approval. GitHub Pages hosts public UI only.
+
+
+## Shared Randbeck ID decision
+Use a single Randbeck ID as the identity foundation across participating platforms while retaining the **Area 33 Account** label for Area 33 visitors. Guest browsing and independent optional marketing consent remain required. The optional Passport invitation occurs only after a verified completed transaction/transfer, never merely at Loadout quote request. See `RANDBECK_ID_PASSPORT_FLOW.md`.

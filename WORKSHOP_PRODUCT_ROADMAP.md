@@ -80,3 +80,7 @@ A visitor can find a trustworthy learning resource, record a safe planning proje
 
 ## Shared identity dependency (approved)
 Before W3 private project persistence and W4 Passport linking, implement an Area 33 Account identity service governed by `CUSTOMER_IDENTITY_MARKETING_ROADMAP.md`. Guest learning and public guides (W1) remain available without login. Marketing subscription is a **separate optional consent** and must not be required for account creation, project saving, or Passport access.
+
+
+## Randbeck ID cross-app account agreement
+Workshop saved projects should rely on the shared Randbeck ID subject and application-specific permission scopes. The Area 33 label remains **Area 33 Account**, but authenticated customers may access participating Randbeck products with a common secure sign-in. Passport record linking requires explicit customer permission and independently checked authorization, not merely possession of the account or an existing Loadout. See `RANDBECK_ID_PASSPORT_FLOW.md`.
