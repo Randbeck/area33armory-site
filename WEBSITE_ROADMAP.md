@@ -172,3 +172,6 @@ Start with **evolution over reinvention**. Evaluate the existing Area 33 logo al
 
 ## Stage 3 — Experience Lab research board
 First visual accessory-exploration UI delivered on draft branch (see EXPERIENCE_LAB_STAGE_3.md). Exact-product 360-degree imagery and compatibility validation are future gated work, not features claimed as operational. Publishing requires owner approval.
+
+### Stage 4 — Differentiated studio presentation
+The development Experience Lab now supports abstract perspective manipulation, Studio/Focus/Compare Interests display modes, dynamic selection feedback and enhanced editorial visual styling. These modes are functional **research UI**, not working 3D firearm models or actual verified accessory configuration. No production exposure; visual/browser QA and genuine rights-cleared assets still needed.
