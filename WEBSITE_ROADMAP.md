@@ -178,3 +178,6 @@ The development Experience Lab now supports abstract perspective manipulation, S
 
 ## Stage 5 — Approved multi-angle viewer foundation
 The Experience Lab now includes a functional keyboard/button/swipe/slider-controlled photo-sequence viewer backed exclusively by an approval-gated static manifest. Its published set is intentionally empty until licensed, exactly matched media is supplied. This is **not** a 3D renderer, a universal 360° capture, an attachment configurator or compatibility engine. See `APPROVED_MEDIA_STAGE_5.md`.
+
+## Customer experience architecture — approved decision
+Standard catalog browsing is the default, with conventional product images, readable specifications, evidence, comparisons and inquiries. The Experience Lab is opt-in, reached by clearly labeled links; no forced 3D, animation, AR, or heavy media downloads in ordinary browsing. Where no approved multi-angle media exists, the Experience Lab explains that honestly. Preserve the user's standard browsing state when returning from the optional lab. Avoid forcing a customer into interactive views. This architecture applies to mobile, accessibility, performance and future Randbeck integration.
