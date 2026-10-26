@@ -169,3 +169,6 @@ Start with **evolution over reinvention**. Evaluate the existing Area 33 logo al
 
 **Success means:** one coherent brand and shared data foundation, a distinctive usable website before e-commerce, and clean interfaces to add Passport and approved commerce without rebuilding the catalog.
 
+
+## Stage 3 — Experience Lab research board
+First visual accessory-exploration UI delivered on draft branch (see EXPERIENCE_LAB_STAGE_3.md). Exact-product 360-degree imagery and compatibility validation are future gated work, not features claimed as operational. Publishing requires owner approval.
