@@ -38,6 +38,10 @@
     .small-cta { border: 1px solid #5b5b61; padding: 11px 17px; font-size: .84rem; }
     .small-cta:hover { background: #232328; }
     .mobile-menu { display: none; }
+    .site-logo { width: clamp(170px,17vw,240px); height: auto; display: block; }
+    .hero-logo { position: relative; width: min(85%, 550px); height: auto; display: block; }
+    .about-mark { display: grid; gap: 32px; }
+    .about-logo { display: block; width: min(100%,510px); height: auto; }
     .hero { position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid var(--line); }
     .hero::before { content: ""; position: absolute; z-index: -1; inset: 0; opacity: .27; background: repeating-linear-gradient(125deg, transparent 0px, transparent 64px, #ffffff0a 65px, transparent 66px), radial-gradient(ellipse 650px 500px at 74% 52%, #a91e2831, transparent 70%); }
     .hero-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(320px,.85fr); min-height: 640px; align-items: center; gap: 56px; padding-block: 110px; }
@@ -129,7 +133,7 @@
 <body>
   <header>
     <div class="container nav">
-      <a class="identity" href="#top" aria-label="Area 33 Armory home"><span class="mark" aria-hidden="true">33</span><span>AREA 33<br>ARMORY</span></a>
+      <a class="identity" href="#top" aria-label="Area 33 Armory home"><img class="site-logo" src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="240" height="57"></a>
       <nav class="desktop-nav" aria-label="Main navigation">
         <a href="#services">What we do</a><a href="#about">About us</a><a href="#process">How it works</a><a href="#intelligence">Product search</a>
         <a class="small-cta" href="#contact">Get in touch</a>
@@ -151,8 +155,9 @@
           <p>Welcome to Area 33 Armory. Straight answers, personal attention, and a commitment to serving our community with integrity.</p>
           <div class="actions"><a class="button button-primary" href="#contact">Contact Area 33 <span aria-hidden="true">↗</span></a><a class="button button-secondary" href="#services">Explore our services</a></div>
         </div>
-        <div class="hero-visual" aria-label="Area 33 Armory graphic featuring the number thirty-three">
-          <span class="visual-number" aria-hidden="true">33</span><span class="visual-label">Equipping Patriots · Supporting Heroes</span>
+        <div class="hero-visual" aria-label="Area 33 Armory brand">
+          <img class="hero-logo" src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="550" height="129">
+          <span class="visual-label">Equipping Patriots · Supporting Heroes</span>
         </div>
       </div>
     </div>
@@ -174,7 +179,7 @@
     <section class="about" id="about">
       <div class="container about-grid">
         <div><div class="eyebrow">About Area 33</div><h2>More than a name.</h2><p>Area 33 Armory is a veteran-owned Missouri business shaped by the values of service, accountability, and doing the work the right way.</p><p>We're improving how we research products and communicate with customers, but the foundation stays the same: treat people fairly and give them information they can trust.</p></div>
-        <p class="statement">“Equipping Patriots.<br>Supporting Heroes.”</p>
+        <div class="about-mark"><img class="about-logo" src="assets/area33-logo-light.svg" alt="Area 33 Armory, red 33 with black wordmark" width="510" height="120"><p class="statement">“Equipping Patriots.<br>Supporting Heroes.”</p></div>
       </div>
     </section>
     <section id="process">
