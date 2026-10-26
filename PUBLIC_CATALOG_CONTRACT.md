@@ -46,3 +46,4 @@ Response shape:
 
 ## Future integration seam
 A subsequent stage can add `assets/public-catalog.js` (client-only public read calls) and catalog card/detail components after the API passes the gates above. Keep editorial topics independent of real product search; never silently substitute local examples for a failed catalog request.
+\n\n## Stage 2 development interface\nSee `CATALOG_STAGE_2.md` for the implemented catalog preview, its explicit disabled API configuration and the remaining publication/security gates.\n
