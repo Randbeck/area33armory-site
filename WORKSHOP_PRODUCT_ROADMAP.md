@@ -76,3 +76,7 @@ Do not replace normal catalog browsing or force interactive tools. Offer Worksho
 A visitor can find a trustworthy learning resource, record a safe planning project, request help and return to their standard catalog journey without being pushed into an interactive experience. Later, an authorized user can attach a professionally supported record to Passport without disclosing ownership or internal dealer data.
 
 **Release control:** Develop only on `site-refresh-v1`; do not merge to `main`, publish or promise a live feature without explicit owner approval.
+
+
+## Shared identity dependency (approved)
+Before W3 private project persistence and W4 Passport linking, implement an Area 33 Account identity service governed by `CUSTOMER_IDENTITY_MARKETING_ROADMAP.md`. Guest learning and public guides (W1) remain available without login. Marketing subscription is a **separate optional consent** and must not be required for account creation, project saving, or Passport access.
