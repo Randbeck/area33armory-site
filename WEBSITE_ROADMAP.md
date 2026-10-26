@@ -175,3 +175,6 @@ First visual accessory-exploration UI delivered on draft branch (see EXPERIENCE_
 
 ### Stage 4 — Differentiated studio presentation
 The development Experience Lab now supports abstract perspective manipulation, Studio/Focus/Compare Interests display modes, dynamic selection feedback and enhanced editorial visual styling. These modes are functional **research UI**, not working 3D firearm models or actual verified accessory configuration. No production exposure; visual/browser QA and genuine rights-cleared assets still needed.
+
+## Stage 5 — Approved multi-angle viewer foundation
+The Experience Lab now includes a functional keyboard/button/swipe/slider-controlled photo-sequence viewer backed exclusively by an approval-gated static manifest. Its published set is intentionally empty until licensed, exactly matched media is supplied. This is **not** a 3D renderer, a universal 360° capture, an attachment configurator or compatibility engine. See `APPROVED_MEDIA_STAGE_5.md`.
