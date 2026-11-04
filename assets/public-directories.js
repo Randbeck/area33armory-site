@@ -22,7 +22,7 @@
     if(!r||typeof r!=="object"||r.published!==true||!allowedIndustries.has(r.industry))return null;
     const name=txt(r.business_name,100),title=txt(r.title,150),id=txt(r.public_id,90);
     if(!name||!title||!id||!txt(r.service,90)||!txt(r.summary,900))return null;
-    return {id,industry:r.industry,name,title,service:txt(r.service),summary:txt(r.summary,900),location:txt(r.location_label,100),period:txt(r.completed_period,50),evidence:txt(r.verification_label,90),image:imagePath(r.cover_image)};
+    return {id,industry:r.industry,name,title,service:txt(r.service),summary:txt(r.summary,900),location:txt(r.location_label,100),period:txt(r.completed_period,50),evidence:txt(r.verification_label,90),image:imagePath(r.cover_image),before:imagePath(r.before_image),after:imagePath(r.after_image)};
   }
   function cleanDealer(r){
     if(!r||typeof r!=="object"||r.published!==true||r.acceptance_confirmed!==true)return null;
@@ -43,6 +43,12 @@
     body.append(element("small","",kind==="portfolio"?r.name+" · "+r.service:r.city+", "+r.state+" "+r.zip));
     body.append(element("p","",kind==="portfolio"?r.summary:(r.policy||"Contact dealer directly to reconfirm transfer terms.")));
     body.append(element("small","",kind==="portfolio"?(r.evidence||"Professional-reported; independent verification not established"):(r.updated?"Last acceptance check: "+r.updated:"Check date not supplied")));
+    if(kind==="portfolio"&&r.before&&r.after){
+      const button=element("button","case-open","Compare before & after ↗");
+      button.type="button";
+      button.addEventListener("click",()=>document.dispatchEvent(new CustomEvent("area33:open-case",{detail:{before:r.before,after:r.after,title:r.title,business:r.name}})));
+      body.append(button);
+    }
     if(kind==="ffl"){
       const a=element("a","action","Ask Area 33 about this dealer ↗");
       a.href="mailto:area33armory@mail.com?subject="+encodeURIComponent("Receiving FFL inquiry: "+r.name)+"&body="+encodeURIComponent("Please confirm whether "+r.name+" in "+r.city+", "+r.state+" can receive the proposed transfer. No shipment is authorized.");
@@ -60,6 +66,7 @@
       return okQ&&okFilter;
     });
     results.replaceChildren(...shown.slice(0,60).map(makeCard));
+    if(kind==="portfolio")byId("case-study").hidden=true;
     results.hidden=!shown.length;
     empty.hidden=!!shown.length;
     byId("empty-title").textContent=items.length?(kind==="portfolio"?"No matching published projects.":"No matching confirmed partner records."):(kind==="portfolio"?"No public portfolios yet.":"No confirmed transfer partners published.");

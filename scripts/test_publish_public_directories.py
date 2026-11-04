@@ -51,4 +51,28 @@ class Tests(unittest.TestCase):
         with self.assertRaises(PublicationError):ffl(r)
     def test_duplicate(self):
         with self.assertRaises(PublicationError):build([sample_portfolio(),sample_portfolio()],"portfolio")
+    def test_before_after_approved(self):
+        r=sample_portfolio()
+        r["before_image"]="assets/approved/sample/before.webp"
+        r["after_image"]="assets/approved/sample/after.webp"
+        r["approvals"].update({"media_rights":True,"before_after_publication":True,"before_after_alignment":True})
+        out=portfolio(r)
+        self.assertEqual(out["before_image"],"assets/approved/sample/before.webp")
+        self.assertNotIn("approvals",out)
+    def test_before_after_consent(self):
+        r=sample_portfolio()
+        r["before_image"]="assets/approved/sample/before.webp"
+        r["after_image"]="assets/approved/sample/after.webp"
+        r["approvals"].update({"media_rights":True,"before_after_publication":False,"before_after_alignment":True})
+        with self.assertRaises(PublicationError):portfolio(r)
+    def test_before_after_partial(self):
+        r=sample_portfolio()
+        r["before_image"]="assets/approved/sample/before.webp"
+        with self.assertRaises(PublicationError):portfolio(r)
+    def test_before_after_traversal(self):
+        r=sample_portfolio()
+        r["before_image"]="assets/approved/../private.jpg"
+        r["after_image"]="assets/approved/sample/after.webp"
+        r["approvals"].update({"media_rights":True,"before_after_publication":True,"before_after_alignment":True})
+        with self.assertRaises(PublicationError):portfolio(r)
 if __name__=="__main__":unittest.main()

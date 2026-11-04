@@ -48,6 +48,15 @@ def portfolio(r):
     if image is not None:
         if a.get("media_rights") is not True or not isinstance(image,str) or not IMAGE.fullmatch(image) or ".." in image:
             raise PublicationError("Image must be rights-approved and on-site under assets/approved/")
+    before=r.get("before_image")
+    after=r.get("after_image")
+    if before is not None or after is not None:
+        if not isinstance(before,str) or not isinstance(after,str):
+            raise PublicationError("Before/after requires two approved images")
+        if a.get("media_rights") is not True or a.get("before_after_publication") is not True or a.get("before_after_alignment") is not True:
+            raise PublicationError("Before/after requires rights, specific client consent and alignment review")
+        if any((not IMAGE.fullmatch(p) or ".." in p) for p in (before,after)):
+            raise PublicationError("Before/after images must reside under assets/approved")
     return {
         "public_id":public_id(r),"published":True,"industry":r["industry"],
         "business_name":field(r,"business_name",100),"title":field(r,"title",150),
@@ -55,6 +64,7 @@ def portfolio(r):
         "location_label":field(r,"location_label",100),
         "completed_period":field(r,"completed_period",50),
         "verification_label":field(r,"verification_label",90),"cover_image":image,
+        "before_image":before,"after_image":after,
     }
 
 def ffl(r,today=None):
