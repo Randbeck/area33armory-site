@@ -49,6 +49,12 @@ class Tests(unittest.TestCase):
         with self.assertRaises(PublicationError):item(r)
     def test_duplicate_id_rejected(self):
         with self.assertRaises(PublicationError):build([good(),good()])
+    def test_sensitive_variant_rejected(self):
+        r=good();r["variant"]="private@example.com"
+        with self.assertRaises(PublicationError):item(r)
+    def test_malformed_configurations_fail_clean(self):
+        r=good();r["configurations"]=None
+        with self.assertRaises(PublicationError):item(r)
     def test_sensitive_contact_rejected(self):
         r=good();r["model"]="customer@example.com"
         with self.assertRaises(PublicationError):item(r)

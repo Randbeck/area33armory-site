@@ -66,15 +66,17 @@ def item(record):
       "publication_approved":True,"exact_identity_verified":True,"rights":"approved",
       "manufacturer":txt(record,"manufacturer",100),
       "model":txt(record,"model",120),
-      "variant":record.get("variant") if isinstance(record.get("variant"),str) and len(record["variant"])<=100 else "",
+      "variant":txt(record,"variant",100) if isinstance(record.get("variant"),str) and record.get("variant").strip() else "",
       "rights_source":txt(record,"rights_source",160),
       "identity_evidence_label":txt(record,"identity_evidence_label",160),
       "checked_at":day(record,"checked_at"),
       "frames":base,
       "configurations":[]
     }
+    raw_configurations=record.get("configurations",[])
+    if not isinstance(raw_configurations,list):raise PublicationError("Configurations must be an array")
     config_ids=set()
-    for config in record.get("configurations",[]):
+    for config in raw_configurations:
         if not isinstance(config,dict):raise PublicationError("Malformed configuration")
         if config.get("status")!="published":continue
         approval(config,"owner_publication","media_rights","exact_accessory","pairing_verified","image_alignment")
