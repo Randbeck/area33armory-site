@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import {approvedPath,sanitizeShowroomManifest,sanitizeShowroomItem} from "../assets/showroom-contract.mjs";
-const frame=angle=>({angle,src:"assets/approved/showroom/record_12345/"+angle+".webp",alt:"Approved "+angle});
+const frame=angle=>({angle,src:"assets/approved/showroom/record_123456789/"+angle+".webp",alt:"Approved "+angle});
 function valid(){
  return {
   id:"record_123456789",manufacturer:"Test brand",model:"Exact item",variant:"",
@@ -13,7 +13,7 @@ function valid(){
    id:"option_123456789",label:"Approved attachment appearance",publication_approved:true,media_rights_approved:true,
    exact_accessory_verified:true,pairing_verified:true,alignment_reviewed:true,
    pairing_evidence_label:"Manual evidence review",
-   frames:[{...frame("left"),src:"assets/approved/showroom/record_12345/left-with.webp"},{...frame("right"),src:"assets/approved/showroom/record_12345/right-with.webp"}]
+   frames:[{...frame("left"),src:"assets/approved/showroom/record_123456789/left-with.webp"},{...frame("right"),src:"assets/approved/showroom/record_123456789/right-with.webp"}]
   }],
   secret_dealer_cost: 1
  }
@@ -23,6 +23,10 @@ assert.equal(approvedPath("https://example.com/img.webp"),null);
 assert.ok(sanitizeShowroomItem(valid()));
 assert.equal(sanitizeShowroomItem({...valid(),publication_approved:false}),null);
 assert.equal(sanitizeShowroomItem({...valid(),rights:"unclear"}),null);
+const foreignBase=valid();foreignBase.frames[0].src="assets/approved/showroom/other_product_123/left.webp";
+assert.equal(sanitizeShowroomItem(foreignBase),null);
+const foreignConfig=valid();foreignConfig.configurations[0].frames[0].src="assets/approved/showroom/other_product_123/left.webp";
+assert.equal(sanitizeShowroomItem(foreignConfig).configurations.length,0);
 const clean=sanitizeShowroomItem(valid());
 assert.equal(clean.secret_dealer_cost,undefined);
 assert.equal(clean.configurations.length,1);
