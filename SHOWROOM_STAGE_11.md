@@ -26,3 +26,8 @@ This is **not** a true 3D engine, a verified all-product fitment database, a cla
 
 ## Not yet
 Real media assets are not available in this development context; no actual product views or accessory composites have been published. Public hosting and the live branch remain unchanged.
+
+## Media separation hardening (November 4, 2026)
+- The offline publisher and the browser each reject frames whose approved path is outside that exact product's own `assets/approved/showroom/<public-id>/` folder; this applies to base and accessory appearances.
+- Offline publishing also rejects symlinks that could cause a trusted-looking image path to resolve outside its product's directory.
+- Regression tests cover cross-product media substitution. No genuine product photography has been published by these tests.
