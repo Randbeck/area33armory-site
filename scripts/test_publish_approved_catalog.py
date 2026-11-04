@@ -44,6 +44,7 @@ class CatalogApprovalTests(unittest.TestCase):
         self.out = self.dir / "approvals"
         self.template = prepare(self.handoff, self.media, self.out)
         self.records = json.loads(self.template.read_text())
+        self.original_draft = json.loads(self.template.read_text())
         self.approved = self.records[0]
         self.approved.update({
             "status": "published", "category": "Holsters",
@@ -81,10 +82,13 @@ class CatalogApprovalTests(unittest.TestCase):
             return publish(self.template, do_publish=do_publish)
 
     def test_draft_defaults_all_false(self):
-        saved = json.loads(self.template.read_text())[0]
-        # setUp has modified memory, not the prepared draft on disk, until self.write()
-        self.assertIn("photos", saved)
-        self.assertTrue(saved["approvals"]["owner_publication"])
+        draft = self.original_draft[0]
+        self.assertEqual(draft["status"], "draft")
+        self.assertTrue(all(value is False for value in draft["approvals"].values()))
+        self.assertEqual(draft["product_type"], "")
+        self.assertEqual(draft["rights_source"], "")
+        self.assertEqual(draft["photos"][0]["alt"], "")
+        self.assertIn("photos", draft)
 
     def test_private_approval_file_contains_no_public_media(self):
         self.assertTrue(self.template.exists())
