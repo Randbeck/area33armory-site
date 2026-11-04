@@ -153,7 +153,7 @@ for(let i=0;i<data.length;i++){
  const item=data[i],section=node("section");section.className="card";
  const head=node("div");head.className="head";
  const title=node("h2",[item.manufacturer,item.model,item.variant].filter(Boolean).join(" "));
- const status=node("span","Draft — not approved");status.className="status";
+ const status=node("span",(item.status==="published"&&ready(item))?"Review complete — PRIVATE only":"Draft — not approved");status.className="status";
  head.append(title,status);section.append(head);
  section.append(node("p","Product "+(i+1)+" of "+data.length+" — source title must be verified."));
  const gallery=node("div");gallery.className="photos";
