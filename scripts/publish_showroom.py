@@ -34,18 +34,18 @@ def approval(obj,*fields):
     if not isinstance(a,dict) or any(a.get(f) is not True for f in fields):
         raise PublicationError("Missing required independent publication approval: "+", ".join(fields))
     return a
-def asset(obj):
+def asset(obj, public_item_id):
     path=txt(obj,"src",180)
-    if ".." in path or not ASSET.fullmatch(path):
+    if ".." in path or not ASSET.fullmatch(path) or not path.startswith(f"assets/approved/showroom/{public_item_id}/"):
         raise PublicationError("Only local approved showroom PNG/JPEG/WebP images are allowed")
     return path
-def frames(arr):
+def frames(arr, public_item_id):
     if not isinstance(arr,list) or len(arr)<2 or len(arr)>48:
         raise PublicationError("Each configuration requires 2-48 approved image angles")
     out=[]
     for f in arr:
         if not isinstance(f,dict):raise PublicationError("Malformed media frame")
-        out.append({"angle":txt(f,"angle",50),"src":asset(f),"alt":txt(f,"alt",200)})
+        out.append({"angle":txt(f,"angle",50),"src":asset(f,public_item_id),"alt":txt(f,"alt",200)})
     if len({x["angle"] for x in out})!=len(out):
         raise PublicationError("Duplicate angle")
     return out
@@ -60,9 +60,10 @@ def item(record):
     if not isinstance(record,dict):raise PublicationError("Record must be an object")
     if record.get("status")!="published":return None
     approval(record,"owner_publication","exact_identity","media_rights","content_review")
-    base=frames(record.get("frames"))
+    pid=public_id(record)
+    base=frames(record.get("frames"),pid)
     out={
-      "id":public_id(record),"status":"published",
+      "id":pid,"status":"published",
       "publication_approved":True,"exact_identity_verified":True,"rights":"approved",
       "manufacturer":txt(record,"manufacturer",100),
       "model":txt(record,"model",120),
@@ -83,7 +84,7 @@ def item(record):
         cid=public_id(config)
         if cid in config_ids:raise PublicationError("Duplicate configuration ID")
         config_ids.add(cid)
-        media=frames(config.get("frames"))
+        media=frames(config.get("frames"),pid)
         if [f["angle"] for f in media]!=[f["angle"] for f in base]:
             raise PublicationError("Configuration images must match exact base angles and sequence")
         out["configurations"].append({
@@ -116,6 +117,9 @@ def check_media_files(payload,root):
         for frameset in allframes:
             for frame in frameset:
                 path=root / frame["src"]
+                approved_dir=root.resolve() / "assets" / "approved" / "showroom" / item["id"]
+                if path.is_symlink() or not path.resolve().is_relative_to(approved_dir):
+                    raise PublicationError("Media path escapes its approved exact-product directory")
                 if not path.is_file():raise PublicationError("Referenced approved media file missing: "+frame["src"])
                 if path.stat().st_size>18_000_000 or path.stat().st_size<12:raise PublicationError("Invalid media file size")
                 sig=path.open("rb").read(16)
