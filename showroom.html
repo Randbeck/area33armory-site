@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0c0c10">
+<meta name="description" content="Area 33 approved-media showroom: interactive exact-product photo views and individually verified accessory configurations when published.">
+<title>Real-Media Showroom | Area 33 Armory</title><link rel="stylesheet" href="assets/showroom.css"><script type="module" src="assets/showroom.js"></script></head>
+<body><a class="skip" href="#showroom">Skip to showroom</a>
+<header class="top"><div class="wrap nav"><a href="index.html"><img src="assets/area33-logo-dark.svg" width="200" height="48" alt="Area 33 Armory home"></a><nav aria-label="Main navigation"><a href="index.html">Home</a><a href="studio.html">Concept Studio</a><a aria-current="page" href="showroom.html">Real-Media Showroom</a><a href="catalog.html">Catalog preview</a><a href="portfolio.html">Work portfolios</a><a href="contact.html">Contact</a></nav></div></header>
+<main id="showroom"><section class="intro"><div class="wrap intro-row"><div><span class="eyebrow">AREA 33 / PRODUCT EXPERIENCE</span><h1>Look closer.<br><em>Know more.</em></h1><p>A photo-based interactive experience built for exact products—not generic matches. Explore approved angles and accessory visuals when verified media is released.</p><div class="intro-actions"><a class="primary" href="#workspace">Explore approved media ↘</a><a href="studio.html">Try the working Concept Studio ↗</a></div></div><div class="hero-art" aria-hidden="true"><span>33</span><small>INTELLIGENT VISUAL DISCOVERY</small></div></div></section>
+<div class="disclosure"><div class="wrap"><strong>RECORDS, NOT ASSUMPTIONS</strong><span>Only rights-cleared, individually approved product media may appear here. Photographs do not independently prove fitment, current inventory, pricing or legal eligibility.</span></div></div>
+<section id="workspace" class="wrap workspace"><div class="section-head"><div><span class="eyebrow dark">APPROVED MEDIA ONLY</span><h2>The product, from another perspective.</h2></div><p>Rotate through real approved photo frames, inspect details, and compare a published accessory configuration against the matching base view.</p></div>
+<div class="empty" id="empty" role="status"><div class="empty-icon" aria-hidden="true">33</div><div><span class="eyebrow dark">FIRST PRODUCT MEDIA IN PREPARATION</span><h3 id="empty-heading">No exact-product media published yet.</h3><p id="empty-copy">The viewer is built, but Area 33 has not approved a product-specific photo set and accessory composites for public viewing. We won't replace them with made-up inventory or mismatched photographs.</p><a href="studio.html" class="primary-dark">Try the interactive concept instead ↗</a></div></div>
+<div id="app" class="studio" hidden>
+ <div class="media-shell">
+  <div class="media-top"><div><span class="eyebrow">AREA 33 / EXACT-MODEL MEDIA</span><strong id="product-heading">Approved product</strong></div><span class="state-label">APPROVED REFERENCE</span></div>
+  <div id="viewer" class="viewer" tabindex="0" role="group" aria-label="Approved product image viewer. Use left and right arrow keys to rotate.">
+   <div class="image-pair"><img id="base-image" alt="" draggable="false"><img id="selected-image" alt="" draggable="false" hidden><div class="split" id="split" hidden></div></div>
+   <span class="corner top-left">A33 / REAL-MEDIA STUDIO</span><span class="corner bottom-right" id="frame-name">FRAME 1</span>
+  </div>
+  <div class="toolbar" role="group" aria-label="Image controls">
+   <button type="button" id="prev" aria-label="Previous approved angle">← Previous</button>
+   <label class="scrub-label" for="angle">Angle <output id="angle-label" for="angle">1 / 1</output></label>
+   <input type="range" id="angle" min="0" max="0" value="0" aria-label="Approved image angle">
+   <button type="button" id="next" aria-label="Next approved angle">Next →</button>
+  </div>
+  <div class="toolbar secondary" role="group" aria-label="Zoom controls"><button id="zoom-out" type="button">− Zoom out</button><output id="zoom-label">100%</output><button id="zoom-in" type="button">+ Zoom in</button><button id="zoom-reset" type="button">Reset zoom</button></div>
+  <p id="viewer-error" class="viewer-error" role="status" aria-live="polite" hidden>Approved media is unavailable for this view.</p>
+ </div>
+ <aside class="panel"><div><span class="eyebrow dark">YOUR VIEW</span><h3>Explore the evidence.</h3><p id="product-description" class="quiet">Approved product description</p></div>
+ <div class="field"><label for="product">Exact product</label><select id="product"></select></div>
+ <div class="field"><label for="configuration">Accessory appearance</label><select id="configuration"><option value="base">As photographed</option></select><p class="fine">Only exact-product configurations with approved imagery and documented pairing evidence are selectable.</p></div>
+ <div class="compare-controls"><label class="check"><input type="checkbox" id="compare"> Compare with base image</label><label for="split-control">Before / after split</label><input type="range" min="0" max="100" value="50" id="split-control" disabled><output id="split-label">50%</output></div>
+ <div class="evidence"><span>PRODUCT IDENTITY</span><strong id="identity-status">Awaiting selection</strong><span>IMAGE RIGHTS</span><strong id="rights-status">Awaiting selection</strong><span>ACCESSORY PAIRING</span><strong id="pairing-status">No accessory selected</strong><span>RECORD CHECKED</span><strong id="checked-status">—</strong></div>
+ <a class="contact-link" href="contact.html">Ask Area 33 about this research ↗</a><p class="fine">Recorded media evidence is not a live stock check or a safety assessment.</p></aside>
+</div><p class="caption" id="caption" role="status" aria-live="polite"></p></div>
+</section><section class="next"><div class="wrap next-grid"><div><span class="eyebrow">THE EXPERIENCE WE'RE BUILDING</span><h2>Not another product grid.</h2></div><div><p>Media-first exploration, visual comparisons, and source-backed explanations all belong together. Each real image set requires exact identification and licensing before it can be published.</p><a href="studio.html">Explore the interactive concept Studio ↗</a></div></div></section></main>
+<footer><div class="wrap"><a href="index.html"><img src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="175" height="42"></a><p>Informational showroom only. No online checkout, live inventory, verified customer prices, or automatic fulfillment.</p><nav><a href="index.html">Home</a><a href="studio.html">Concept Studio</a><a href="portfolio.html">Work portfolios</a><a href="contact.html">Contact</a></nav></div></footer></body></html>
