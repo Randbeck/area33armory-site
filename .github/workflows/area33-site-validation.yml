@@ -13,12 +13,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Test approval gating and public-field allowlists
-        run: python -m unittest discover -s scripts -p "test_publish_public_directories.py" -v
+      - name: Test privacy and exact-media publisher
+        run: python -m unittest discover -s scripts -p "test_*.py" -v
       - name: Check JavaScript syntax
         run: |
           node --check assets/public-directories.js
+          node --check assets/portfolio-compare.js
           node --check assets/catalog.js
           node --check assets/experience-lab.js
-      - name: Test the public website contract
-        run: node scripts/test_public_site.mjs
+          node --check assets/showroom-contract.mjs
+          node --input-type=module --check < assets/showroom.js
+      - name: Test public website contract
+        run: |
+          node scripts/test_public_site.mjs
+          node scripts/test_showroom_contract.mjs
