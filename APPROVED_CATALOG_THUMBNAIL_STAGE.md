@@ -62,3 +62,32 @@ The CLI \`python scripts/publish_approved_catalog.py --input <private reviewed a
 ## Boundaries
 
 The preview has no payment features, customer checkout, verified stock or price data. RSR SKU-to-UPC association is source evidence rather than proof of safety or compatibility. Site/browser validation helps avoid accidental leaks, but it cannot replace human licensing, source identity, and release review. This is not a scheduled Randbeck image sync or automatically maintained all-distributor catalog.
+
+
+## Offline owner approval page — Nov 4 update
+
+The next step uses the already generated private approval file. No FTP connection, site deployment, media download or changes to the V16 Randbeck installation.
+
+In PowerShell:
+\`\`\`powershell
+Set-Location "C:\Area33\area33-catalog-approval-test"
+git pull --ff-only origin work/approved-catalog-thumbnails
+if ($LASTEXITCODE -ne 0) { throw "Unable to update private review tool" }
+
+$draft = "C:\Area33-private\catalog-approvals-20261104-160150\catalog-approval-template.json"
+if (-not (Test-Path $draft)) { throw "Private approval draft not found" }
+
+py .\scripts\build_private_catalog_review.py --input $draft
+if ($LASTEXITCODE -ne 0) { throw "Review page creation failed" }
+Start-Process (Join-Path (Split-Path $draft) "catalog-owner-review.html")
+\`\`\`
+
+The local HTML displays the original private source photos, source-proposed manufacturer/model, and fields for exact variant, category, type, date/evidence, permitted image rights, and per-photo alt descriptions. **All 5 approvals start false** for a newly prepared draft. Each product requires an explicit five-part checklist, a conscious human confirmation, and an explicit export. Edit a field after confirmation and the product returns to draft.
+
+"Save private progress" downloads a copy of the edited draft JSON. "Export approved items only" downloads only independently reviewed selections and **does not publish them**. Browsers normally place downloaded files in the user's Downloads folder; move any such files to private storage outside the website/GitHub checkout. The page does not automatically persist edits; export before closing it.
+
+Do **not** approve every RSR record by default: only mark the exact products Area 33 actually offers for sale. RSR's rights documentation pertains to displaying products for sale, not arbitrary promotion or general catalog research. The photo/identity, rights, compatibility and sale listing facts require independent owner checks. An "approved" owner-review JSON file is still only a *private input* to the separate, fail-closed publisher and must never be committed.
+
+The private HTML itself embeds absolute local paths for offline image previews. Keep it private and do not upload the HTML, exported JSON, FTP credentials or distributor originals to GitHub or an external site. No online account integration or public release is performed by the page.
+
+**Validation:** \`python -m unittest discover -s scripts -p "test_*.py" -v\` and GitHub branch CI cover generator escaping, hash checks, no auto approvals, and offline script syntax.
