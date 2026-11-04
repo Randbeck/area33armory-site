@@ -5,8 +5,8 @@ sys.path.insert(0,str(Path(__file__).parent))
 from publish_showroom import build,item,PublicationError
 
 def good():
-    frame=lambda angle: {"angle":angle,"src":"assets/approved/showroom/record_12345/"+angle+".webp","alt":"Actual licensed image at "+angle}
-    config=lambda angle: {"angle":angle,"src":"assets/approved/showroom/record_12345/with-"+angle+".webp","alt":"Licensed approved configuration "+angle}
+    frame=lambda angle: {"angle":angle,"src":"assets/approved/showroom/record_123456789/"+angle+".webp","alt":"Actual licensed image at "+angle}
+    config=lambda angle: {"angle":angle,"src":"assets/approved/showroom/record_123456789/with-"+angle+".webp","alt":"Licensed approved configuration "+angle}
     return {
       "id":"record_123456789","status":"published",
       "manufacturer":"Test manufacturer","model":"Exact model","variant":"Exact variant",
@@ -46,6 +46,12 @@ class Tests(unittest.TestCase):
         with self.assertRaises(PublicationError):item(r)
     def test_pairing_approval_required(self):
         r=good();r["configurations"][0]["approvals"]["pairing_verified"]=False
+        with self.assertRaises(PublicationError):item(r)
+    def test_foreign_product_base_media_rejected(self):
+        r=good();r["frames"][0]["src"]="assets/approved/showroom/different_item_123/left.webp"
+        with self.assertRaises(PublicationError):item(r)
+    def test_foreign_product_accessory_media_rejected(self):
+        r=good();r["configurations"][0]["frames"][1]["src"]="assets/approved/showroom/different_item_123/right.webp"
         with self.assertRaises(PublicationError):item(r)
     def test_duplicate_id_rejected(self):
         with self.assertRaises(PublicationError):build([good(),good()])
