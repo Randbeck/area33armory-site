@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b0b0d"><meta name="description" content="Contact Area 33 Armory, a veteran-owned Missouri business, with general research, service or business questions."><title>Contact | Area 33 Armory</title>
+<style>
+:root{--ink:#161619;--muted:#64646b;--line:#d9d9dd;--red:#ce353a}
+*{box-sizing:border-box}body{margin:0;background:#f2f2f1;color:var(--ink);font-family:Inter,"Segoe UI",Arial,sans-serif;line-height:1.55}a{color:inherit}button,input,select,textarea{font:inherit}button{cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #d54248;outline-offset:3px}
+.wrap{width:min(1160px,calc(100% - 42px));margin:auto}.skip{position:absolute;top:-100px;left:12px;background:white;padding:10px;z-index:20}.skip:focus{top:10px}
+header{background:#0c0c0f;color:white;border-bottom:1px solid #39393f}.nav{min-height:88px;display:flex;justify-content:space-between;align-items:center;gap:22px}.nav img{display:block;width:205px;height:auto}.nav nav{display:flex;align-items:center;gap:clamp(10px,2vw,24px);flex-wrap:wrap}.nav a{text-decoration:none;font-size:.84rem}.nav nav a[aria-current]{color:#ff888e}
+.hero{background:linear-gradient(130deg,#111115,#0b0b0e 64%,#32171d);color:white;padding:96px 0}.eyebrow{font-size:.72rem;color:#ff898e;letter-spacing:.2em;font-weight:850}.hero h1{font-size:clamp(3.35rem,7.4vw,6.8rem);letter-spacing:-.08em;line-height:.99;margin:19px 0 23px}.hero h1 em{font-style:normal;color:#f46c76}.hero p{color:#c4c4c9;font-size:1.1rem;max-width:590px}
+.content{padding:80px 0 100px}.layout{display:grid;grid-template-columns:.83fr 1.17fr;gap:clamp(25px,7vw,95px)}.kicker{font-size:.74rem;color:#b22d34;font-weight:850;letter-spacing:.14em}.intro h2{font-size:clamp(2rem,4vw,3.1rem);letter-spacing:-.055em;line-height:1.08;margin:13px 0}.intro p{color:#626269}.email-card{display:block;margin:30px 0;background:#17171b;color:white;text-decoration:none;padding:27px;border-radius:11px}.email-card strong{display:block;color:#c5c5c9;font-size:.84rem;margin-bottom:7px}.email-card span{font-size:1.15rem;font-weight:800;overflow-wrap:anywhere}.email-card:hover{background:#303036}.caution{border-left:3px solid var(--red);padding-left:18px;font-size:.85rem}
+.panel{border:1px solid var(--line);background:white;border-radius:13px;padding:clamp(23px,4vw,40px)}.panel h2{font-size:2rem;letter-spacing:-.055em;margin:0}.panel>p{color:#66666d;font-size:.88rem}.field{margin:17px 0}.field label{display:block;margin-bottom:7px;font-size:.85rem;font-weight:760}.field input,.field select,.field textarea{width:100%;display:block;border:1px solid #b7b7bd;border-radius:7px;padding:12px 13px;background:white;color:#151518}.field textarea{resize:vertical;min-height:148px}.hint{font-size:.75rem;color:#74747b}.submit{border:0;border-radius:8px;background:#16161a;color:#fff;font-weight:750;padding:14px 22px}.submit:hover{background:#34343b}.draft-status{font-size:.8rem;color:#55555a}
+footer{background:#0b0b0e;color:#b6b6bc;padding:39px 0;font-size:.8rem}footer img{display:block;width:175px;height:auto}footer p{margin:8px 0}footer a{color:white}
+@media(max-width:780px){.nav{align-items:flex-start;flex-direction:column;padding:18px 0}.hero{padding:70px 0}.layout{grid-template-columns:1fr}.content{padding:60px 0}}
+</style></head>
+<body><a class="skip" href="#main">Skip to content</a><header><div class="wrap nav"><a href="index.html"><img src="assets/area33-logo-dark.svg" alt="Area 33 Armory home" width="205" height="50"></a><nav aria-label="Main navigation"><a href="index.html">Home</a><a href="explore.html">Explore</a><a href="catalog.html">Catalog preview</a><a href="experience-lab.html">Experience Lab</a><a href="contact.html" aria-current="page">Contact</a></nav></div></header>
+<main id="main"><section class="hero"><div class="wrap"><span class="eyebrow">AREA 33 / LET'S CONNECT</span><h1>Real questions.<br><em>Real conversations.</em></h1><p>Have a general product research question, a service inquiry, or want to learn more about Area 33? Start here.</p></div></section>
+<div class="content"><div class="wrap layout"><aside class="intro"><span class="kicker">DIRECT CONTACT</span><h2>Reach Area 33 Armory.</h2><p>We're a veteran-owned Missouri business. We value clear answers and personal service.</p><a class="email-card" href="mailto:area33armory@mail.com?subject=Area%2033%20Armory%20Inquiry"><strong>Email Area 33 directly</strong><span>area33armory@mail.com ↗</span></a><p class="caution">Please don't email identification documents, payment details, Social Security numbers, or other sensitive information.</p></aside>
+<section class="panel" aria-labelledby="draft-title"><h2 id="draft-title">Prepare your message.</h2><p>Fill out the fields to open a draft in your own email application. This page does not send or store your message; you'll review and send it yourself.</p><form id="inquiry">
+<div class="field"><label for="name">Your name</label><input id="name" name="name" maxlength="100" autocomplete="name" required></div>
+<div class="field"><label for="email">Reply email</label><input id="email" name="email" type="email" maxlength="150" autocomplete="email" required></div>
+<div class="field"><label for="topic">Topic</label><select id="topic" name="topic" required><option value="">Choose a topic</option><option>General question</option><option>Product research</option><option>Service inquiry</option><option>Business information</option></select></div>
+<div class="field"><label for="message">Your message</label><textarea id="message" name="message" maxlength="1200" required placeholder="How can we help?"></textarea><p class="hint">General inquiries only. Do not include financial or identifying documents.</p></div>
+<button class="submit" type="submit">Open email draft ↗</button><p id="status" class="draft-status" role="status" aria-live="polite"></p></form></section></div></div></main>
+<footer><div class="wrap"><a href="index.html"><img src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="175" height="42"></a><p>Veteran-owned • Missouri-based • Equipping Patriots · Supporting Heroes</p><p>General information website. No online checkout, live inventory verification, or payment processing.</p></div></footer>
+<script>
+"use strict";
+document.getElementById("inquiry").addEventListener("submit",function(event){
+event.preventDefault();if(!this.reportValidity())return;
+const values=new FormData(this);
+const clean=(key,max)=>String(values.get(key)||"").trim().slice(0,max);
+const name=clean("name",100),email=clean("email",150),topic=clean("topic",80),message=clean("message",1200);
+if(!name||!email||!topic||!message)return;
+const subject="Area 33 Armory — "+topic;
+const body="Name: "+name+"\nReply email: "+email+"\nTopic: "+topic+"\n\n"+message;
+document.getElementById("status").textContent="Your email app should open a draft. Review and send it there; this site has not sent anything.";
+window.location.href="mailto:area33armory@mail.com?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+});
+</script></body></html>
