@@ -7,7 +7,7 @@ const TYPES=new Set(["complete","part","accessory","ammunition","other"]);
 const TXT=(v,max=160)=>typeof v==="string"&&v.trim().length>0&&v.trim().length<=max?v.trim():null;
 const DATE=(v)=>typeof v==="string"&&Number.isFinite(Date.parse(v))?v:null;
 const DATESTAMP=(v)=>typeof v==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v+"T00:00:00Z"))?v:null;
-const ITEM_FIELDS=new Set(["id","manufacturer","model","variant","category","product_type","specifications","evidence","images","publication_updated_at"]);
+const ITEM_FIELDS=new Set(["id","manufacturer","model","variant","description","category","product_type","specifications","evidence","images","publication_updated_at"]);
 function exactKeys(obj,allow){return Object.keys(obj).every(k=>allow.has(k));}
 export function sanitizeCatalogManifest(doc,{baseUrl="https://area33armory.com/"}={}){
   if(!doc||typeof doc!=="object"||Array.isArray(doc)||doc.schema!=="area33.catalog.public.v1"||!Array.isArray(doc.items)||doc.items.length>100||!doc.coverage||typeof doc.coverage.description!=="string")return null;
@@ -17,8 +17,8 @@ export function sanitizeCatalogManifest(doc,{baseUrl="https://area33armory.com/"
   for(const raw of doc.items){
     if(!raw||typeof raw!=="object"||Array.isArray(raw)||!exactKeys(raw,ITEM_FIELDS))return null;
     const id=TXT(raw.id,64),manufacturer=TXT(raw.manufacturer,100),model=TXT(raw.model,120),category=TXT(raw.category,100);
-    const variant=raw.variant===""?"":TXT(raw.variant,100),type=TXT(raw.product_type,20);
-    if(!id||!ID.test(id)||ids.has(id)||!manufacturer||!model||!category||variant===null||!TYPES.has(type))return null;
+    const variant=raw.variant===""?"":TXT(raw.variant,100),description=raw.description===undefined||raw.description===""?"":TXT(raw.description,200),type=TXT(raw.product_type,20);
+    if(!id||!ID.test(id)||ids.has(id)||!manufacturer||!model||!category||variant===null||description===null||!TYPES.has(type))return null;
     if(!DATE(raw.publication_updated_at))return null;
     if(!Array.isArray(raw.specifications)||raw.specifications.length!==0)return null;
     if(!Array.isArray(raw.evidence)||raw.evidence.length!==1)return null;
@@ -38,7 +38,7 @@ export function sanitizeCatalogManifest(doc,{baseUrl="https://area33armory.com/"
     }
     ids.add(id);
     result.push({
-      id,manufacturer,model,variant,type,category,specs:[],
+      id,manufacturer,model,variant,description,type,category,specs:[],
       evidence:[{source:evidence.source_label.trim(),date:evidence.checked_at}],
       images,updated:raw.publication_updated_at.slice(0,10)
     });
