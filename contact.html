@@ -18,12 +18,23 @@ footer{background:#0b0b0e;color:#b6b6bc;padding:39px 0;font-size:.8rem}footer im
 <section class="panel" aria-labelledby="draft-title"><h2 id="draft-title">Prepare your message.</h2><p>Fill out the fields to open a draft in your own email application. This page does not send or store your message; you'll review and send it yourself.</p><form id="inquiry">
 <div class="field"><label for="name">Your name</label><input id="name" name="name" maxlength="100" autocomplete="name" required></div>
 <div class="field"><label for="email">Reply email</label><input id="email" name="email" type="email" maxlength="150" autocomplete="email" required></div>
-<div class="field"><label for="topic">Topic</label><select id="topic" name="topic" required><option value="">Choose a topic</option><option>General question</option><option>Product research</option><option>Service inquiry</option><option>Business information</option></select></div>
+<div class="field"><label for="topic">Topic</label><select id="topic" name="topic" required><option value="">Choose a topic</option><option>General question</option><option>Product research</option><option>Service inquiry</option><option>Business information</option><option>Image or trademark rights</option></select></div>
 <div class="field"><label for="message">Your message</label><textarea id="message" name="message" maxlength="1200" required placeholder="How can we help?"></textarea><p class="hint">General inquiries only. Do not include financial or identifying documents.</p></div>
 <button class="submit" type="submit">Open email draft ↗</button><p id="status" class="draft-status" role="status" aria-live="polite"></p></form></section></div></div></main>
 <footer><div class="wrap"><a href="index.html"><img src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="175" height="42"></a><p>Veteran-owned • Missouri-based • Equipping Patriots · Supporting Heroes</p><p>General information website. No online checkout, live inventory verification, or payment processing.</p></div></footer>
 <script>
 "use strict";
+// Prefill the rights-contact topic from a verified, opaque public product ID.
+// No supplier SKUs or private rights evidence are inserted into the URL.
+const rightsParams=new URLSearchParams(window.location.search);
+const rightsId=rightsParams.get("product");
+if(rightsParams.get("topic")==="Image or trademark rights"){
+  document.getElementById("topic").value="Image or trademark rights";
+  if(rightsId&&/^catalog_[a-f0-9]{20}$/.test(rightsId)){
+    document.getElementById("message").value=
+      "Public catalog record: "+rightsId+"\nPlease review the image or attribution for this listing.";
+  }
+}
 document.getElementById("inquiry").addEventListener("submit",function(event){
 event.preventDefault();if(!this.reportValidity())return;
 const values=new FormData(this);
