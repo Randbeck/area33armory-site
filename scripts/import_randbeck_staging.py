@@ -116,7 +116,7 @@ def _key_file(path: Path) -> bytes:
     return data
 
 
-def _source_file(root: Path, sku: str, rec: dict) -> Path:
+def _source_file(root: Path, sku: str, rec: dict, *, allow_exif: bool = False) -> Path:
     raw = rec.get("private_relative_file")
     if not isinstance(raw, str) or "\\" in raw:
         raise BridgeError("Source image path missing or invalid")
@@ -149,7 +149,9 @@ def _source_file(root: Path, sku: str, rec: dict) -> Path:
     if (size != (rec.get("width"), rec.get("height"))
             or size[0] < 300 or size[1] < 200):
         raise BridgeError("Original thumbnail dimensions do not match verified evidence")
-    if exif or rec.get("exif_present") is not False:
+    if type(rec.get("exif_present")) is not bool or rec["exif_present"] != exif:
+        raise BridgeError("Original source image EXIF evidence disagrees with verification")
+    if exif and not allow_exif:
         raise MediaMetadataReviewRequired(
             "EXIF-bearing media requires separate review"
         )
@@ -157,7 +159,8 @@ def _source_file(root: Path, sku: str, rec: dict) -> Path:
 
 
 def build(
-    staging_file: Path, batch_root: Path, identity_key: bytes
+    staging_file: Path, batch_root: Path, identity_key: bytes,
+    *, private_derivatives_root: Path | None = None,
 ) -> tuple[list[dict], dict]:
     if not isinstance(identity_key, bytes) or len(identity_key) != 32:
         raise BridgeError("32-byte private identity key required")
@@ -184,6 +187,7 @@ def build(
             by_upc[identity[0]].add(identity)
 
     drafts, exceptions, seen_id = [], [], set()
+    derivative_audits = []
     for identity, source_items in sorted(groups.items(), key=lambda r: r[0]):
         first = source_items[0]
         reasons = set()
@@ -205,25 +209,47 @@ def build(
             if rec.get("media_rights_approved") is not False:
                 raise BridgeError("Unexpected source-media approval state")
             for flag in rec.get("blockers", []):
-                if flag in IDENTITY_FLAGS or flag == "source_exif_requires_review_before_any_public_export":
+                if flag in IDENTITY_FLAGS:
+                    reasons.add("randbeck_" + flag)
+                if (flag == "source_exif_requires_review_before_any_public_export"
+                        and private_derivatives_root is None):
                     reasons.add("randbeck_" + flag)
             for photo in rec.get("source_media") or []:
                 if not photo.get("thumbnail_resolution_candidate"):
                     continue
                 try:
                     original = _source_file(batch_root, sku, photo)
+                    digest = photo["sha256"]
                 except MediaMetadataReviewRequired:
-                    # A metadata-bearing image is not a corrupted image.
-                    # Quarantine its entire product group, but continue the
-                    # remaining independent products in this private batch.
-                    # Never copy the original into an approval draft.
-                    reasons.add("photo_exif_metadata_requires_review")
-                    continue
+                    if private_derivatives_root is None:
+                        reasons.add("photo_exif_metadata_requires_review")
+                        continue
+                    from private_exif_derivatives import (
+                        PrivateDerivativeError, create_private_derivative,
+                    )
+                    # A private metadata-only copy is an engineering input,
+                    # NOT permission to alter supplier images for advertising.
+                    source = _source_file(
+                        batch_root, sku, photo, allow_exif=True
+                    )
+                    try:
+                        original, digest, evidence = create_private_derivative(
+                            source, private_derivatives_root, sku, source.name,
+                            photo["sha256"],
+                        )
+                    except PrivateDerivativeError as exc:
+                        # Unsupported orientation/metadata remains held.
+                        reasons.add("source_metadata_requires_manual_review")
+                        continue
+                    derivative_audits.append({
+                        "source_sku": sku,
+                        "source_name": source.name,
+                        **evidence,
+                    })
                 except BridgeError:
                     # Hash mismatches, path traversal, invalid image bytes
                     # and other evidence tampering remain batch-fatal.
                     raise
-                digest = photo["sha256"]
                 if digest in hashes:
                     continue
                 hashes.add(digest)
@@ -292,11 +318,15 @@ def build(
         "review_drafts_generated": len(drafts),
         "quarantined_identity_or_media_groups": len(exceptions),
         "groups_held_for_photo_metadata_review": sum(
-            "photo_exif_metadata_requires_review" in entry["reasons"]
-            or "randbeck_source_exif_requires_review_before_any_public_export"
-            in entry["reasons"]
+            any(reason in entry["reasons"] for reason in (
+                "photo_exif_metadata_requires_review",
+                "randbeck_source_exif_requires_review_before_any_public_export",
+                "source_metadata_requires_manual_review",
+            ))
             for entry in exceptions
         ),
+        "private_metadata_only_derivative_files": len(derivative_audits),
+        "private_metadata_derivative_audit": derivative_audits,
         "exception_reason_counts": dict(sorted(Counter(
             reason for entry in exceptions for reason in entry["reasons"]
         ).items())),
@@ -311,15 +341,25 @@ def build(
 
 
 def write_private_bridge(
-    staging: Path, root: Path, output: Path, key_path: Path
+    staging: Path, root: Path, output: Path, key_path: Path,
+    *, prepare_private_derivatives: bool = False,
 ):
     output = _outside_site(output, should_exist=False)
     if output.exists():
         raise BridgeError("Private bridge output exists; refusing overwrite")
-    # Resolve and validate all input and media before any destination directory.
+    # Only explicit owner-selected --prepare-private-exif-copies triggers
+    # any image processing. Originals remain unchanged, and images remain
+    # outside Git/public directories. Without flag, legacy behavior is identical.
     key = _key_file(key_path)
-    drafts, report = build(staging, root, key)
-    output.mkdir(parents=True, exist_ok=False)
+    if prepare_private_derivatives:
+        output.mkdir(parents=True, exist_ok=False)
+        drafts, report = build(
+            staging, root, key,
+            private_derivatives_root=output / "private-exif-copies",
+        )
+    else:
+        drafts, report = build(staging, root, key)
+        output.mkdir(parents=True, exist_ok=False)
     (output / "catalog-private-exceptions.json").write_text(
         json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
@@ -346,10 +386,15 @@ def main(argv=None):
     parser.add_argument("--batch-root", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--identity-key", type=Path, required=True)
+    parser.add_argument(
+        "--prepare-private-exif-copies", action="store_true",
+        help="Explicitly prepare lossless, private APP1/EXIF-cleared copies; never publish",
+    )
     args = parser.parse_args(argv)
     try:
         report = write_private_bridge(
-            args.staging, args.batch_root, args.out, args.identity_key
+            args.staging, args.batch_root, args.out, args.identity_key,
+            prepare_private_derivatives=args.prepare_private_exif_copies,
         )
     except (BridgeError, OSError, ValueError) as exc:
         parser.error(str(exc))
@@ -359,6 +404,7 @@ def main(argv=None):
     print(f"  Existing owner-review workflow drafts: {report['review_drafts_generated']}")
     print(f"  Identity/media exception groups: {report['quarantined_identity_or_media_groups']}")
     print(f"  Held for photo metadata review: {report['groups_held_for_photo_metadata_review']}")
+    print(f"  Private lossless EXIF-cleared photo copies: {report['private_metadata_only_derivative_files']}")
     print("  Exception reasons:", report["exception_reason_counts"])
     print("No owner approvals set, no public images copied, no site files changed.")
 
