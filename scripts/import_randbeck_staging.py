@@ -53,6 +53,10 @@ class BridgeError(ValueError):
     pass
 
 
+class MediaMetadataReviewRequired(BridgeError):
+    """Authentic, unchanged source photo is held for manual metadata inspection."""
+
+
 def _outside_site(path: Path, *, should_exist: bool = True) -> Path:
     value = path.expanduser().resolve()
     if value == SITE or value.is_relative_to(SITE):
@@ -146,7 +150,9 @@ def _source_file(root: Path, sku: str, rec: dict) -> Path:
             or size[0] < 300 or size[1] < 200):
         raise BridgeError("Original thumbnail dimensions do not match verified evidence")
     if exif or rec.get("exif_present") is not False:
-        raise BridgeError("EXIF-bearing media requires separate review")
+        raise MediaMetadataReviewRequired(
+            "EXIF-bearing media requires separate review"
+        )
     return path.resolve()
 
 
@@ -206,8 +212,16 @@ def build(
                     continue
                 try:
                     original = _source_file(batch_root, sku, photo)
+                except MediaMetadataReviewRequired:
+                    # A metadata-bearing image is not a corrupted image.
+                    # Quarantine its entire product group, but continue the
+                    # remaining independent products in this private batch.
+                    # Never copy the original into an approval draft.
+                    reasons.add("photo_exif_metadata_requires_review")
+                    continue
                 except BridgeError:
-                    # A real source tampering exception is serious, never silently skip.
+                    # Hash mismatches, path traversal, invalid image bytes
+                    # and other evidence tampering remain batch-fatal.
                     raise
                 digest = photo["sha256"]
                 if digest in hashes:
@@ -277,6 +291,12 @@ def build(
         "exact_identity_groups": len(groups),
         "review_drafts_generated": len(drafts),
         "quarantined_identity_or_media_groups": len(exceptions),
+        "groups_held_for_photo_metadata_review": sum(
+            "photo_exif_metadata_requires_review" in entry["reasons"]
+            or "randbeck_source_exif_requires_review_before_any_public_export"
+            in entry["reasons"]
+            for entry in exceptions
+        ),
         "exception_reason_counts": dict(sorted(Counter(
             reason for entry in exceptions for reason in entry["reasons"]
         ).items())),
@@ -338,6 +358,7 @@ def main(argv=None):
     print(f"  Exact identity groups: {report['exact_identity_groups']}")
     print(f"  Existing owner-review workflow drafts: {report['review_drafts_generated']}")
     print(f"  Identity/media exception groups: {report['quarantined_identity_or_media_groups']}")
+    print(f"  Held for photo metadata review: {report['groups_held_for_photo_metadata_review']}")
     print("  Exception reasons:", report["exception_reason_counts"])
     print("No owner approvals set, no public images copied, no site files changed.")
 
