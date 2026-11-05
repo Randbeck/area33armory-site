@@ -23,6 +23,10 @@ const product=(i)=>({
   publication_updated_at:"2026-11-05T09:00:00Z"
 });
 const products=Array.from({length:205},(_,i)=>product(i));
+// A fully reviewed, owner-written product without any supplier imagery can
+// coexist in the SAME approved-only 205-record sharded catalog.
+products[203]={...products[203],presentation_mode:"text_only",images:[],
+  description:"Original owner-written product profile for 203"};
 const shards=[],texts=new Map();
 for(let i=0;i<products.length;i+=100){
   const group=products.slice(i,i+100);
@@ -75,6 +79,9 @@ assert.equal(reads.length,3); // 1 for first page, 2 for boundary page
 const end=await pageApprovedIndex(verified,{},200,12,fetcher,{baseUrl:base});
 assert.equal(end.items.length,5);
 assert.equal(end.hasMore,false);
+assert.equal(end.items[3].presentationMode,"text_only");
+assert.deepEqual(end.items[3].images,[]);
+assert.equal(end.items[3].description,"Original owner-written product profile for 203");
 const longTail=await pageApprovedIndex(verified,{query:"unique long-tail"},0,12,fetcher,{baseUrl:base});
 assert.equal(longTail.items.length,1);
 assert.equal(longTail.items[0].id,products[204].id);
