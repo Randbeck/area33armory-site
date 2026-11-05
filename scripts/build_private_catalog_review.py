@@ -45,9 +45,19 @@ def validate_source(data_file: Path) -> tuple[list[dict], list[list[str]]]:
             raise ReviewError("Incomplete approval checklist")
         if any(type(v) is not bool for v in checks.values()):
             raise ReviewError("Invalid approval values")
+        listing_mode = item.get("listing_mode", "image")
+        if listing_mode not in ("image", "text_only"):
+            raise ReviewError("Invalid listing presentation mode")
         frames = item.get("photos")
-        if not isinstance(frames, list) or not 1 <= len(frames) <= 8:
-            raise ReviewError("Expected 1-8 original JPEGs per item")
+        if not isinstance(frames, list):
+            raise ReviewError("Photo records must be an explicit list")
+        if listing_mode == "text_only":
+            if (frames != [] or item.get("rights_source", "") != ""
+                    or checks["media_rights"] is not False
+                    or item.get("content_origin", "") not in ("", "owner_written")):
+                raise ReviewError("Text-only drafts may not carry images, image rights or supplier text")
+        elif not 1 <= len(frames) <= 8:
+            raise ReviewError("Expected 1-8 original JPEGs per image listing")
         photos = []
         for frame in frames:
             if not isinstance(frame, dict):
@@ -101,12 +111,12 @@ footer{max-width:1120px;margin:40px auto;color:var(--muted);padding:0 20px 30px}
 </style></head><body>
 <header><div class="inner"><small>AREA 33 / PRIVATE OWNER REVIEW</small>
 <h1>Product approval workspace</h1>
-<p>Review exact source models, photographs, image rights and actual products offered for sale.</p></div></header>
+<p>Review exact models, original text, and photos only where publication rights are documented.</p></div></header>
 <main><div class="toolbar"><div><strong id="count">Loading…</strong>
 <p class="muted">Changes are not saved unless you explicitly export a private JSON file.</p></div>
 <div><button class="secondary" id="save">Save private progress</button>
 <button id="export">Export approved items only</button></div></div>
-<p class="warning">SKU/UPC matching alone does not approve a listing. Keep the five owner confirmations unchecked until you've verified each fact. No products or photos are published by this page.</p>
+<p class="warning">A distributor feed, photo download, or public image does not grant copyright rights. For text-only listings, write your own description and leave image rights unchecked. Product identity, listing eligibility, and owner publication still require review. Nothing is published here.</p>
 <div id="records"></div></main>
 <footer>This page runs offline and does not make network requests. Keep private JSON and source photographs out of GitHub.</footer>
 <script id="data" type="application/json">__PRIVATE_DATA__</script>
@@ -122,15 +132,24 @@ const CHECKS=[
  ["offered_for_sale","Area 33 is actually offering this exact product for sale."],
  ["owner_publication","I explicitly authorize this item for a separate publication review."]
 ];
-const required=["manufacturer","model","category","rights_source","identity_evidence_label","source_checked_at"];
+const required=["manufacturer","model","category","identity_evidence_label","source_checked_at"];
+function textOnly(item){return item.listing_mode==="text_only";}
 function node(tag,text){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n;}
 function ready(item){
  const date=String(item.source_checked_at||"");
+ const textMode=textOnly(item);
+ const modeOk=textMode?
+   (item.photos.length===0 && !item.rights_source &&
+    item.content_origin==="owner_written" && item.approvals.media_rights===false):
+   ((item.listing_mode===undefined||item.listing_mode==="image")&&
+    String(item.rights_source||"").trim() && item.photos.length>0 &&
+    item.photos.every(p=>String(p.alt||"").trim())&&
+    item.approvals.media_rights===true);
  return required.every(k=>String(item[k]||"").trim()) &&
   ["complete","part","accessory","ammunition","other"].includes(item.product_type) &&
   /^\d{4}-\d\d-\d\d$/.test(date)&&Number.isFinite(Date.parse(date+"T00:00:00Z")) &&
-  item.photos.every(p=>String(p.alt||"").trim())&&
-  CHECKS.every(([k])=>item.approvals[k]===true);
+  modeOk && CHECKS.filter(([k])=>k!=="media_rights")
+                       .every(([k])=>item.approvals[k]===true);
 }
 function refresh(){
  const approved=data.filter(item=>item.status==="published"&&ready(item)).length;
@@ -155,7 +174,9 @@ for(let i=0;i<data.length;i++){
  const title=node("h2",[item.manufacturer,item.model,item.variant].filter(Boolean).join(" "));
  const status=node("span",(item.status==="published"&&ready(item))?"Review complete — PRIVATE only":"Draft — not approved");status.className="status";
  head.append(title,status);section.append(head);
- section.append(node("p","Product "+(i+1)+" of "+data.length+" — source title must be verified."));
+ section.append(node("p","Product "+(i+1)+" of "+data.length+
+  (textOnly(item)?" — TEXT ONLY: write your own description; no source images will be published.":
+  " — IMAGE LISTING: exact photos and separate media rights must be verified.")));
  const gallery=node("div");gallery.className="photos";
  function edited(){item.status="draft";status.textContent="Draft — not approved";refresh();}
  for(let j=0;j<item.photos.length;j++){
@@ -180,7 +201,19 @@ for(let i=0;i<data.length;i++){
  field("manufacturer","Manufacturer — independently verify");
  field("model","Exact model — independently verify");
  field("variant","Variant and fit (only if verified)");
- field("description","Proposed public description — verify source claims");
+ field("description",textOnly(item)?
+   "Your independently written, fact-checked description (do not copy supplier text)":
+   "Proposed public description — verify source claims");
+ if(textOnly(item)){
+  const contentLabel=node("label","Public copy origin"),originSelect=node("select");
+  for(const [value,label] of [["","Select after independent writing"],
+     ["owner_written","Owner-written and verified"]]){
+    const option=node("option",label);option.value=value;originSelect.append(option);
+  }
+  originSelect.value=item.content_origin||"";
+  originSelect.addEventListener("change",()=>{item.content_origin=originSelect.value;edited();});
+  contentLabel.append(originSelect);fields.append(contentLabel);
+ }
  field("category","Public category");
  const typeLabel=node("label","Product type"),select=node("select");
  for(const [value,label] of [["","Choose type"],["accessory","Accessory"],["complete","Complete product"],["part","Part"],["ammunition","Ammunition"],["other","Other"]]){
@@ -191,12 +224,13 @@ for(let i=0;i<data.length;i++){
  typeLabel.append(select);fields.append(typeLabel);
  field("source_checked_at","Date evidence verified","date");
  field("identity_evidence_label","Exact identity evidence and reference");
- field("rights_source","Specific image-rights source or authorization");
+ if(!textOnly(item))field("rights_source","Specific image-rights source or authorization");
  section.append(fields);
  const fieldset=node("fieldset");fieldset.append(node("legend","Five independent owner confirmations"));
  for(const [key,desc] of CHECKS){
   const label=node("label");label.className="check";
   const cb=node("input");cb.type="checkbox";cb.checked=item.approvals[key]===true;
+  if(textOnly(item)&&key==="media_rights")cb.disabled=true;
   cb.addEventListener("change",()=>{item.approvals[key]=cb.checked;edited();});
   label.append(cb,node("span",desc));fieldset.append(label);
  }
@@ -204,8 +238,10 @@ for(let i=0;i<data.length;i++){
  const actions=node("div");actions.className="actions";
  const approve=node("button","Confirm product review");approve.type="button";
  approve.addEventListener("click",()=>{
-  if(!ready(item)){alert("Complete the evidence, photo descriptions and all five owner confirmations first.");return;}
-  if(!confirm("Confirm that you personally reviewed this exact product, photo rights and sale listing?"))return;
+  if(!ready(item)){alert("Complete identity, content origin, evidence and applicable owner confirmations first.");return;}
+  if(!confirm(textOnly(item)?
+    "Confirm your original text, exact product identity and proposed sale listing? No image rights are asserted.":
+    "Confirm exact product, source photo rights and proposed sale listing?"))return;
   item.status="published";status.textContent="Review complete — PRIVATE only";refresh();
  });
  const hold=node("button","Hold as draft");hold.className="secondary";hold.type="button";
