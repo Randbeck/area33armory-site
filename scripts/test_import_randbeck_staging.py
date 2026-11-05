@@ -85,6 +85,7 @@ class BridgeTests(unittest.TestCase):
         self.assertEqual(report["quarantined_identity_or_media_groups"], 0)
         item = items[0]
         self.assertEqual(item["category"], "Holsters & Pouches")
+        self.assertEqual(item["description"], "Source product details")
         self.assertEqual(item["product_type"], "accessory")
         self.assertEqual(item["status"], "draft")
         self.assertEqual(item["source_checked_at"], "")
