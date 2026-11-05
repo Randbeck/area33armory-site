@@ -47,6 +47,7 @@ class CatalogApprovalTests(unittest.TestCase):
         self.original_draft = json.loads(self.template.read_text())
         self.approved = self.records[0]
         self.approved.update({
+            "description": "Manufacturer-described synthetic sample; owner-reviewed.",
             "status": "published", "category": "Holsters",
             "product_type": "accessory", "rights_source": "RSR dealer permitted sale display",
             "identity_evidence_label": "RSR approved item verified",
@@ -105,6 +106,7 @@ class CatalogApprovalTests(unittest.TestCase):
                               "source_path", "source_sku", "dealer_cost"):
             self.assertNotIn(private_value, public)
         self.assertIn("Holsters", public)
+        self.assertIn("Manufacturer-described synthetic sample; owner-reviewed.", public)
         self.assertIn("assets/approved/catalog/", public)
 
     def test_requires_all_independent_approvals_and_sale_scope(self):
