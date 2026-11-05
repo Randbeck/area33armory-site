@@ -162,6 +162,7 @@ def build(
     staging_file: Path, batch_root: Path, identity_key: bytes,
     *, private_derivatives_root: Path | None = None,
     authorized_scope: dict | None = None,
+    text_only_drafts: bool = False,
 ) -> tuple[list[dict], dict]:
     if not isinstance(identity_key, bytes) or len(identity_key) != 32:
         raise BridgeError("32-byte private identity key required")
@@ -222,9 +223,11 @@ def build(
                 if flag in IDENTITY_FLAGS:
                     reasons.add("randbeck_" + flag)
                 if (flag == "source_exif_requires_review_before_any_public_export"
-                        and private_derivatives_root is None):
+                        and not text_only_drafts and private_derivatives_root is None):
                     reasons.add("randbeck_" + flag)
-            for photo in rec.get("source_media") or []:
+            # Text-only intake never processes, copies, references, or
+            # relies on manufacturer photographs or derivative rights.
+            for photo in ([] if text_only_drafts else (rec.get("source_media") or [])):
                 if not photo.get("thumbnail_resolution_candidate"):
                     continue
                 try:
@@ -273,7 +276,7 @@ def build(
                 })
                 if len(images) == 8:
                     break
-        if not images:
+        if not text_only_drafts and not images:
             reasons.add("no_usable_verified_source_photo")
         category = _clean(first.get("source_category"), 100)
         kind = TYPE_SUGGESTIONS.get(category, "")
@@ -317,8 +320,10 @@ def build(
             "status": "draft",
             "manufacturer": _clean(first.get("manufacturer"), 100),
             "model": _clean(first.get("model"), 120),
-            # Source-derived proposed description; requires explicit content approval.
-            "description": _clean(first.get("description"), 200),
+            # Text-only owner copy starts BLANK, never vendor-copied.
+            "description": "" if text_only_drafts else _clean(first.get("description"), 200),
+            "listing_mode": "text_only" if text_only_drafts else "image",
+            "content_origin": "" if text_only_drafts else "source_review_pending",
             "variant": "",
             "category": category,
             "product_type": kind,
@@ -353,6 +358,7 @@ def build(
         "private_metadata_only_derivative_files": len(derivative_audits),
         "private_metadata_derivative_audit": derivative_audits,
         "scope_gate_enabled": authorized_scope is not None,
+        "text_only_owner_review_drafts": len(drafts) if text_only_drafts else 0,
         "scope_signed_eligible_drafts": scope_eligible_drafts,
         "private_scope_to_catalog_product_links": private_scope_to_product_links,
         "scope_receipt_eligible_source_products": (
@@ -377,6 +383,7 @@ def write_private_bridge(
     *, prepare_private_derivatives: bool = False,
     scope_receipt: Path | None = None, scope_ledger: Path | None = None,
     scope_key: Path | None = None,
+    text_only_drafts: bool = False,
 ):
     output = _outside_site(output, should_exist=False)
     if output.exists():
@@ -384,6 +391,10 @@ def write_private_bridge(
     # Only explicit owner-selected --prepare-private-exif-copies triggers
     # any image processing. Originals remain unchanged, and images remain
     # outside Git/public directories. Without flag, legacy behavior is identical.
+    if text_only_drafts and prepare_private_derivatives:
+        raise BridgeError("Text-only mode cannot prepare or reference manufacturer photos")
+    if text_only_drafts and any(v is not None for v in (scope_receipt,scope_ledger,scope_key)):
+        raise BridgeError("Text-only mode never inherits supplier/manufacturer image-use permissions")
     key = _key_file(key_path)
     options=(scope_receipt,scope_ledger,scope_key)
     if 0<sum(v is not None for v in options)<3:
@@ -400,9 +411,13 @@ def write_private_bridge(
             staging, root, key,
             private_derivatives_root=output / "private-exif-copies",
             authorized_scope=scope,
+            text_only_drafts=text_only_drafts,
         )
     else:
-        drafts, report = build(staging, root, key,authorized_scope=scope)
+        drafts, report = build(
+            staging, root, key, authorized_scope=scope,
+            text_only_drafts=text_only_drafts,
+        )
         output.mkdir(parents=True, exist_ok=False)
     (output / "catalog-private-exceptions.json").write_text(
         json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -430,6 +445,10 @@ def main(argv=None):
     parser.add_argument("--batch-root", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--identity-key", type=Path, required=True)
+    parser.add_argument(
+        "--text-only-drafts", action="store_true",
+        help="Prepare owner-written product profiles with NO source images or descriptions",
+    )
     parser.add_argument("--scope-receipt", type=Path,
                         help="Private signed Randbeck cohort eligibility receipt")
     parser.add_argument("--scope-ledger", type=Path,
@@ -448,12 +467,14 @@ def main(argv=None):
             scope_receipt=args.scope_receipt,
             scope_ledger=args.scope_ledger,
             scope_key=args.scope_key,
+            text_only_drafts=args.text_only_drafts,
         )
     except (BridgeError, OSError, ValueError) as exc:
         parser.error(str(exc))
     print("Real Area 33 catalog intake from Randbeck:")
     print(f"  Source products: {report['source_products']}")
     print(f"  Exact identity groups: {report['exact_identity_groups']}")
+    print(f"  Text-only owner-review drafts: {report['text_only_owner_review_drafts']}")
     print(f"  Existing owner-review workflow drafts: {report['review_drafts_generated']}")
     print(f"  Identity/media exception groups: {report['quarantined_identity_or_media_groups']}")
     if report["scope_gate_enabled"]:
