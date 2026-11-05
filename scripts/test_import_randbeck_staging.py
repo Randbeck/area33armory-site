@@ -200,6 +200,107 @@ class BridgeTests(unittest.TestCase):
         self.assertTrue(all(flag is False for flag in
                             records[0]["approvals"].values()))
 
+    def test_explicit_exif_private_copies_allow_source_draft_with_no_approval(self):
+        from PIL import ImageChops
+        from private_exif_derivatives import strip_private_jpeg_metadata
+        original = jpeg(with_exif=True)
+        self.original.write_bytes(original)
+        self.item["source_media"][0]["sha256"] = hashlib.sha256(original).hexdigest()
+        self.item["source_media"][0]["exif_present"] = True
+        self.item["blockers"].append(
+            "source_exif_requires_review_before_any_public_export"
+        )
+        self.save()
+
+        # Without explicit opt-in, do not process photos.
+        legacy, legacy_report = build(self.staging, self.batch, self.secret)
+        self.assertEqual(legacy, [])
+        self.assertEqual(legacy_report["groups_held_for_photo_metadata_review"], 1)
+
+        keyfile = self.root / "private-catalog-key.bin"
+        report = write_private_bridge(
+            self.staging, self.batch, self.out, keyfile,
+            prepare_private_derivatives=True,
+        )
+        self.assertEqual(report["review_drafts_generated"], 1)
+        self.assertEqual(report["quarantined_identity_or_media_groups"], 0)
+        self.assertEqual(report["private_metadata_only_derivative_files"], 1)
+        self.assertEqual(report["groups_held_for_photo_metadata_review"], 0)
+
+        draft = json.loads(
+            (self.out / "catalog-approval-template-part-001.json").read_text()
+        )[0]
+        path = Path(draft["photos"][0]["source_path"])
+        self.assertTrue(path.is_file())
+        self.assertTrue(path.is_relative_to(self.out))
+        self.assertEqual(path.read_bytes(), strip_private_jpeg_metadata(original)[0])
+        with Image.open(path) as image:
+            self.assertFalse(image.getexif())
+            image.load()
+            with Image.open(self.original) as first:
+                first.load()
+                self.assertIsNone(ImageChops.difference(first, image).getbbox())
+        self.assertEqual(self.original.read_bytes(), original)
+        self.assertTrue(all(v is False for v in draft["approvals"].values()))
+        self.assertEqual(draft["rights_source"], "")
+        self.assertEqual(draft["status"], "draft")
+        with self.assertRaises(CatalogPublicationError):
+            publication_of_list(self.root, [draft])
+
+    def test_unsafe_exif_orientation_stays_quarantined_with_optin(self):
+        picture = Image.new("RGB", (900, 600), "white")
+        meta = Image.Exif()
+        meta[274] = 6
+        stream = io.BytesIO()
+        picture.save(stream, "JPEG", exif=meta)
+        raw = stream.getvalue()
+        self.original.write_bytes(raw)
+        self.item["source_media"][0]["sha256"] = hashlib.sha256(raw).hexdigest()
+        self.item["source_media"][0]["exif_present"] = True
+        self.save()
+        report = write_private_bridge(
+            self.staging, self.batch, self.out,
+            self.root / "private-catalog-key.bin",
+            prepare_private_derivatives=True,
+        )
+        self.assertEqual(report["review_drafts_generated"], 0)
+        self.assertEqual(report["groups_held_for_photo_metadata_review"], 1)
+        self.assertEqual(report["private_metadata_only_derivative_files"], 0)
+        self.assertIn(
+            "source_metadata_requires_manual_review",
+            report["exception_reason_counts"],
+        )
+        self.assertEqual(self.original.read_bytes(), raw)
+
+    def test_private_exif_cleaner_refuses_nonexif_or_corrupt_input(self):
+        from private_exif_derivatives import (
+            PrivateDerivativeError, strip_private_jpeg_metadata,
+        )
+        with self.assertRaises(PrivateDerivativeError):
+            strip_private_jpeg_metadata(jpeg())
+        with self.assertRaises(PrivateDerivativeError):
+            strip_private_jpeg_metadata(b"not-a-jpeg")
+
+    def test_explicit_derivative_does_not_auto_approve_unknown_photo_rights(self):
+        raw = jpeg(with_exif=True)
+        self.original.write_bytes(raw)
+        self.item["source_media"][0]["sha256"] = hashlib.sha256(raw).hexdigest()
+        self.item["source_media"][0]["exif_present"] = True
+        self.save()
+        drafts, report = build(
+            self.staging, self.batch, self.secret,
+            private_derivatives_root=self.out / "private-exif-copies",
+        )
+        self.assertEqual(len(drafts), 1)
+        self.assertEqual(drafts[0]["approvals"]["media_rights"], False)
+        self.assertEqual(drafts[0]["approvals"]["owner_publication"], False)
+        self.assertEqual(report["private_metadata_only_derivative_files"], 1)
+        audit = report["private_metadata_derivative_audit"][0]
+        self.assertTrue(audit["same_compressed_image_scan_preserved"])
+        self.assertFalse(audit["advertising_rights_approved"])
+        self.assertFalse(audit["publication_approved"])
+        self.assertEqual(audit["source_sha256"], hashlib.sha256(raw).hexdigest())
+
     def test_tampered_bytes_fail_closed(self):
         self.original.write_bytes(jpeg() + b"extra")
         with self.assertRaises(BridgeError):
