@@ -70,7 +70,8 @@ class ScopedImportTests(unittest.TestCase):
         self.evidence.write_text("Synthetic fixture - supplier grants display rights for one category")
         self.grant={
             "id":"a"*24,
-            "supplier":"RSR","source_category":"Holsters & Pouches",
+            "supplier":"RSR","manufacturer":"Verified Maker",
+            "source_category":"Holsters & Pouches",
             "public_category":"Holsters","product_type":"accessory",
             "permissions":{
                 "show_source_product_listing":True,
@@ -81,7 +82,7 @@ class ScopedImportTests(unittest.TestCase):
             "offer_mode":"inquiry_only","max_snapshot_age_hours":48,
             "excluded_upcs":[],"excluded_brands":[],
             "evidence":{
-                "type":"direct_supplier_written_permission",
+                "type":"manufacturer_written_permission",
                 "private_file":str(self.evidence),
                 "sha256":hashlib.sha256(self.evidence.read_bytes()).hexdigest(),
             },
@@ -89,7 +90,7 @@ class ScopedImportTests(unittest.TestCase):
                 "reviewer":"Sample Owner",
                 "approved_on":(self.now-timedelta(days=1)).date().isoformat(),
                 "expires_on":(self.now+timedelta(days=30)).date().isoformat(),
-                "attestation":"I reviewed the supplier terms for this exact scope",
+                "attestation":"I reviewed the manufacturer image rights for this exact brand and scope",
             },
         }
         self.ledgerpath=self.root/"ledger.json"
@@ -210,6 +211,22 @@ class ScopedImportTests(unittest.TestCase):
     def test_changed_supplier_evidence_refused(self):
         self.evidence.write_text("Terms replaced")
         with self.assertRaises(ScopeReceiptError):
+            self.verify()
+
+    def test_distributor_only_agreement_can_never_clear_rsr_image_rights(self):
+        self.grant["evidence"]["type"]="supplier_dealer_agreement"
+        self.write_ledger()
+        self.write_receipt()
+        with self.assertRaisesRegex(ScopeReceiptError,
+                                    "RSR cannot sublicense manufacturer imagery"):
+            self.verify()
+
+    def test_another_brand_is_not_covered_by_permission(self):
+        self.record["manufacturer"]="Another Manufacturer"
+        self.write_staging()
+        self.write_receipt()
+        with self.assertRaisesRegex(ScopeReceiptError,
+                                    "exact manufacturer"):
             self.verify()
 
     def test_owner_revocation_refuses_earlier_receipt(self):
