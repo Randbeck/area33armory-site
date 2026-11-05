@@ -1,7 +1,7 @@
 name: Area 33 draft website validation
 on:
   push:
-    branches: [site-refresh-v1, work/approved-catalog-thumbnails, work/randbeck-catalog-bridge-v1]
+    branches: [site-refresh-v1, work/approved-catalog-thumbnails, work/randbeck-catalog-bridge-v1, work/scalable-approved-catalog-v2]
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,6 +23,7 @@ jobs:
           node --check assets/portfolio-compare.js
           node --input-type=module --check < assets/catalog.js
           node --check assets/catalog-static-contract.mjs
+          node --check assets/catalog-shards-contract.mjs
           node --check assets/experience-lab.js
           node --check assets/showroom-contract.mjs
           node --input-type=module --check < assets/showroom.js
@@ -31,3 +32,4 @@ jobs:
           node scripts/test_public_site.mjs
           node scripts/test_showroom_contract.mjs
           node scripts/test_catalog_static_contract.mjs
+          node scripts/test_catalog_shards_contract.mjs
