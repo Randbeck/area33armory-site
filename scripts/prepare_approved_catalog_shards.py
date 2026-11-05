@@ -98,21 +98,47 @@ def _withdrawals(path):
 
 
 def gather_approved(bundles):
-    records, frames, seen=[],[],set()
+    records, frames, provenance, seen=[],[],[],set()
     for bundle in bundles:
         public, media=validate_approved_bundle(Path(bundle))
-        for product in public["items"]:
+        private_rows=json.loads(Path(bundle).read_text(encoding="utf-8"))
+        if len(private_rows)!=len(public["items"]):
+            raise ShardedReleaseError("Private approvals and public records differ")
+        for product, raw in zip(public["items"],private_rows):
             ident=product["id"]
-            if ident in seen:
-                raise ShardedReleaseError("Same approved catalog identity appears twice")
+            if ident in seen or raw.get("id")!=ident:
+                raise ShardedReleaseError("Duplicate or mismatched approved catalog identity")
             seen.add(ident)
             records.append(product)
+            photos=raw.get("photos")
+            if (not isinstance(photos,list) or
+                    len(photos)!=len(product["images"])):
+                raise ShardedReleaseError("Approved media and private provenance disagree")
+            refs=[]
+            for photo, public_image in zip(photos,product["images"]):
+                original_hash=photo.get("source_sha256")
+                if not isinstance(original_hash,str) or not re.fullmatch(
+                    r"[a-f0-9]{64}", original_hash
+                ):
+                    raise ShardedReleaseError("Photo provenance hash missing")
+                refs.append({
+                    "public_url":public_image["url"],
+                    "original_sha256":original_hash,
+                })
+            provenance.append({
+                "id":ident,
+                "manufacturer":product["manufacturer"],
+                "presentation_mode":product["presentation_mode"],
+                "rights_source":raw.get("rights_source",""),
+                "images":refs,
+            })
         frames.extend(media)
         if len(records)>MAX_PRODUCTS:
             raise ShardedReleaseError("Approved release record limit exceeded")
     records.sort(key=lambda p:(p["manufacturer"].casefold(),
                                p["model"].casefold(),p["id"]))
-    return records,frames
+    provenance.sort(key=lambda row:row["id"])
+    return records,frames,provenance
 
 
 def prepare_private_release(
@@ -121,7 +147,7 @@ def prepare_private_release(
 ):
     """Stage media, hashed public index/shards, and audit in a new PRIVATE folder."""
     output=_private_destination(output)
-    public,frames=gather_approved(bundles)
+    public,frames,provenance=gather_approved(bundles)
     previous=_previous_ids(previous_index)
     current={item["id"] for item in public}
     if not public and not previous:
@@ -210,6 +236,15 @@ def prepare_private_release(
         destination.parent.mkdir(parents=True,exist_ok=True)
         destination.write_bytes(_encode(index))
         (temp/"catalog-private-release-audit.json").write_bytes(_encode(audit))
+        (temp/"catalog-private-media-provenance.json").write_bytes(
+            _encode({
+                "schema":"area33.catalog.private_media_provenance.v1",
+                "release_version":version,
+                "public_catalog_record_count":len(public),
+                "records":provenance,
+                "notice":"PRIVATE ONLY: hash-to-listing associations, not a license or public manifest.",
+            })
+        )
         (temp/"READ_ME_FIRST.txt").write_text(
             "PRIVATE staged catalog release. Do NOT upload/merge/deploy automatically.\n"
             "All inputs must be independently approved. Every removal requires "
