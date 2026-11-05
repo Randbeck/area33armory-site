@@ -68,7 +68,7 @@ class TextFirstCatalogTests(unittest.TestCase):
         self.assertIn("write your own description",html)
         self.assertIn("Owner-written and verified",html)
         self.assertIn('item.approvals.media_rights===false',html)
-        self.assertIn("No products or photos are published",html) if False else None
+        self.assertIn("Nothing is published here",html)
 
     def test_text_only_explicit_review_allows_zero_media_files(self):
         self.approved()
@@ -171,11 +171,11 @@ class TextFirstCatalogTests(unittest.TestCase):
             (out/"catalog-approval-template-part-001.json").read_text()
         )[0]["photos"],[])
         with self.assertRaises(BridgeError):
-            intake(stage,original,bytes(range(32)),
-                   text_only_drafts=True,private_derivatives_root=out/"not-used") if False else write_private_bridge(
-                    stage,original,self.root/"new-output",self.root/"private-id-key.bin",
-                    text_only_drafts=True,prepare_private_derivatives=True
-                )
+            write_private_bridge(
+                stage,original,self.root/"new-output",
+                self.root/"private-id-key.bin",
+                text_only_drafts=True,prepare_private_derivatives=True,
+            )
 
 
 if __name__=="__main__":
