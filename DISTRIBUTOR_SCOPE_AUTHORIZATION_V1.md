@@ -1,3 +1,5 @@
+> **RSR manufacturer image-rights correction (2026-11-05):** The RSR FTP image disclaimer explicitly says RSR does not own manufacturer photographs/logos/trademarks or have authority to pass image rights to a dealer. Supplier-only approval is insufficient. This integration now requires signed grants bound to the exact manufacturer and category, backed by written rights-holder permission or manufacturer dealer-media terms. The old supplier-wide rights concept below is superseded for RSR images. No current product/image has been authorized for release.
+
 # Area 33 importer: signed supplier-category scopes (development only)
 
 The public Area 33 catalog remains approved-only and unchanged. No release, no public product images and no automatic listing permission have been added by this branch.
