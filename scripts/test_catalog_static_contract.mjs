@@ -41,6 +41,20 @@ assert.equal(sanitizeCatalogManifest(body([{...item,description:"X".repeat(201)}
 assert.equal(sanitizeCatalogManifest(body([{...item,description:"",dealer_cost:"secret"}])),null);
 assert.equal(sanitizeCatalogManifest(body([{...item,product_type:"unknown"}])),null);
 
+// Text-only records are allowed ONLY when explicitly declared, never by
+// silently stripping missing or unlicensed image objects.
+const textOnly={...item,presentation_mode:"text_only",description:"Original dealer text",images:[]};
+const textRecord=sanitizeCatalogManifest(body([textOnly]));
+assert.ok(textRecord);
+assert.equal(textRecord.items[0].images.length,0);
+assert.equal(textRecord.items[0].presentationMode,"text_only");
+assert.equal(filterPublicCatalog(textRecord.items,{query:"original dealer"}).length,1);
+assert.equal(sanitizeCatalogManifest(body([{...item,images:[]}])),null);
+assert.equal(sanitizeCatalogManifest(body([{...textOnly,presentation_mode:"unknown"}])),null);
+assert.equal(sanitizeCatalogManifest(body([{...textOnly,images:item.images}])),null);
+assert.equal(sanitizeCatalogManifest(body([{...textOnly,source_sku:"PRIVATE"}])),null);
+assert.equal(sanitizeCatalogManifest(body([{...textOnly,source_image_path:"/private.jpg"}])),null);
+
 const html=fs.readFileSync(new URL("../catalog.html",import.meta.url),"utf8");
 const js=fs.readFileSync(new URL("../assets/catalog.js",import.meta.url),"utf8");
 assert.match(html,/type="module" src="assets\/catalog\.js"/);
