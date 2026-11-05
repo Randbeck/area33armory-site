@@ -180,6 +180,7 @@ for(let i=0;i<data.length;i++){
  field("manufacturer","Manufacturer — independently verify");
  field("model","Exact model — independently verify");
  field("variant","Variant and fit (only if verified)");
+ field("description","Proposed public description — verify source claims");
  field("category","Public category");
  const typeLabel=node("label","Product type"),select=node("select");
  for(const [value,label] of [["","Choose type"],["accessory","Accessory"],["complete","Complete product"],["part","Part"],["ammunition","Ammunition"],["other","Other"]]){
