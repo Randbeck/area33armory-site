@@ -18,9 +18,15 @@ from publish_approved_catalog import CatalogPublicationError, build as build_pub
 UPC = "816161020234"
 
 
-def jpeg():
+def jpeg(*, with_exif=False):
     stream = io.BytesIO()
-    Image.new("RGB", (900, 600), "white").save(stream, "JPEG")
+    picture = Image.new("RGB", (900, 600), "white")
+    if with_exif:
+        source_metadata = Image.Exif()
+        source_metadata[274] = 1  # Orientation; metadata presence itself needs review.
+        picture.save(stream, "JPEG", exif=source_metadata)
+    else:
+        picture.save(stream, "JPEG")
     return stream.getvalue()
 
 
@@ -141,6 +147,58 @@ class BridgeTests(unittest.TestCase):
         records, report = build(self.staging, self.batch, self.secret)
         self.assertEqual(records, [])
         self.assertIn("unknown_public_category_mapping", report["exceptions"][0]["reasons"])
+
+    def test_exif_source_is_held_not_auto_stripped_or_published(self):
+        changed = jpeg(with_exif=True)
+        self.original.write_bytes(changed)
+        self.item["source_media"][0]["sha256"] = hashlib.sha256(changed).hexdigest()
+        self.item["source_media"][0]["exif_present"] = True
+        self.item["blockers"].append(
+            "source_exif_requires_review_before_any_public_export"
+        )
+        self.save()
+        rows, report = build(self.staging, self.batch, self.secret)
+        self.assertEqual(rows, [])
+        self.assertEqual(report["source_products"], 1)
+        self.assertEqual(report["quarantined_identity_or_media_groups"], 1)
+        self.assertEqual(report["groups_held_for_photo_metadata_review"], 1)
+        self.assertEqual(
+            report["exception_reason_counts"]["photo_exif_metadata_requires_review"],
+            1,
+        )
+        # Originals are untouched. Metadata-bearing JPEG never enters an
+        # approval draft (and the importer cannot publish images).
+        self.assertEqual(self.original.read_bytes(), changed)
+
+    def test_mixed_exif_and_clean_source_keeps_clean_product_moving(self):
+        flagged = deepcopy(self.item)
+        flagged["source_sku"] = "BBB-101"
+        flagged["upc"] = "816161020241"
+        folder = self.batch / "media" / flagged["source_sku"]
+        folder.mkdir()
+        photo = folder / "BBB-101_1_HR.jpg"
+        tagged = jpeg(with_exif=True)
+        photo.write_bytes(tagged)
+        flagged["source_media"][0]["private_relative_file"] = (
+            "media/BBB-101/BBB-101_1_HR.jpg"
+        )
+        flagged["source_media"][0]["sha256"] = hashlib.sha256(tagged).hexdigest()
+        flagged["source_media"][0]["exif_present"] = True
+        flagged["blockers"].append(
+            "source_exif_requires_review_before_any_public_export"
+        )
+        self.payload["items"].append(flagged)
+        self.save()
+        records, report = build(self.staging, self.batch, self.secret)
+        self.assertEqual(report["source_products"], 2)
+        self.assertEqual(report["review_drafts_generated"], 1)
+        self.assertEqual(report["quarantined_identity_or_media_groups"], 1)
+        self.assertEqual(report["groups_held_for_photo_metadata_review"], 1)
+        self.assertEqual(records[0]["photos"][0]["source_path"],
+                         str(self.original.resolve()))
+        self.assertNotIn(str(photo.resolve()), json.dumps(records))
+        self.assertTrue(all(flag is False for flag in
+                            records[0]["approvals"].values()))
 
     def test_tampered_bytes_fail_closed(self):
         self.original.write_bytes(jpeg() + b"extra")
