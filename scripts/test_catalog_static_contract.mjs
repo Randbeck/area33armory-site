@@ -17,9 +17,11 @@ const item={
   publication_updated_at:"2026-11-04T22:00:00Z"
 };
 function body(items){return {...empty,items};}
-const present=sanitizeCatalogManifest(body([item]),{baseUrl:"https://area33armory.com/catalog.html"});
+const present=sanitizeCatalogManifest(body([{...item,description:"Owner-reviewed product description"}]),{baseUrl:"https://area33armory.com/catalog.html"});
 assert.ok(present);
 assert.equal(present.items.length,1);
+assert.equal(present.items[0].description,"Owner-reviewed product description");
+assert.equal(filterPublicCatalog(present.items,{query:"owner-reviewed"}).length,1);
 assert.equal(present.items[0].images[0].url,
              "https://area33armory.com/assets/approved/catalog/catalog_0123456789abcdefabcd/view-01.jpg");
 assert.equal(filterPublicCatalog(present.items,{query:"example holster"}).length,1);
@@ -35,6 +37,8 @@ assert.equal(sanitizeCatalogManifest(body([{...item,images:[{...item.images[0],
 assert.equal(sanitizeCatalogManifest(body([{...item,images:[{...item.images[0],
   url:"assets/approved/catalog/catalog_ffffffffffffffffffff/view-01.jpg"}]}])),null);
 assert.equal(sanitizeCatalogManifest(body([item,item])),null);
+assert.equal(sanitizeCatalogManifest(body([{...item,description:"X".repeat(201)}])),null);
+assert.equal(sanitizeCatalogManifest(body([{...item,description:"",dealer_cost:"secret"}])),null);
 assert.equal(sanitizeCatalogManifest(body([{...item,product_type:"unknown"}])),null);
 
 const html=fs.readFileSync(new URL("../catalog.html",import.meta.url),"utf8");
