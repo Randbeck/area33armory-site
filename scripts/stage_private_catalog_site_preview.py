@@ -88,8 +88,16 @@ def _check_release_status(root: Path, index: dict) -> str:
                 or raw.get("published") is not False
                 or raw.get("website_modified") is not False
                 or type(raw.get("source_approved_bundle_count")) is not int
-                or raw["source_approved_bundle_count"] < 1):
+                or raw["source_approved_bundle_count"] < 0):
             raise ReleasePreflightError("Private owner-approved release audit is invalid")
+        if raw.get("release_kind") == "approved_refresh":
+            if (raw.get("previous_snapshot_verified") is not True or
+                    not isinstance(raw.get("previous_version"), str) or
+                    not raw["previous_version"].startswith("r")):
+                raise ReleasePreflightError("Approved refresh needs verified prior release evidence")
+            return "approved_refresh"
+        if raw.get("release_kind") is not None or raw["source_approved_bundle_count"] < 1:
+            raise ReleasePreflightError("Owner-approved release requires approved source bundles")
         return "owner_approved_builder"
     if (raw.get("schema") != "area33.catalog.private_rights_withdrawal.v1"
             or raw.get("new_version") != index["version"]
@@ -101,7 +109,7 @@ def _check_release_status(root: Path, index: dict) -> str:
 
 
 def _withdrawal_ids(root: Path, style: str) -> set[str]:
-    if style == "owner_approved_builder":
+    if style in ("owner_approved_builder", "approved_refresh"):
         audit = json.loads((root / "catalog-private-release-audit.json").read_text())
         reviewed = audit.get("approved_withdrawals", [])
     else:
@@ -159,6 +167,12 @@ def prepare_private_website_preview(
         _check_release_status(previous_root, prior)
         if previous_root == release_root:
             raise ReleasePreflightError("Previous release must be distinct")
+        if style == "approved_refresh":
+            audit = json.loads(
+                (release_root/"catalog-private-release-audit.json").read_text()
+            )
+            if audit.get("previous_version") != prior["version"]:
+                raise ReleasePreflightError("Refresh audit does not match reviewed previous release")
         prior_version = prior["version"]
         previous_ids = {p["id"] for p in old_products}
         previous_urls = set(old_media)
@@ -170,9 +184,9 @@ def prepare_private_website_preview(
             raise ReleasePreflightError(
                 "Changed approved snapshot must list exactly every reviewed removal"
             )
-    elif style == "reviewed_rights_withdrawal":
+    elif style in ("reviewed_rights_withdrawal", "approved_refresh"):
         raise ReleasePreflightError(
-            "A rights-withdrawal preview requires the previous approved release"
+            "A reviewed withdrawal or approved refresh requires the previous approved release"
         )
 
     created = sorted(new_ids-previous_ids)
