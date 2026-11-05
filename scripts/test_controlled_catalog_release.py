@@ -26,6 +26,9 @@ from stage_private_catalog_site_preview import (
 from plan_controlled_catalog_deployment import (
     ControlledReleaseError, stage_controlled_deployment,
 )
+from rehearse_catalog_cutover import (
+    CutoverRehearsalError, rehearse_private_cutover,
+)
 
 
 class ControlledCatalogReleaseTests(unittest.TestCase):
@@ -160,6 +163,12 @@ class ControlledCatalogReleaseTests(unittest.TestCase):
         self.assertIs(approval["approved"],False)
         self.assertEqual((SITE/"assets/catalog-public.json").read_bytes(),self.site_initial)
         self.assertFalse((SITE/"assets/catalog-index.v2.json").exists())
+        rehearsal=rehearse_private_cutover(
+            self.package,self.root/"private-local-cutover-rehearsal",
+        )
+        self.assertTrue(rehearsal["activation_index_last_verified"])
+        self.assertTrue(rehearsal["rollback_rehearsed"])
+        self.assertFalse(rehearsal["live_site_modified"])
 
     def test_new_approved_item_and_separately_reapproved_text_update(self):
         updated=self.record(2,"Sample Manufacturer",None,
@@ -232,6 +241,11 @@ class ControlledCatalogReleaseTests(unittest.TestCase):
         self.assertFalse((self.package/"site/assets/approved/catalog"/
                           self.records[0]["id"]).exists())
         self.assertEqual((SITE/"assets/catalog-public.json").read_bytes(),self.site_initial)
+        rehearsal=rehearse_private_cutover(
+            self.package,self.root/"private-local-cutover-rehearsal",
+        )
+        self.assertFalse(rehearsal["rollback_rehearsed"])
+        self.assertTrue(rehearsal["old_media_removal_simulated"])
 
     def test_invalid_prior_withdrawal_evidence_blocks_preflight(self):
         ident=self.records[0]["id"]
@@ -253,6 +267,18 @@ class ControlledCatalogReleaseTests(unittest.TestCase):
         with self.assertRaises(ControlledReleaseError):
             self.plan()
         self.assertFalse(self.package.exists())
+
+    def test_rehearsal_rejects_tampered_release_assets(self):
+        self.refreshed()
+        self.preflight()
+        self.plan()
+        staged=self.package/"site/assets/catalog-index.v2.json"
+        staged.write_bytes(staged.read_bytes()+b" ")
+        with self.assertRaises(CutoverRehearsalError):
+            rehearse_private_cutover(
+                self.package,self.root/"tampered-rehearsal"
+            )
+        self.assertFalse((self.root/"tampered-rehearsal").exists())
 
     def test_rollforward_holds_rechecked_after_preview_created(self):
         self.refreshed()
