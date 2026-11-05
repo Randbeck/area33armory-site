@@ -82,6 +82,7 @@ def approved_record(record: dict, index: int, source_root: Path):
     manufacturer = clean_text(record, "manufacturer", 100)
     model = clean_text(record, "model", 120)
     variant = optional_text(record, "variant", 100)
+    description = optional_text(record, "description", 200)
     category = clean_text(record, "category", 100)
     product_type = clean_text(record, "product_type", 20)
     if product_type not in TYPES:
@@ -144,6 +145,7 @@ def approved_record(record: dict, index: int, source_root: Path):
         "manufacturer": manufacturer,
         "model": model,
         "variant": variant,
+        "description": description,
         "category": category,
         "product_type": product_type,
         "specifications": [],
