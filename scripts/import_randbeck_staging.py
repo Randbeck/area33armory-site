@@ -161,6 +161,7 @@ def _source_file(root: Path, sku: str, rec: dict, *, allow_exif: bool = False) -
 def build(
     staging_file: Path, batch_root: Path, identity_key: bytes,
     *, private_derivatives_root: Path | None = None,
+    authorized_scope: dict | None = None,
 ) -> tuple[list[dict], dict]:
     if not isinstance(identity_key, bytes) or len(identity_key) != 32:
         raise BridgeError("32-byte private identity key required")
@@ -188,6 +189,7 @@ def build(
 
     drafts, exceptions, seen_id = [], [], set()
     derivative_audits = []
+    scope_eligible_drafts = 0
     for identity, source_items in sorted(groups.items(), key=lambda r: r[0]):
         first = source_items[0]
         reasons = set()
@@ -199,6 +201,13 @@ def build(
             reasons.add("missing_manufacturer_mpn_or_model")
         if len({rec.get("source_category") for rec in source_items}) != 1:
             reasons.add("cross_record_category_conflict")
+        if authorized_scope is not None:
+            for rec in source_items:
+                receipt=authorized_scope["eligible_by_sku"].get(rec.get("source_sku"))
+                if receipt is None or receipt["status"]!="policy_eligible_private_candidate":
+                    reasons.add("not_eligible_under_signed_distributor_scope")
+                elif receipt["source_category"]!=rec["source_category"]:
+                    reasons.add("scope_category_mismatch")
         images = []
         hashes = set()
         for rec in source_items:
@@ -269,6 +278,11 @@ def build(
         kind = TYPE_SUGGESTIONS.get(category, "")
         if not kind:
             reasons.add("unknown_public_category_mapping")
+        if authorized_scope is not None and not reasons:
+            grant=authorized_scope["eligible_by_sku"][first["source_sku"]]
+            if (grant["proposed_public_type"]!=kind or
+                    not grant["proposed_public_category"]):
+                reasons.add("scope_public_product_type_conflict")
         if reasons:
             exceptions.append({
                 "upc": identity[0],
@@ -287,6 +301,8 @@ def build(
         if not ID.fullmatch(opaque) or opaque in seen_id:
             raise BridgeError("Catalog public identity collision")
         seen_id.add(opaque)
+        if authorized_scope is not None:
+            scope_eligible_drafts += 1
         drafts.append({
             "id": opaque,
             "status": "draft",
@@ -327,6 +343,12 @@ def build(
         ),
         "private_metadata_only_derivative_files": len(derivative_audits),
         "private_metadata_derivative_audit": derivative_audits,
+        "scope_gate_enabled": authorized_scope is not None,
+        "scope_signed_eligible_drafts": scope_eligible_drafts,
+        "scope_receipt_eligible_source_products": (
+            authorized_scope["eligible_product_count"]
+            if authorized_scope is not None else None
+        ),
         "exception_reason_counts": dict(sorted(Counter(
             reason for entry in exceptions for reason in entry["reasons"]
         ).items())),
@@ -343,6 +365,8 @@ def build(
 def write_private_bridge(
     staging: Path, root: Path, output: Path, key_path: Path,
     *, prepare_private_derivatives: bool = False,
+    scope_receipt: Path | None = None, scope_ledger: Path | None = None,
+    scope_key: Path | None = None,
 ):
     output = _outside_site(output, should_exist=False)
     if output.exists():
@@ -351,14 +375,24 @@ def write_private_bridge(
     # any image processing. Originals remain unchanged, and images remain
     # outside Git/public directories. Without flag, legacy behavior is identical.
     key = _key_file(key_path)
+    options=(scope_receipt,scope_ledger,scope_key)
+    if 0<sum(v is not None for v in options)<3:
+        raise BridgeError("All three signed scope receipt, current ledger and key are required")
+    scope=None
+    if all(v is not None for v in options):
+        from verify_randbeck_scope_receipt import (
+            ScopeReceiptError,validate_scoped_receipt,
+        )
+        scope=validate_scoped_receipt(staging,scope_receipt,scope_ledger,scope_key)
     if prepare_private_derivatives:
         output.mkdir(parents=True, exist_ok=False)
         drafts, report = build(
             staging, root, key,
             private_derivatives_root=output / "private-exif-copies",
+            authorized_scope=scope,
         )
     else:
-        drafts, report = build(staging, root, key)
+        drafts, report = build(staging, root, key,authorized_scope=scope)
         output.mkdir(parents=True, exist_ok=False)
     (output / "catalog-private-exceptions.json").write_text(
         json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -386,6 +420,12 @@ def main(argv=None):
     parser.add_argument("--batch-root", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--identity-key", type=Path, required=True)
+    parser.add_argument("--scope-receipt", type=Path,
+                        help="Private signed Randbeck cohort eligibility receipt")
+    parser.add_argument("--scope-ledger", type=Path,
+                        help="Current private owner-signed distributor scope ledger")
+    parser.add_argument("--scope-key", type=Path,
+                        help="Private shared signature verification key")
     parser.add_argument(
         "--prepare-private-exif-copies", action="store_true",
         help="Explicitly prepare lossless, private APP1/EXIF-cleared copies; never publish",
@@ -395,6 +435,9 @@ def main(argv=None):
         report = write_private_bridge(
             args.staging, args.batch_root, args.out, args.identity_key,
             prepare_private_derivatives=args.prepare_private_exif_copies,
+            scope_receipt=args.scope_receipt,
+            scope_ledger=args.scope_ledger,
+            scope_key=args.scope_key,
         )
     except (BridgeError, OSError, ValueError) as exc:
         parser.error(str(exc))
@@ -403,6 +446,9 @@ def main(argv=None):
     print(f"  Exact identity groups: {report['exact_identity_groups']}")
     print(f"  Existing owner-review workflow drafts: {report['review_drafts_generated']}")
     print(f"  Identity/media exception groups: {report['quarantined_identity_or_media_groups']}")
+    if report["scope_gate_enabled"]:
+        print(f"  Signed-scope authorized PRIVATE drafts: {report['scope_signed_eligible_drafts']}")
+        print(f"  Eligible source records on signed receipt: {report['scope_receipt_eligible_source_products']}")
     print(f"  Held for photo metadata review: {report['groups_held_for_photo_metadata_review']}")
     print(f"  Private lossless EXIF-cleared photo copies: {report['private_metadata_only_derivative_files']}")
     print("  Exception reasons:", report["exception_reason_counts"])
