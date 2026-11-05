@@ -54,6 +54,7 @@ class PrivateOwnerReviewTests(unittest.TestCase):
         self.assertEqual(html.parent,self.root)
         page=html.read_text(encoding="utf-8")
         self.assertIn("Product approval workspace",page)
+        self.assertIn("Proposed public description",page)
         self.assertIn("Save private progress",page)
         self.assertIn("Export approved items only",page)
         self.assertIn("offered_for_sale",page)
