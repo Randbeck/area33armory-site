@@ -252,6 +252,8 @@ def build(
             "status": "draft",
             "manufacturer": _clean(first.get("manufacturer"), 100),
             "model": _clean(first.get("model"), 120),
+            # Source-derived proposed description; requires explicit content approval.
+            "description": _clean(first.get("description"), 200),
             "variant": "",
             "category": category,
             "product_type": kind,
