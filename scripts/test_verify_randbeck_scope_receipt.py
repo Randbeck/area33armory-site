@@ -170,6 +170,10 @@ class ScopedImportTests(unittest.TestCase):
         )
         self.assertTrue(report["scope_gate_enabled"])
         self.assertEqual(report["scope_signed_eligible_drafts"],1)
+        links=report["private_scope_to_catalog_product_links"]
+        self.assertEqual(len(links),1)
+        self.assertEqual(links[0]["grant_id"],self.grant["id"])
+        self.assertFalse(links[0]["publication_approved"])
         drafts=json.loads((self.output/"catalog-approval-template-part-001.json").read_text())
         self.assertEqual(len(drafts),1)
         self.assertEqual(drafts[0]["status"],"draft")
