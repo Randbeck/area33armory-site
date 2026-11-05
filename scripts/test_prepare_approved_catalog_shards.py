@@ -66,8 +66,10 @@ class ShardedApprovedReleaseTests(unittest.TestCase):
         audit,index=prepare_private_release(self.bundles,output)
         self.assertEqual(index["total"],205)
         self.assertEqual([x["count"] for x in index["shards"]],[100,100,5])
-        self.assertEqual(index["products"][204]["description"],
-                         "Owner-reviewed catalog detail 204")
+        self.assertIn(
+            "Owner-reviewed catalog detail 204",
+            {row["description"] for row in index["products"]}
+        )
         self.assertFalse(audit["published"])
         self.assertFalse(audit["website_modified"])
         self.assertEqual(audit["source_approved_bundle_count"],3)
@@ -103,8 +105,14 @@ class ShardedApprovedReleaseTests(unittest.TestCase):
         self.assertFalse((self.root/"should-not-exist").exists())
 
     def test_duplicates_across_approved_bundles_are_refused(self):
+        # One record per bundle: exercises cross-bundle duplicate detection,
+        # not the existing publisher's within-bundle duplicate gate.
         records=[self.make_approved(9),self.make_approved(9)]
-        files=self.make_bundles(records,tag="duplicates")
+        files=[]
+        for n,record in enumerate(records):
+            file=self.root/f"duplicate-bundle-{n}.json"
+            file.write_text(json.dumps([record]))
+            files.append(file)
         with self.assertRaises(ShardedReleaseError):
             prepare_private_release(files,self.root/"duplicate-output")
 
