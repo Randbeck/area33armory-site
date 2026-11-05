@@ -153,8 +153,10 @@ def prepare_private_website_preview(
             or release_root.is_relative_to(output_root)):
         raise ReleasePreflightError("Preview must not contain original approved release")
     index, products, provenance, media = _approved_previous(release_root)
-    if not products:
-        raise ReleasePreflightError("No owner-approved product records to preview")
+    if not products and previous_release_root is None:
+        raise ReleasePreflightError(
+            "An empty catalog is only valid as a reviewed withdrawal from a previous release"
+        )
     style = _check_release_status(release_root, index)
 
     new_ids = {p["id"] for p in products}
