@@ -142,10 +142,20 @@ def validate_scoped_receipt(staging_path:Path,receipt_path:Path,
         if entry["status"]!="policy_eligible_private_candidate":
             continue
         grant=authorized.get(entry["grant_id"])
-        if grant is None or grant.get("supplier")!=staging["source"] or (
-            grant.get("source_category")!=entry["source_category"]
+        staged=next(x for x in staging["items"] if x["source_sku"]==entry["source_sku"])
+        if (grant is None or grant.get("supplier")!=staging["source"]
+                or grant.get("source_category")!=entry["source_category"]
+                or str(grant.get("manufacturer") or "").strip().casefold()
+                    != str(staged.get("manufacturer") or "").strip().casefold()):
+            raise ScopeReceiptError("Scope must match the exact manufacturer and category")
+        # RSR explicitly disclaims the right to sublicense manufacturer
+        # photographs. A distributor access/dealer agreement is not
+        # sufficient evidence for the copyright owner's image permission.
+        rights_type=(grant.get("evidence") or {}).get("type")
+        if staging["source"]=="RSR" and rights_type not in (
+            "manufacturer_written_permission","manufacturer_dealer_media_terms"
         ):
-            raise ScopeReceiptError("Cohort references unauthorized or revoked scope")
+            raise ScopeReceiptError("RSR cannot sublicense manufacturer imagery")
         owner=grant.get("owner_review") or {}
         try:
             approved=date.fromisoformat(owner["approved_on"])
@@ -169,7 +179,6 @@ def validate_scoped_receipt(staging_path:Path,receipt_path:Path,
         if (perms.get("show_source_product_listing") is not True or
                 perms.get("display_original_product_photo") is not True):
             raise ScopeReceiptError("Source listing or image rights missing")
-        staged=next(x for x in staging["items"] if x["source_sku"]==entry["source_sku"])
         if (any(p.get("exif_present") is True for p in staged.get("source_media",[]))
                 and perms.get("display_metadata_cleared_photo") is not True):
             raise ScopeReceiptError("Source image transformation is not approved")
