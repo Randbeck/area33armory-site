@@ -22,7 +22,7 @@ HEX64=re.compile(r"^[0-9a-f]{64}$")
 RECEIPT_AGE=timedelta(minutes=30)
 RECEIPT_FIELDS={
     "schema","publication_enabled","supplier_license_validated_by_platform",
-    "ledger_revision","source_snapshot_modified_at","source_products",
+    "ledger_revision","source_snapshot_modified_at","evaluated_at","source_products",
     "private_policy_candidates","held_exceptions","reasons","note","items",
     "source_staging_sha256","ledger_signature","receipt_hmac_sha256",
 }
@@ -90,6 +90,17 @@ def validate_scoped_receipt(staging_path:Path,receipt_path:Path,
         raise ScopeReceiptError("Cohort was evaluated under a different owner policy revision")
     if receipt["source_staging_sha256"]!=hashlib.sha256(source_bytes).hexdigest():
         raise ScopeReceiptError("Cohort receipt does not match the exact staging input")
+    try:
+        evaluated=datetime.fromisoformat(receipt["evaluated_at"])
+        source_observed=datetime.fromisoformat(staging["private_inventory_snapshot_modified_at"])
+        if evaluated.tzinfo is None or source_observed.tzinfo is None:
+            raise ValueError()
+    except (TypeError,KeyError,ValueError) as exc:
+        raise ScopeReceiptError("Missing source and evaluation timestamps") from exc
+    if (evaluated>now or now-evaluated>RECEIPT_AGE):
+        raise ScopeReceiptError("Source eligibility receipt expired; re-evaluate current policy")
+    if receipt["source_snapshot_modified_at"]!=staging["private_inventory_snapshot_modified_at"]:
+        raise ScopeReceiptError("Scope receipt and source freshness metadata disagree")
     if (not isinstance(staging,dict) or staging.get("schema")!=STAGING_SCHEMA
             or staging.get("source")!="RSR" or
             staging.get("publication_enabled") is not False or
@@ -143,6 +154,11 @@ def validate_scoped_receipt(staging_path:Path,receipt_path:Path,
             raise ScopeReceiptError("Invalid owner grant dates") from exc
         if not approved<=now.date()<=expires:
             raise ScopeReceiptError("Supplier authorization is expired")
+        freshness=grant.get("max_snapshot_age_hours")
+        if (type(freshness) is not int or not 1<=freshness<=168 or
+                source_observed>now or
+                now-source_observed>timedelta(hours=freshness)):
+            raise ScopeReceiptError("Supplier source snapshot is stale under owner scope")
         ev=grant.get("evidence") or {}
         path=Path(str(ev.get("private_file") or "")).expanduser().resolve()
         if (not path.is_file() or not isinstance(ev.get("sha256"),str) or
