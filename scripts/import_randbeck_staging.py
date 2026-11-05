@@ -190,6 +190,7 @@ def build(
     drafts, exceptions, seen_id = [], [], set()
     derivative_audits = []
     scope_eligible_drafts = 0
+    private_scope_to_product_links = []
     for identity, source_items in sorted(groups.items(), key=lambda r: r[0]):
         first = source_items[0]
         reasons = set()
@@ -303,6 +304,14 @@ def build(
         seen_id.add(opaque)
         if authorized_scope is not None:
             scope_eligible_drafts += 1
+            for original in source_items:
+                entry=authorized_scope["eligible_by_sku"][original["source_sku"]]
+                private_scope_to_product_links.append({
+                    "grant_id":entry["grant_id"],
+                    "private_source_sku":original["source_sku"],
+                    "opaque_catalog_id":opaque,
+                    "publication_approved":False,
+                })
         drafts.append({
             "id": opaque,
             "status": "draft",
@@ -345,6 +354,7 @@ def build(
         "private_metadata_derivative_audit": derivative_audits,
         "scope_gate_enabled": authorized_scope is not None,
         "scope_signed_eligible_drafts": scope_eligible_drafts,
+        "private_scope_to_catalog_product_links": private_scope_to_product_links,
         "scope_receipt_eligible_source_products": (
             authorized_scope["eligible_product_count"]
             if authorized_scope is not None else None
