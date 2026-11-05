@@ -48,7 +48,7 @@ export function sanitizeCatalogManifest(doc,{baseUrl="https://area33armory.com/"
 export function filterPublicCatalog(items,{query="",category="",productType="",brand=""}={}){
   const q=query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   return items.filter(item=>{
-    const haystack=[item.manufacturer,item.model,item.variant,item.category,item.type].join(" ").toLowerCase();
+    const haystack=[item.manufacturer,item.model,item.variant,item.description,item.category,item.type].join(" ").toLowerCase();
     return q.every(term=>haystack.includes(term)) &&
       (!category||item.category.toLowerCase()===category.toLowerCase()) &&
       (!productType||item.type===productType) &&
