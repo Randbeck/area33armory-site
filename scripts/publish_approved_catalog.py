@@ -35,6 +35,11 @@ REQUIRED_APPROVALS = (
     "owner_publication", "exact_identity", "media_rights",
     "content_review", "offered_for_sale",
 )
+# Text-only needs separate evidence: owner-generated wording, no supplier
+# photo, and no invented image copyright approval.
+BASE_APPROVALS = (
+    "owner_publication", "exact_identity", "content_review", "offered_for_sale",
+)
 Image.MAX_IMAGE_PIXELS = 40_000_000
 
 
@@ -72,10 +77,18 @@ def check_date(record: dict, key: str) -> str:
 def approved_record(record: dict, index: int, source_root: Path):
     if not isinstance(record, dict) or record.get("status") != "published":
         raise CatalogPublicationError("All records must be marked published after human review")
-    if not isinstance(record.get("approvals"), dict) or any(
-        record["approvals"].get(key) is not True for key in REQUIRED_APPROVALS
-    ):
-        raise CatalogPublicationError("Missing independent owner/identity/rights/content/sale approval")
+    listing_mode = record.get("listing_mode", "image")
+    if listing_mode not in ("image", "text_only"):
+        raise CatalogPublicationError("Unsupported explicit catalog listing mode")
+    approvals = record.get("approvals")
+    if (not isinstance(approvals, dict) or set(approvals) != set(REQUIRED_APPROVALS)
+            or any(type(value) is not bool for value in approvals.values())
+            or any(approvals[key] is not True for key in BASE_APPROVALS)):
+        raise CatalogPublicationError("Missing independent owner/identity/content/sale approval")
+    if listing_mode == "image" and approvals["media_rights"] is not True:
+        raise CatalogPublicationError("Product photographs require separately confirmed image rights")
+    if listing_mode == "text_only" and approvals["media_rights"] is not False:
+        raise CatalogPublicationError("Text-only listing cannot assert photograph rights")
     product_id = clean_text(record, "id", 64)
     if not ID.fullmatch(product_id):
         raise CatalogPublicationError("Invalid opaque public ID")
@@ -87,12 +100,20 @@ def approved_record(record: dict, index: int, source_root: Path):
     product_type = clean_text(record, "product_type", 20)
     if product_type not in TYPES:
         raise CatalogPublicationError("Unsupported public product type")
-    rights = clean_text(record, "rights_source", 160)
     identity = clean_text(record, "identity_evidence_label", 160)
     checked = check_date(record, "source_checked_at")
     photos = record.get("photos")
-    if not isinstance(photos, list) or not 1 <= len(photos) <= 8:
-        raise CatalogPublicationError("Approved thumbnail catalog needs 1-8 exact photos")
+    if listing_mode == "text_only":
+        if photos != []:
+            raise CatalogPublicationError("Text-only listing must contain zero images")
+        if record.get("rights_source", "") != "":
+            raise CatalogPublicationError("Text-only listing must not claim image rights")
+        if record.get("content_origin") != "owner_written":
+            raise CatalogPublicationError("Text-only copy must be independently owner-written and verified")
+    else:
+        rights = clean_text(record, "rights_source", 160)
+        if not isinstance(photos, list) or not 1 <= len(photos) <= 8:
+            raise CatalogPublicationError("Approved image listing needs 1-8 exact photos")
     frames = []
     seen_angles = set()
     for n, photo in enumerate(photos, 1):
@@ -146,6 +167,7 @@ def approved_record(record: dict, index: int, source_root: Path):
         "model": model,
         "variant": variant,
         "description": description,
+        "presentation_mode": listing_mode,
         "category": category,
         "product_type": product_type,
         "specifications": [],
