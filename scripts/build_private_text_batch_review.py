@@ -228,6 +228,7 @@ function asField(label,key,opts={}){
   element=node("input");element.type=opts.date?"date":"text";
   element.maxLength=opts.max||160;element.value=opts.value||"";
  }
+ if(opts.readonly)element.readOnly=true;
  element.addEventListener(opts.select?"change":"input",()=>{
   const item=data.find(x=>x.id===selected);
   item[key]=element.value;
@@ -248,8 +249,8 @@ function invalidate(item,changedFields){
 function reviewFields(item){
  const fields=node("div");fields.className="fields";
  fields.append(
-  asField("Manufacturer — verify exact identity","manufacturer",{value:item.manufacturer,max:100}),
-  asField("Exact model/part number — independently verify","model",{value:item.model,max:120}),
+  asField("Manufacturer — verify; hold if incorrect","manufacturer",{value:item.manufacturer,max:100,readonly:true}),
+  asField("Exact model/part number — verify; hold if incorrect","model",{value:item.model,max:120,readonly:true}),
   asField("Verified variant or fit (optional)","variant",{value:item.variant,max:100}),
   asField("Product category","category",{value:item.category,max:100}),
   asField("Product type","product_type",{value:item.product_type,select:[
@@ -348,10 +349,13 @@ byId("resume").addEventListener("change",async ev=>{
   if(file.size>8_000_000)throw Error("Progress file is too large");
   const incoming=JSON.parse(await file.text());
   if(!Array.isArray(incoming)||incoming.length!==data.length)throw Error("Wrong candidate count");
+  const originals=new Map(data.map(x=>[x.id,x]));
   const currentIds=new Set(data.map(x=>x.id)),found=new Set();
   for(const item of incoming){
    if(!item||typeof item!=="object"||!currentIds.has(item.id)||found.has(item.id)||
       item.listing_mode!=="text_only"||item.rights_source!==""||
+      item.manufacturer!==originals.get(item.id).manufacturer||
+      item.model!==originals.get(item.id).model||
       !Array.isArray(item.photos)||item.photos.length!==0||
       !item.approvals||item.approvals.media_rights!==false||
       !["draft","published"].includes(item.status)||
