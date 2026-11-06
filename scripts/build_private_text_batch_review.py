@@ -9,6 +9,7 @@ Identity exceptions are read-only and never become product drafts.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -71,6 +72,68 @@ def source_batch(draft_file:Path,exceptions_file:Path)->tuple[list[dict],list[di
     return rows,exceptions
 
 
+def validated_private_evidence(
+    evidence_file:Path, draft_file:Path, exception_file:Path, rows:list[dict],
+)->list[dict]:
+    evidence_file=_private_file(evidence_file)
+    payload=json.loads(evidence_file.read_text(encoding="utf-8"))
+    expected={
+        "schema","source","source_staging_sha256","source_drafts_sha256",
+        "source_exceptions_sha256","candidate_count",
+        "held_identity_exception_count","evidence","publication_approved",
+        "media_rights_approved","source_offer_verified","note",
+    }
+    if (not isinstance(payload,dict) or set(payload)!=expected
+            or payload["schema"]!="area33.catalog.private_identity_evidence.v1"
+            or payload["source"]!="RSR"
+            or payload["publication_approved"] is not False
+            or payload["media_rights_approved"] is not False
+            or payload["source_offer_verified"] is not False
+            or type(payload["candidate_count"]) is not int
+            or payload["candidate_count"]!=len(rows)
+            or payload["source_drafts_sha256"]!=hashlib.sha256(
+                _private_file(draft_file).read_bytes()
+            ).hexdigest()
+            or payload["source_exceptions_sha256"]!=hashlib.sha256(
+                _private_file(exception_file).read_bytes()
+            ).hexdigest()
+            or not isinstance(payload["evidence"],list)
+            or len(payload["evidence"])!=len(rows)):
+        raise ReviewError("Private source evidence does not match unchanged owner-review drafts")
+    expected_ids={item["id"] for item in rows}
+    matched={}
+    by_id={item["id"]:item for item in rows}
+    for entry in payload["evidence"]:
+        if (not isinstance(entry,dict) or set(entry)!={
+                "id","recorded_upc","recorded_manufacturer_part_number",
+                "recorded_source_skus","recorded_category","recorded_manufacturer",
+                "recorded_model","neutral_draft_suggestion","evidence_status"
+            } or entry.get("id") not in expected_ids
+                or entry["id"] in matched):
+            raise ReviewError("Unrecognized or duplicated private evidence identity")
+        item=by_id[entry["id"]]
+        if (entry["recorded_manufacturer"]!=item["manufacturer"]
+                or entry["recorded_model"]!=item["model"]
+                or entry["recorded_category"]!=item["category"]
+                or not isinstance(entry["recorded_upc"],str)
+                or not re.fullmatch(r"\d{12,14}",entry["recorded_upc"])
+                or not isinstance(entry["recorded_manufacturer_part_number"],str)
+                or not 1<=len(entry["recorded_manufacturer_part_number"])<=120
+                or not isinstance(entry["recorded_source_skus"],list)
+                or not entry["recorded_source_skus"]
+                or not all(isinstance(k,str) and 1<=len(k)<=64
+                           for k in entry["recorded_source_skus"])
+                or not isinstance(entry["neutral_draft_suggestion"],str)
+                or len(entry["neutral_draft_suggestion"])>200
+                or entry["evidence_status"]!=
+                    "RSR source identity only — not independently verified"):
+            raise ReviewError("Private source evidence conflicts with approved-only draft identity")
+        matched[entry["id"]]=entry
+    if set(matched)!=expected_ids:
+        raise ReviewError("Missing or extra private evidence entries")
+    return [matched[row["id"]] for row in rows]
+
+
 def inline(value)->str:
     return (json.dumps(value,ensure_ascii=True)
             .replace("<",r"\u003c").replace(">",r"\u003e")
@@ -107,7 +170,15 @@ nav input,nav select{width:100%;margin:0 0 8px;border:1px solid #aaa;border-radi
 .product.active{border-color:#151515;background:white}
 .product strong{display:block;overflow-wrap:anywhere}
 .product small{color:var(--muted)}
-.workspace{padding:clamp(16px,3vw,30px)}.heading{display:flex;align-items:start;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.workspace{padding:clamp(16px,3vw,30px)}
+.source-evidence{border:1px solid #bbb;border-radius:12px;padding:16px;background:#fafafa;margin:18px 0}
+.source-evidence h3{font-size:16px;margin:0 0 12px}
+.evidence-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.evidence-item{display:grid;gap:4px;min-width:0;overflow-wrap:anywhere}
+.evidence-item strong{font-size:12px}.evidence-item span{font-size:13px}
+.suggestion{padding:14px;background:white;border:1px solid #ddd;border-radius:10px;margin:14px 0}
+.suggestion p{margin:8px 0}
+@media(max-width:700px){.evidence-grid{grid-template-columns:1fr}}.heading{display:flex;align-items:start;justify-content:space-between;gap:15px;flex-wrap:wrap}
 .heading h2{font-size:24px;line-height:1.2;letter-spacing:-.035em;margin:0}.muted{color:var(--muted)}.badge{border:1px solid #bbb;padding:4px 10px;border-radius:99px;font-size:12px;white-space:nowrap}
 .mini{font-size:12px;color:var(--muted)}
 .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0}
@@ -144,10 +215,21 @@ footer{color:var(--muted);width:min(1350px,calc(100% - 32px));margin:12px auto 4
 <footer>Runs locally without fetching or sending data. Keep exported JSON, source records and this generated page outside GitHub and public website folders.</footer>
 <script id="review-data" type="application/json">__REVIEW_DATA__</script>
 <script id="exception-data" type="application/json">__EXCEPTION_DATA__</script>
+<script id="source-evidence" type="application/json">__PRIVATE_EVIDENCE__</script>
 <script>
 "use strict";
 let data=JSON.parse(document.getElementById("review-data").textContent);
 const exceptions=JSON.parse(document.getElementById("exception-data").textContent);
+const evidenceRows=JSON.parse(document.getElementById("source-evidence").textContent);
+const evidenceById=new Map(evidenceRows.map(x=>[x.id,x]));
+const duplicateCounts=new Map();
+for(const item of data){
+ const key=[item.manufacturer,item.model].join("\x1f").toLowerCase();
+ duplicateCounts.set(key,(duplicateCounts.get(key)||0)+1);
+}
+function isDuplicateName(item){
+ return duplicateCounts.get([item.manufacturer,item.model].join("\x1f").toLowerCase())>1;
+}
 const byId=id=>document.getElementById(id);
 const CHECKS=[
  ["exact_identity","Exact manufacturer/model/variant and identity evidence independently verified"],
@@ -191,7 +273,11 @@ function filtered(){
  const search=byId("search").value.trim().toLowerCase(),filter=byId("filter").value;
  return data.filter(item=>
   (filter==="all"||(filter==="ready"?isReady(item):!isReady(item))) &&
-  [item.manufacturer,item.model,item.variant,item.category,item.id].join(" ").toLowerCase().includes(search));
+  [item.manufacturer,item.model,item.variant,item.category,item.id,
+   (evidenceById.get(item.id)||{}).recorded_upc||"",
+   (evidenceById.get(item.id)||{}).recorded_manufacturer_part_number||"",
+   ((evidenceById.get(item.id)||{}).recorded_source_skus||[]).join(" ")
+  ].join(" ").toLowerCase().includes(search));
 }
 function updateSummary(){
  const approved=data.filter(isReady).length;
@@ -207,7 +293,12 @@ function renderList(){
   const button=node("button");
   button.type="button";button.className="product"+(item.id===selected?" active":"");
   button.append(node("strong",item.manufacturer+" "+item.model),
-    node("small",(isReady(item)?"Reviewed":"Draft")+" · "+(item.variant||item.product_type||"No variant")));
+    node("small",(isReady(item)?"Reviewed":"Draft")+" · "+(item.variant||item.product_type||"No variant")+
+      ((evidenceById.get(item.id)||{}).recorded_manufacturer_part_number?
+       " · MPN "+evidenceById.get(item.id).recorded_manufacturer_part_number:"")),
+    ...(isDuplicateName(item)&&evidenceById.has(item.id)?[
+      node("small","Recorded UPC "+evidenceById.get(item.id).recorded_upc)
+    ]:[]));
   button.addEventListener("click",()=>{selected=item.id;renderList();renderDetail();});
   items.append(button);
  }
@@ -275,6 +366,47 @@ function renderDetail(){
  const badge=node("span",isReady(item)?"Reviewed — PRIVATE only":"Draft — not approved");
  badge.className="badge";badge.id="item-status";head.append(badge);place.append(head);
  place.append(node("p","All supplier image use remains disabled. Review the product and write original copy. No inventory, prices, photos or publication are implied."));
+ const ev=evidenceById.get(item.id);
+ if(ev){
+  const evidence=node("section");evidence.className="source-evidence";
+  const heading=node("h3","Private source identity evidence — not yet independently verified");
+  evidence.append(heading);
+  const line=node("div");line.className="evidence-grid";
+  for(const [label,value] of [
+    ["Recorded UPC (check-digit valid only)",ev.recorded_upc],
+    ["Manufacturer part number",ev.recorded_manufacturer_part_number],
+    ["Source SKU(s), PRIVATE",ev.recorded_source_skus.join(", ")],
+    ["RSR category",ev.recorded_category]
+  ]){
+    const pair=node("div");pair.className="evidence-item";
+    pair.append(node("strong",label),node("span",value));line.append(pair);
+  }
+  evidence.append(line);
+  evidence.append(node("p","These values come from a previously saved distributor record. Matching numbers do NOT prove the correct variant, current stock, dealer terms, fit, or sale eligibility."));
+  if(isDuplicateName(item))evidence.append(node("p","Look-alike model names are kept separate by exact source UPC and manufacturer part number. Compare before approving."));
+  if(ev.neutral_draft_suggestion){
+    const suggestion=node("div");suggestion.className="suggestion";
+    suggestion.append(node("strong","Neutral wording suggestion from recorded labels only"));
+    suggestion.append(node("p",ev.neutral_draft_suggestion));
+    const insert=node("button","Use as editable starting text");insert.type="button";
+    insert.addEventListener("click",()=>{
+      if(item.description && !window.confirm("Replace your existing description with the unverified neutral starting text?"))return;
+      item.description=ev.neutral_draft_suggestion;
+      item.content_origin="";
+      for(const [key] of CHECKS)item.approvals[key]=false;
+      item.status="draft";
+      renderList();renderDetail();
+    });
+    suggestion.append(insert);
+    suggestion.append(node("p","Edit and independently verify every claim. Inserting never confirms owner-written origin, identity, or sale authorization."));
+    evidence.append(suggestion);
+  }else{
+    evidence.append(node("p","No safe short description suggestion fits this identity. Write and verify your own copy."));
+  }
+  place.append(evidence);
+ }else{
+  place.append(node("p","No matched private UPC/MPN evidence was supplied. Independent research remains required."));
+ }
  place.append(reviewFields(item));
  const section=node("fieldset");section.className="review";
  section.append(node("legend","Independent item-by-item confirmations"));
@@ -387,8 +519,11 @@ renderList();renderDetail();
 """
 
 
-def make_batch_review(input_file:Path,exceptions_file:Path,out:Path|None=None)->Path:
+def make_batch_review(input_file:Path,exceptions_file:Path,out:Path|None=None,
+                      *,evidence_file:Path|None=None)->Path:
     rows,exceptions=source_batch(input_file,exceptions_file)
+    evidence=(validated_private_evidence(evidence_file,input_file,exceptions_file,rows)
+              if evidence_file is not None else [])
     if out is None:
         out=Path(input_file).expanduser().resolve().parent/"catalog-batch-owner-review.html"
     else:
@@ -397,8 +532,9 @@ def make_batch_review(input_file:Path,exceptions_file:Path,out:Path|None=None)->
             or out.suffix.lower()!=".html"
             or out.is_relative_to(HERE)):
         raise ReviewError("Choose a new .html file in the same private draft directory")
-    html=HTML.replace("__REVIEW_DATA__",inline(rows)).replace(
-        "__EXCEPTION_DATA__",inline(exceptions))
+    html=(HTML.replace("__REVIEW_DATA__",inline(rows))
+          .replace("__EXCEPTION_DATA__",inline(exceptions))
+          .replace("__PRIVATE_EVIDENCE__",inline(evidence)))
     if len(html.encode("utf-8"))>MAX_HTML_BYTES:
         raise ReviewError("Private HTML review file would exceed safe offline limit")
     out.write_text(html,encoding="utf-8")
@@ -409,10 +545,13 @@ def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--drafts",required=True,type=Path)
     p.add_argument("--exceptions",required=True,type=Path)
+    p.add_argument("--evidence",type=Path,
+                   help="Private RSR UPC/MPN/SKU sidecar from original staged source")
     p.add_argument("--out",type=Path)
     args=p.parse_args(argv)
     try:
-        path=make_batch_review(args.drafts,args.exceptions,args.out)
+        path=make_batch_review(args.drafts,args.exceptions,args.out,
+                               evidence_file=args.evidence)
     except (ValueError,OSError,KeyError,TypeError) as exc:
         p.error(str(exc))
     print("PRIVATE, OFFLINE, FOCUSED owner-review workspace:")
