@@ -29,6 +29,12 @@ from plan_controlled_catalog_deployment import (
 from rehearse_catalog_cutover import (
     CutoverRehearsalError, rehearse_private_cutover,
 )
+from prepare_github_pages_candidate import (
+    PagesCandidateError, prepare_github_pages_candidate,
+)
+from verify_github_pages_candidate import (
+    PagesVerificationError, verify_github_pages_candidate,
+)
 
 
 class ControlledCatalogReleaseTests(unittest.TestCase):
@@ -169,6 +175,78 @@ class ControlledCatalogReleaseTests(unittest.TestCase):
         self.assertTrue(rehearsal["activation_index_last_verified"])
         self.assertTrue(rehearsal["rollback_rehearsed"])
         self.assertFalse(rehearsal["live_site_modified"])
+
+    def test_github_pages_candidate_verified_public_site_only(self):
+        self.refreshed()
+        self.preflight()
+        self.plan()
+        candidate_root=self.root/"private-pages-candidate"
+        receipt=prepare_github_pages_candidate(
+            self.package,self.candidate,self.holds,candidate_root,
+            previous_approved_release=self.base,
+        )
+        site=candidate_root/"site"
+        self.assertEqual((site/"CNAME").read_text(),"area33armory.com\n")
+        self.assertEqual((site/".nojekyll").read_bytes(),b"")
+        self.assertFalse((site/"private-pages-candidate-receipt.json").exists())
+        self.assertFalse((site/"deployment-plan-private.json").exists())
+        self.assertFalse((site/"catalog-private-media-provenance.json").exists())
+        self.assertFalse((site/"private-rights-holds.json").exists())
+        verification=verify_github_pages_candidate(
+            site,
+            expected_manifest_sha256=receipt["public_manifest_sha256"],
+            expected_index_sha256=receipt["public_index_sha256"],
+        )
+        self.assertEqual(verification["approved_product_count"],3)
+        self.assertEqual(verification["approved_image_count"],1)
+        self.assertTrue(verification["not_deployed"])
+        self.assertEqual((SITE/"assets/catalog-public.json").read_bytes(),self.site_initial)
+
+    def test_pages_candidate_fails_if_rights_hold_changed_after_release_plan(self):
+        self.refreshed()
+        self.preflight()
+        self.plan()
+        self.make_holds([self.hold("image_sha256",self.ha)])
+        with self.assertRaises(PagesCandidateError):
+            prepare_github_pages_candidate(
+                self.package,self.candidate,self.holds,self.root/"blocked-pages",
+                previous_approved_release=self.base,
+            )
+        self.assertFalse((self.root/"blocked-pages").exists())
+
+    def test_pages_verifier_rejects_tampering_or_extra_public_file(self):
+        self.refreshed()
+        self.preflight()
+        self.plan()
+        candidate_root=self.root/"private-pages-candidate"
+        receipt=prepare_github_pages_candidate(
+            self.package,self.candidate,self.holds,candidate_root,
+            previous_approved_release=self.base,
+        )
+        site=candidate_root/"site"
+        args={
+            "expected_manifest_sha256":receipt["public_manifest_sha256"],
+            "expected_index_sha256":receipt["public_index_sha256"],
+        }
+        leaked=site/"private-dealer-cost.txt"
+        leaked.write_text("SECRET_DEALER_COST")
+        with self.assertRaises(PagesVerificationError):
+            verify_github_pages_candidate(site,**args)
+        leaked.unlink()
+        (site/"CNAME").write_text("unexpecteddomain.example\n")
+        with self.assertRaises(PagesVerificationError):
+            verify_github_pages_candidate(site,**args)
+        (site/"CNAME").write_text("area33armory.com\n")
+        (site/"assets/catalog-public.json").write_bytes(
+            (site/"assets/catalog-public.json").read_bytes()+b" "
+        )
+        with self.assertRaises(PagesVerificationError):
+            verify_github_pages_candidate(site,**args)
+        with self.assertRaises(PagesVerificationError):
+            verify_github_pages_candidate(
+                site,expected_manifest_sha256="0"*64,
+                expected_index_sha256=receipt["public_index_sha256"],
+            )
 
     def test_new_approved_item_and_separately_reapproved_text_update(self):
         updated=self.record(2,"Sample Manufacturer",None,
