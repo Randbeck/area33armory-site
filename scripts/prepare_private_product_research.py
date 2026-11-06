@@ -209,6 +209,16 @@ def validate_research_packet(packet:dict,evidence:list[dict],drafts:Path,
                     or not isinstance(warning["explanation"],str)
                     or not 12<=len(warning["explanation"])<=300):
                 raise ReviewError("An unresolved UPC identity conflict has invalid evidence")
+        conflict=CONFLICT_LEADS.get(item["recorded_mpn"])
+        is_disputed=bool(conflict and item["recorded_upc"] in conflict["observed_upcs"])
+        if is_disputed:
+            if (len(item["identity_warnings"])!=1 or
+                    item["identity_warnings"][0]["code"]!="conflicting_public_upc" or
+                    item["identity_warnings"][0]["observed_upcs"]!=conflict["observed_upcs"] or
+                    not all(src in item["sources"] for src in conflict["sources"])):
+                raise ReviewError("Recorded manufacturer part number has an unresolved public UPC conflict")
+        elif item["identity_warnings"]:
+            raise ReviewError("Unrecognized private identity conflict marker")
         for source in item["sources"]:
             if (not isinstance(source,dict) or set(source)!={
                 "title","url","source_kind","observed_on"
