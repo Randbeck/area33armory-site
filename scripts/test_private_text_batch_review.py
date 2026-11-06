@@ -100,7 +100,7 @@ class OwnerTextBatchReviewTests(unittest.TestCase):
         self.assertIn("Export approved-only JSON",text)
         self.assertIn("Quarantined identity exceptions",text)
         self.assertIn("There is no bulk-approval button",text)
-        self.assertIn("zero images",text.lower().replace("no images","zero images") if "zero images" in text.lower() else "zero images")
+        self.assertIn("No photos",text)
         self.assertNotIn("fetch(",text)
         self.assertNotIn("XMLHttpRequest",text)
         self.assertNotIn("localStorage",text)
@@ -239,7 +239,7 @@ class OwnerTextBatchReviewTests(unittest.TestCase):
         self.approve(0)
         self.rows[0]["content_origin"]="source_copied"
         self.write_drafts()
-        with self.assertRaises(PrivateHandoffError):
+        with self.assertRaises(ReviewError):
             prepare_private_text_handoff(self.draft,self.draft,self.exceptions,self.output)
 
 
