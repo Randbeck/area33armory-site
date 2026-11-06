@@ -21,7 +21,8 @@ if ((Get-Item -LiteralPath $IdentityKey).Length -ne 32) {
 
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $evidence = Join-Path $Pilot "catalog-private-identity-evidence-$stamp.json"
-$reviewPage = Join-Path $Pilot "catalog-evidence-assisted-review-$stamp.html"
+$research = Join-Path $Pilot "catalog-private-product-research-$stamp.json"
+$reviewPage = Join-Path $Pilot "catalog-source-backed-review-$stamp.html"
 $scriptDir = $PSScriptRoot
 
 & $Python (Join-Path $scriptDir 'prepare_private_catalog_evidence.py') `
@@ -32,16 +33,26 @@ $scriptDir = $PSScriptRoot
     --out $evidence
 if ($LASTEXITCODE -ne 0) { throw 'Private UPC/MPN/SKU evidence join failed. Nothing published.' }
 
+& $Python (Join-Path $scriptDir 'prepare_private_product_research.py') `
+    --drafts $drafts `
+    --exceptions $exceptions `
+    --evidence $evidence `
+    --out $research
+if ($LASTEXITCODE -ne 0) { throw 'Private source-linked research packet failed. Nothing published.' }
+
 & $Python (Join-Path $scriptDir 'build_private_text_batch_review.py') `
     --drafts $drafts `
     --exceptions $exceptions `
     --evidence $evidence `
+    --research $research `
     --out $reviewPage
 if ($LASTEXITCODE -ne 0) { throw 'Private evidence-assisted review failed. Nothing published.' }
 
 Start-Process -FilePath $reviewPage
 Write-Host 'PRIVATE evidence-assisted catalog review opened in your browser.'
-Write-Host 'Look-alike models now show recorded part numbers and UPC.'
+Write-Host 'Look-alike models now show recorded part numbers, UPC and source-linked research.'
 Write-Host 'No publication, image processing, rights grants, or source data changes.'
 Write-Host "Review page: $reviewPage"
 Write-Host "Private identity evidence: $evidence"
+Write-Host "Private research packet: $research"
+Write-Host 'Save product progress and research notes separately before closing the browser.'
