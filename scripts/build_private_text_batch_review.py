@@ -169,7 +169,7 @@ nav input,nav select{width:100%;margin:0 0 8px;border:1px solid #aaa;border-radi
 .product{display:block;text-align:left;width:100%;margin:4px 0;padding:10px;border-color:transparent;background:#f7f7f7}
 .product.active{border-color:#151515;background:white}
 .product strong{display:block;overflow-wrap:anywhere}
-.product small{color:var(--muted)}
+.product small{color:var(--muted);display:block;line-height:1.45;margin-top:3px;overflow-wrap:anywhere}
 .workspace{padding:clamp(16px,3vw,30px)}
 .source-evidence{border:1px solid #bbb;border-radius:12px;padding:16px;background:#fafafa;margin:18px 0}
 .source-evidence h3{font-size:16px;margin:0 0 12px}
@@ -178,6 +178,17 @@ nav input,nav select{width:100%;margin:0 0 8px;border:1px solid #aaa;border-radi
 .evidence-item strong{font-size:12px}.evidence-item span{font-size:13px}
 .suggestion{padding:14px;background:white;border:1px solid #ddd;border-radius:10px;margin:14px 0}
 .suggestion p{margin:8px 0}
+.research{border:1px solid #ddd;border-radius:12px;padding:16px;margin:18px 0}
+.research h3{font-size:16px;margin:0 0 10px}
+.research p{overflow-wrap:anywhere}
+.research a{color:inherit;text-decoration:underline;overflow-wrap:anywhere}
+.research-source{padding:12px 0;border-top:1px solid #e3e3e3}
+.research-source strong{display:block}
+.research-fields{display:grid;grid-template-columns:minmax(170px,1fr) minmax(200px,2fr);gap:8px;margin:12px 0}
+.research-fields input,.research-fields select{min-width:0;width:100%;padding:9px;border:1px solid #aaa;border-radius:7px}
+.research-source label{display:flex;align-items:flex-start;gap:8px;margin-top:6px}
+.research-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+@media(max-width:700px){.research-fields{grid-template-columns:1fr}}
 @media(max-width:700px){.evidence-grid{grid-template-columns:1fr}}.heading{display:flex;align-items:start;justify-content:space-between;gap:15px;flex-wrap:wrap}
 .heading h2{font-size:24px;line-height:1.2;letter-spacing:-.035em;margin:0}.muted{color:var(--muted)}.badge{border:1px solid #bbb;padding:4px 10px;border-radius:99px;font-size:12px;white-space:nowrap}
 .mini{font-size:12px;color:var(--muted)}
@@ -202,6 +213,8 @@ footer{color:var(--muted);width:min(1350px,calc(100% - 32px));margin:12px auto 4
 <div class="stat"><strong id="exceptions-count">0</strong><span>Identity exceptions</span></div></div>
 <div class="tools"><button id="save" type="button">Save private progress</button>
 <label for="resume">Resume saved progress</label><input type="file" accept=".json,application/json" id="resume">
+<button id="research-save" type="button">Save research notes</button>
+<label for="research-resume">Load research notes</label><input type="file" accept=".json,application/json" id="research-resume">
 <button class="primary" id="export" type="button">Export approved-only JSON</button></div></div>
 <p class="notice">This is a private review tool, not a sales authorization. Manufacturer identity, owner-written copy, legal/channel restrictions, and an actual offer for sale must each be confirmed. <strong>There is no bulk-approval button.</strong> Identity exceptions remain quarantined below. Edits are held in browser memory until you save a private JSON file.</p>
 <div class="shell"><nav aria-label="Candidate list"><h2>Product queue</h2><input id="search" type="search" placeholder="Search manufacturer or model">
@@ -216,12 +229,17 @@ footer{color:var(--muted);width:min(1350px,calc(100% - 32px));margin:12px auto 4
 <script id="review-data" type="application/json">__REVIEW_DATA__</script>
 <script id="exception-data" type="application/json">__EXCEPTION_DATA__</script>
 <script id="source-evidence" type="application/json">__PRIVATE_EVIDENCE__</script>
+<script id="research-data" type="application/json">__PRIVATE_RESEARCH__</script>
 <script>
 "use strict";
 let data=JSON.parse(document.getElementById("review-data").textContent);
 const exceptions=JSON.parse(document.getElementById("exception-data").textContent);
 const evidenceRows=JSON.parse(document.getElementById("source-evidence").textContent);
 const evidenceById=new Map(evidenceRows.map(x=>[x.id,x]));
+let research=JSON.parse(document.getElementById("research-data").textContent);
+let researchById=new Map((research?research.items:[]).map(x=>[x.id,x]));
+const researchLabels=["Magazine configuration","Carry options","Finish/color","Material",
+"Compatibility","Product dimensions","Other verified attribute"];
 const duplicateCounts=new Map();
 for(const item of data){
  const key=[item.manufacturer,item.model].join("\x1f").toLowerCase();
@@ -407,6 +425,95 @@ function renderDetail(){
  }else{
   place.append(node("p","No matched private UPC/MPN evidence was supplied. Independent research remains required."));
  }
+ const r=researchById.get(item.id);
+ if(r){
+  const panel=node("section");panel.className="research";
+  panel.append(node("h3","Independent product research — owner verification required"));
+  panel.append(node("p","Exact lookup: "+r.research_query));
+  const lookup=node("a","Search public sources for this UPC / manufacturer part number");
+  lookup.href="https://www.google.com/search?q="+encodeURIComponent(r.research_query);
+  lookup.target="_blank";lookup.rel="noopener noreferrer";
+  panel.append(lookup);
+  panel.append(node("p","This link opens an external search only when clicked; the recorded UPC and part number are sent to that search provider. No private distributor SKU is included."));
+  for(let i=0;i<r.sources.length;i++){
+   const source=r.sources[i];
+   const sect=node("div");sect.className="research-source";
+   const link=node("a",source.title);link.href=source.url;link.target="_blank";
+   link.rel="noopener noreferrer";sect.append(link);
+   sect.append(node("p",source.source_kind.replace(/_/g," ")+" · Observed "+source.observed_on+" · Not a manufacturer permission grant"));
+   for(const fact of r.facts.filter(x=>x.source_index===i)){
+    const label=node("label"),check=node("input");
+    check.type="checkbox";check.checked=fact.owner_checked===true;
+    check.addEventListener("change",()=>{
+      fact.owner_checked=check.checked;
+      // A fact losing support should also withdraw previous item approval.
+      if(!check.checked && item.status==="published")invalidate(item,true);
+    });
+    label.append(check,node("span",fact.label+": "+fact.value+
+      " — I personally checked this exact claim against the linked source"));
+    sect.append(label);
+   }
+   const addFact=node("button","Add specific fact from this source");addFact.type="button";
+   addFact.addEventListener("click",()=>{
+    if(r.facts.length>=12){alert("Maximum 12 source-linked facts per product");return;}
+    const label=window.prompt("Fact category (choose one): "+researchLabels.join(" | "),"Other verified attribute");
+    if(label===null)return;
+    if(!researchLabels.includes(label)){alert("Choose one of the listed categories exactly.");return;}
+    const value=window.prompt("Short factual specification (4–130 characters). No source marketing prose, prices or stock claims:");
+    if(value===null)return;
+    const clean=value.trim();
+    if(clean.length<4||clean.length>130){alert("Fact must be 4–130 characters");return;}
+    r.facts.push({label,value:clean,source_index:i,owner_checked:false});
+    if(item.status==="published")invalidate(item,true);
+    renderDetail();
+   });
+   sect.append(addFact);
+   panel.append(sect);
+  }
+  const action=node("div");action.className="research-actions";
+  const add=node("button","Add independently found reference");add.type="button";
+  add.addEventListener("click",()=>{
+    if(r.sources.length>=8){alert("Maximum eight source links per item");return;}
+    const title=window.prompt("Reference title (4–160 characters):");
+    if(title===null)return;
+    if(title.trim().length<4||title.trim().length>160){alert("Invalid source title");return;}
+    const uri=window.prompt("Paste exact HTTPS product/specification URL:");
+    if(uri===null)return;
+    let u;
+    try{u=new URL(uri);}catch(_){alert("URL is invalid");return;}
+    if(u.protocol!=="https:"||!u.hostname.includes(".")||u.username||
+       u.password||u.hash||u.hostname==="localhost"){
+      alert("Use a public HTTPS reference without login credentials or fragment.");return;
+    }
+    r.sources.push({title:title.trim(),url:uri.trim(),
+      source_kind:"other_public_reference",observed_on:new Date().toISOString().slice(0,10)});
+    if(item.status==="published")invalidate(item,true);
+    renderDetail();
+  });
+  const draft=node("button","Use checked facts in editable draft");draft.type="button";
+  draft.addEventListener("click",()=>{
+    const facts=r.facts.filter(x=>x.owner_checked===true);
+    if(!facts.length){alert("Independently check at least one exact claim first.");return;}
+    let suggestion=item.manufacturer+" "+item.model+".";
+    for(const fact of facts){
+      const next=suggestion+" "+fact.label+": "+fact.value+".";
+      if(next.length>200)break;
+      suggestion=next;
+    }
+    if(suggestion===item.manufacturer+" "+item.model+"."){
+      alert("Checked facts do not fit the 200-character limit.");return;
+    }
+    if(item.description && !window.confirm("Replace existing copy with this editorial starting point?"))return;
+    item.description=suggestion;
+    item.content_origin="";
+    for(const [key] of CHECKS)item.approvals[key]=false;
+    item.status="draft";
+    renderList();renderDetail();
+  });
+  action.append(add,draft);panel.append(action);
+  panel.append(node("p","Research sources and source-linked facts stay PRIVATE. Checking a fact is your own review assertion, not certification. Inserting text NEVER marks it owner-written or approves the product."));
+  place.append(panel);
+ }
  place.append(reviewFields(item));
  const section=node("fieldset");section.className="review";
  section.append(node("legend","Independent item-by-item confirmations"));
@@ -467,6 +574,55 @@ function download(name,contents){
 byId("search").addEventListener("input",renderList);
 byId("filter").addEventListener("change",renderList);
 byId("save").addEventListener("click",()=>download("area33-private-text-batch-progress.json",data));
+byId("research-save").addEventListener("click",()=>{
+ if(!research){alert("Run the private research-packet generator first.");return;}
+ download("area33-private-product-research-progress.json",research);
+});
+byId("research-resume").addEventListener("change",async ev=>{
+ const file=ev.target.files&&ev.target.files[0];if(!file)return;
+ try{
+  if(!research)throw Error("Generate the original private research packet first");
+  if(file.size>8_000_000)throw Error("Research file too large");
+  const incoming=JSON.parse(await file.text());
+  if(!incoming||incoming.schema!==research.schema||
+      incoming.candidate_count!==research.candidate_count||
+      incoming.source_drafts_sha256!==research.source_drafts_sha256||
+      incoming.private_identity_evidence_sha256!==research.private_identity_evidence_sha256||
+      incoming.publication_approved!==false||
+      incoming.source_research_is_owner_verified!==false||
+      !Array.isArray(incoming.items)||incoming.items.length!==data.length)
+   throw Error("Private research provenance or candidate count differs");
+  const old=new Map(research.items.map(x=>[x.id,x])),found=new Set();
+  for(const row of incoming.items){
+   const prior=old.get(row.id);
+   if(!prior||found.has(row.id)||row.recorded_upc!==prior.recorded_upc||
+      row.recorded_mpn!==prior.recorded_mpn||row.research_query!==prior.research_query||
+      !Array.isArray(row.sources)||row.sources.length>8||
+      !Array.isArray(row.facts)||row.facts.length>12)
+    throw Error("Research identity mismatch");
+   found.add(row.id);
+   for(const s of row.sources){
+    let uri;try{uri=new URL(s.url);}catch(_){throw Error("Invalid source link");}
+    if(!["manufacturer","independent_retailer","other_public_reference"].includes(s.source_kind)||
+       typeof s.title!=="string"||s.title.length<4||s.title.length>160||
+       uri.protocol!=="https:"||!uri.hostname.includes(".")||uri.username||
+       uri.password||uri.hash||!/^\d{4}-\d{2}-\d{2}$/.test(s.observed_on))
+      throw Error("Malformed research source");
+   }
+   for(const fact of row.facts){
+    if(!researchLabels.includes(fact.label)||typeof fact.value!=="string"||
+       fact.value.length<4||fact.value.length>130||
+       !Number.isInteger(fact.source_index)||fact.source_index<0||
+       fact.source_index>=row.sources.length||typeof fact.owner_checked!=="boolean")
+      throw Error("Malformed referenced fact");
+   }
+  }
+  if(!window.confirm("Load this private source research file? It does NOT approve products."))return;
+  research=incoming;researchById=new Map(research.items.map(x=>[x.id,x]));
+  renderList();renderDetail();
+ }catch(err){alert("Research notes were not loaded: "+err.message);}
+ finally{ev.target.value="";}
+});
 byId("export").addEventListener("click",()=>{
  const invalid=data.filter(item=>item.status==="published"&&!isReady(item));
  if(invalid.length){alert("Some published-status records have incomplete reviews. Correct them first.");return;}
@@ -520,10 +676,17 @@ renderList();renderDetail();
 
 
 def make_batch_review(input_file:Path,exceptions_file:Path,out:Path|None=None,
-                      *,evidence_file:Path|None=None)->Path:
+                      *,evidence_file:Path|None=None,research_file:Path|None=None)->Path:
     rows,exceptions=source_batch(input_file,exceptions_file)
     evidence=(validated_private_evidence(evidence_file,input_file,exceptions_file,rows)
               if evidence_file is not None else [])
+    research=None
+    if research_file is not None:
+        if evidence_file is None:
+            raise ReviewError("Research packet requires matching original identity evidence")
+        from prepare_private_product_research import validate_research_packet
+        research=json.loads(_private_file(research_file).read_text(encoding="utf-8"))
+        validate_research_packet(research,evidence,input_file,evidence_file)
     if out is None:
         out=Path(input_file).expanduser().resolve().parent/"catalog-batch-owner-review.html"
     else:
@@ -534,7 +697,8 @@ def make_batch_review(input_file:Path,exceptions_file:Path,out:Path|None=None,
         raise ReviewError("Choose a new .html file in the same private draft directory")
     html=(HTML.replace("__REVIEW_DATA__",inline(rows))
           .replace("__EXCEPTION_DATA__",inline(exceptions))
-          .replace("__PRIVATE_EVIDENCE__",inline(evidence)))
+          .replace("__PRIVATE_EVIDENCE__",inline(evidence))
+          .replace("__PRIVATE_RESEARCH__",inline(research)))
     if len(html.encode("utf-8"))>MAX_HTML_BYTES:
         raise ReviewError("Private HTML review file would exceed safe offline limit")
     out.write_text(html,encoding="utf-8")
@@ -547,11 +711,14 @@ def main(argv=None):
     p.add_argument("--exceptions",required=True,type=Path)
     p.add_argument("--evidence",type=Path,
                    help="Private RSR UPC/MPN/SKU sidecar from original staged source")
+    p.add_argument("--research",type=Path,
+                   help="Private, source-linked research packet; no approval inferred")
     p.add_argument("--out",type=Path)
     args=p.parse_args(argv)
     try:
         path=make_batch_review(args.drafts,args.exceptions,args.out,
-                               evidence_file=args.evidence)
+                               evidence_file=args.evidence,
+                               research_file=args.research)
     except (ValueError,OSError,KeyError,TypeError) as exc:
         p.error(str(exc))
     print("PRIVATE, OFFLINE, FOCUSED owner-review workspace:")
