@@ -106,7 +106,12 @@ class OwnerTextBatchReviewTests(unittest.TestCase):
         self.assertNotIn("localStorage",text)
         self.assertNotIn("sessionStorage",text)
         self.assertNotIn("sendBeacon(",text)
-        self.assertNotIn("https://",text)
+        # The reviewer now offers an explicit user-clicked HTTPS lookup link.
+        # It still performs no automatic network requests or resource imports.
+        self.assertIn("https://www.google.com/search?q=",text)
+        self.assertIn('lookup.target="_blank"',text)
+        self.assertIn('lookup.rel="noopener noreferrer"',text)
+        self.assertNotIn("<script src=",text)
         self.assertFalse(any(row["approvals"]["owner_publication"] for row in self.rows))
         self.assertEqual(self.live.read_bytes(),self.live_bytes)
         with self.assertRaises(ReviewError):
