@@ -62,6 +62,78 @@ SEED_REFERENCES={
              "source_index":0,"owner_checked":False},
         ],
     },
+},
+    ("193858308937","CT35-0057-RH-D"):{
+        "sources":[
+            {"title":"GunMag Warehouse — Cloak Tuck Glock 19/23/19X/44/45, CT35-0057-RH-D",
+             "url":"https://gunmagwarehouse.com/alien-gear-cloak-tuck-right-handed-iwb-holster-for-glock-19-23-19x-44-45.html",
+             "source_kind":"independent_retailer","observed_on":"2026-11-06"},
+            {"title":"Bud's Gun Shop — Cloak Tuck CT35-0057-RH-D UPC cross-check",
+             "url":"https://www.budsgunshop.com/products/holsters/alien-gear-cloak-tuck-3-5-iwb-holster-glock-19-45-rh-722124814",
+             "source_kind":"independent_retailer","observed_on":"2026-11-06"},
+        ],
+        "facts":[
+            {"label":"Compatibility",
+             "value":"Glock 19/23/19X/44/45 (confirm generation and configuration)",
+             "source_index":0,"owner_checked":False},
+            {"label":"Carry options","value":"Right-hand inside-waistband holster",
+             "source_index":0,"owner_checked":False},
+        ],
+    },
+    ("193858309125","CT35-0939-RH-D"):{
+        "sources":[
+            {"title":"WBT Guns — Cloak Tuck 3.5 CT35-0939-RH-D UPC/fit",
+             "url":"https://wbtguns.com/holsters-pouches/alien-gear-holsters-cloak-tuck-3-5-ct35-0939-rh-d/",
+             "source_kind":"independent_retailer","observed_on":"2026-11-06"},
+            {"title":"PSA — Cloak Tuck 3.5 Glock 43/43X CT35-0939-RH-D",
+             "url":"https://palmettostatearmory.com/alien-gear-cloak-tuck-3-5-glock-g43-g43x-iwb-holster-right-boltaron-black.html",
+             "source_kind":"independent_retailer","observed_on":"2026-11-06"},
+        ],
+        "facts":[
+            {"label":"Compatibility","value":"Glock 43/43X",
+             "source_index":0,"owner_checked":False},
+            {"label":"Carry options","value":"Right-hand IWB holster",
+             "source_index":0,"owner_checked":False},
+            {"label":"Material","value":"Boltaron",
+             "source_index":0,"owner_checked":False},
+        ],
+    },
+    ("193858752136","PHO-0057-L1-D"):{
+        "sources":[
+            {"title":"BattleHawk — Photon PHO-0057-L1-D UPC and light-bearing fit",
+             "url":"https://battlehawkarmory.com/product/alien-gear-photon-iwb-owb-holster",
+             "source_kind":"independent_retailer","observed_on":"2026-11-06"},
+            {"title":"WBT Guns — Photon PHO-0057-L1-D",
+             "url":"https://wbtguns.com/holsters-pouches/alien-gear-holsters-photon-holster-pho-0057-l1-d/",
+             "source_kind":"independent_retailer","observed_on":"2026-11-06"},
+        ],
+        "facts":[
+            {"label":"Compatibility",
+             "value":"Glock 19/44/45/19X/23 family; verify generation and light fit",
+             "source_index":0,"owner_checked":False},
+            {"label":"Carry options","value":"Ambidextrous IWB/OWB light-bearing holster",
+             "source_index":0,"owner_checked":False},
+            {"label":"Material","value":"Polymer",
+             "source_index":1,"owner_checked":False},
+        ],
+    },
+}
+
+
+# Multiple public retailer listings disagree over the UPC for CT35-1198-RH-D.
+# A matching MPN alone must not silently authorize an exact identity.
+CONFLICT_LEADS={
+    "CT35-1198-RH-D":{
+        "observed_upcs":["193858332383","193858373485"],
+        "sources":[
+            {"title":"BattleHawk — CT35-1198-RH-D lists UPC 193858332383",
+             "url":"https://battlehawkarmory.com/product/alien-gear-holsters-cloak-tuck-3.5-inside-waistband-holster-fits-sig-p365x-macro-boltaron-construction-right-hand-black",
+             "source_kind":"independent_retailer","observed_on":"2026-11-06"},
+            {"title":"GunMag Warehouse — CT35-1198-RH-D lists UPC 193858373485",
+             "url":"https://gunmagwarehouse.com/alien-gear-cloak-tuck-3-5-right-handed-iwb-holster-for-sig-sauer-p365-x-macro.html",
+             "source_kind":"independent_retailer","observed_on":"2026-11-06"},
+        ],
+    }
 }
 
 
@@ -104,7 +176,7 @@ def validate_research_packet(packet:dict,evidence:list[dict],drafts:Path,
     seen=set()
     for item in packet["items"]:
         if not isinstance(item,dict) or set(item)!={
-            "id","recorded_upc","recorded_mpn","research_query","sources","facts"
+            "id","recorded_upc","recorded_mpn","research_query","sources","facts","identity_warnings"
         }:
             raise ReviewError("Private research item has unexpected fields")
         ident=item["id"]
@@ -121,6 +193,23 @@ def validate_research_packet(packet:dict,evidence:list[dict],drafts:Path,
                 or not isinstance(item["facts"],list)
                 or len(item["facts"])>12):
             raise ReviewError("Private product research identity changed or too large")
+        if not isinstance(item["identity_warnings"],list) or len(item["identity_warnings"])>3:
+            raise ReviewError("Invalid private identity warnings")
+        for warning in item["identity_warnings"]:
+            if (not isinstance(warning,dict) or set(warning)!={
+                    "code","observed_upcs","source_indices","explanation"
+                } or warning["code"]!="conflicting_public_upc"
+                    or not isinstance(warning["observed_upcs"],list)
+                    or len(warning["observed_upcs"])<2
+                    or not all(isinstance(u,str) and re.fullmatch(r"\d{12,14}",u)
+                               for u in warning["observed_upcs"])
+                    or not isinstance(warning["source_indices"],list)
+                    or len(warning["source_indices"])<2
+                    or not all(type(i) is int and 0<=i<len(item["sources"])
+                               for i in warning["source_indices"])
+                    or not isinstance(warning["explanation"],str)
+                    or not 12<=len(warning["explanation"])<=300):
+                raise ReviewError("An unresolved UPC identity conflict has invalid evidence")
         for source in item["sources"]:
             if (not isinstance(source,dict) or set(source)!={
                 "title","url","source_kind","observed_on"
@@ -161,6 +250,18 @@ def prepare_research_packet(drafts:Path,exceptions:Path,evidence_file:Path,
     for entry in evidence:
         key=(entry["recorded_upc"],entry["recorded_manufacturer_part_number"])
         lead=SEED_REFERENCES.get(key,{"sources":[],"facts":[]})
+        conflict=CONFLICT_LEADS.get(key[1])
+        warnings=[]
+        extra_sources=[]
+        if conflict and key[0] in conflict["observed_upcs"]:
+            extra_sources=[dict(src) for src in conflict["sources"]]
+            offset=len(lead["sources"])
+            warnings.append({
+                "code":"conflicting_public_upc",
+                "observed_upcs":list(conflict["observed_upcs"]),
+                "source_indices":list(range(offset,offset+len(extra_sources))),
+                "explanation":"Retailer sources disagree about this manufacturer's exact UPC. HOLD for authoritative manufacturer or source-identity confirmation before approval.",
+            })
         name=entry["recorded_manufacturer"]+" "+entry["recorded_model"]
         query=f"{name} {key[1]} {key[0]} specifications"
         items.append({
@@ -168,8 +269,9 @@ def prepare_research_packet(drafts:Path,exceptions:Path,evidence_file:Path,
             "recorded_upc":key[0],
             "recorded_mpn":key[1],
             "research_query":query[:300],
-            "sources":[dict(s) for s in lead["sources"]],
+            "sources":[dict(s) for s in lead["sources"]]+extra_sources,
             "facts":[dict(f) for f in lead["facts"]],
+            "identity_warnings":warnings,
         })
     packet={
         "schema":SCHEMA,
