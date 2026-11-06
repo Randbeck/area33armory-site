@@ -62,7 +62,6 @@ SEED_REFERENCES={
              "source_index":0,"owner_checked":False},
         ],
     },
-},
     ("193858308937","CT35-0057-RH-D"):{
         "sources":[
             {"title":"GunMag Warehouse — Cloak Tuck Glock 19/23/19X/44/45, CT35-0057-RH-D",
