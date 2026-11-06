@@ -1,0 +1,102 @@
+# TEMPLATE ONLY. This is NOT an active workflow in .github/workflows.
+# Installing a manual deployment workflow on main and switching Pages source
+# to GitHub Actions require separate explicit owner approval. DO NOT merge
+# all development-branch files into main (main currently serves a holding page).
+name: Area 33 — manually approved GitHub Pages publication
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_branch:
+        description: "Exact reviewed public-only release branch (release/area33-...)"
+        required: true
+        type: string
+      expected_commit_sha:
+        description: "Frozen 40-char Git commit SHA for this release"
+        required: true
+        type: string
+      expected_manifest_sha256:
+        description: "Owner-reviewed site/pages-release-public.json SHA-256"
+        required: true
+        type: string
+      expected_index_sha256:
+        description: "Owner-reviewed approved catalog-index.v2.json SHA-256"
+        required: true
+        type: string
+      authorization_phrase:
+        description: "Type exactly: PUBLISH AREA33 APPROVED CATALOG"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: area33-github-pages
+  cancel-in-progress: false
+
+jobs:
+  verify-public-candidate:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout trusted verifier from main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Checkout separately owner-approved public release
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_branch }}
+          path: candidate
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Require exact manual owner signoff and frozen commit
+        shell: bash
+        env:
+          APPROVAL: ${{ inputs.authorization_phrase }}
+          RELEASE_BRANCH: ${{ inputs.release_branch }}
+          EXPECTED_COMMIT: ${{ inputs.expected_commit_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$APPROVAL" == "PUBLISH AREA33 APPROVED CATALOG" ]] || { echo "Explicit publication phrase missing"; exit 1; }
+          [[ "$RELEASE_BRANCH" =~ ^release/area33-[a-z0-9][a-z0-9._-]{0,80}$ ]] || { echo "Release branch not allowlisted"; exit 1; }
+          [[ "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]] || { echo "Invalid frozen release SHA"; exit 1; }
+          actual="$(git -C candidate rev-parse HEAD)"
+          [[ "$actual" == "$EXPECTED_COMMIT" ]] || { echo "Release branch moved since owner review"; exit 1; }
+      - name: Verify all public asset SHA hashes, index and CNAME
+        env:
+          EXPECTED_MANIFEST: ${{ inputs.expected_manifest_sha256 }}
+          EXPECTED_INDEX: ${{ inputs.expected_index_sha256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_github_pages_candidate.py \
+            --site candidate/site \
+            --expected-manifest-sha256 "$EXPECTED_MANIFEST" \
+            --expected-index-sha256 "$EXPECTED_INDEX"
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload ONLY the verified site folder
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: candidate/site
+          retention-days: 1
+
+  deploy:
+    name: Final owner/environment-gated Pages deployment
+    needs: verify-public-candidate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy exactly the verified static GitHub Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
