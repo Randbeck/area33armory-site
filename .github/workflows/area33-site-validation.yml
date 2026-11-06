@@ -1,7 +1,7 @@
 name: Area 33 draft website validation
 on:
   push:
-    branches: [site-refresh-v1, work/approved-catalog-thumbnails, work/randbeck-catalog-bridge-v1, work/scalable-approved-catalog-v2, work/distributor-scope-authorization-v1, work/rights-safe-text-catalog-v1, work/private-media-withdrawal-v1, work/approved-catalog-release-preflight-v1, work/controlled-catalog-release-v1, work/github-pages-controlled-publish-v1]
+    branches: [site-refresh-v1, work/approved-catalog-thumbnails, work/randbeck-catalog-bridge-v1, work/scalable-approved-catalog-v2, work/distributor-scope-authorization-v1, work/rights-safe-text-catalog-v1, work/private-media-withdrawal-v1, work/approved-catalog-release-preflight-v1, work/controlled-catalog-release-v1, work/github-pages-controlled-publish-v1, work/private-text-batch-review-v1]
   workflow_dispatch:
 permissions:
   contents: read
