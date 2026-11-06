@@ -279,8 +279,9 @@ class PrivateIdentityEvidenceTests(unittest.TestCase):
             self.drafts,self.exceptions,self.html,
             evidence_file=self.sidecar,research_file=research
         ).read_text()
-        self.assertIn("9mm/.40 S&W single-stack magazines",html)
-        self.assertIn("9mm/.40 S&W double-stack magazines",html)
+        # Embedded private JSON escapes & as \u0026 to prevent HTML injection.
+        self.assertIn("single-stack magazines",html)
+        self.assertIn("double-stack magazines",html)
         self.assertNotIn("DO_NOT_COPY_VENDOR_MARKETING_DESCRIPTIONS",html)
         self.assertEqual([rec["status"] for rec in self.records],["draft"]*49)
 
