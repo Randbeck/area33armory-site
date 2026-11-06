@@ -17,6 +17,7 @@ from build_private_text_batch_review import make_batch_review
 from import_randbeck_staging import _identity
 from prepare_private_catalog_evidence import build_private_evidence
 from prepare_private_product_research import prepare_research_packet,validate_research_packet
+from prepare_private_first_release_readiness import create_private_readiness
 from prepare_private_text_batch_handoff import prepare_private_text_handoff
 
 
@@ -328,6 +329,150 @@ class PrivateIdentityEvidenceTests(unittest.TestCase):
                 self.root/"not-approved",
             )
         self.assertFalse((self.root/"not-approved").exists())
+
+    def _assign_real_identity(self,i,upc,mpn,model="Cloak Tuck 3.5"):
+        self.source[i]["manufacturer"]="Alien Gear Holsters"
+        self.source[i]["model"]=model
+        self.source[i]["manufacturer_part_number"]=mpn
+        self.source[i]["upc"]=upc
+        self.records[i]["manufacturer"]="Alien Gear Holsters"
+        self.records[i]["model"]=model
+        identity=_identity(self.source[i])
+        self.records[i]["id"]="catalog_"+hmac.new(
+            self.key_bytes,"\x1f".join(identity).encode(),hashlib.sha256
+        ).hexdigest()[:20]
+
+    def test_conflicting_public_upcs_are_held_even_if_user_checks_approval(self):
+        self._assign_real_identity(0,"193858332383","CT35-1198-RH-D")
+        self._write_files()
+        self.build()
+        research_path=self.root/"private-research.json"
+        packet=prepare_research_packet(
+            self.drafts,self.exceptions,self.sidecar,research_path,
+        )
+        conflicting=packet["items"][0]
+        self.assertEqual(conflicting["identity_warnings"][0]["code"],"conflicting_public_upc")
+        self.assertEqual(conflicting["identity_warnings"][0]["observed_upcs"],
+                         ["193858332383","193858373485"])
+        self.assertEqual(len(conflicting["sources"]),2)
+        self.assertEqual(conflicting["facts"],[])
+        page=make_batch_review(
+            self.drafts,self.exceptions,self.html,
+            evidence_file=self.sidecar,research_file=research_path,
+        ).read_text()
+        self.assertIn("IDENTITY CONFLICT",page)
+        self.assertIn("193858373485",page)
+        self.assertIn("hasIdentityConflict(item)",page)
+        self.assertIn("confirm.disabled=true",page)
+        # Explicitly simulate a previously saved owner review. The conflict
+        # must take precedence even over all four owner checkboxes.
+        progress=json.loads(self.drafts.read_text())
+        item=progress[0]
+        item["status"]="published"
+        item["content_origin"]="owner_written"
+        item["description"]="Original checked description for a precise held product."
+        item["identity_evidence_label"]="Independently checked local product identity"
+        item["source_checked_at"]="2026-11-05"
+        for approval in ("owner_publication","exact_identity",
+                         "content_review","offered_for_sale"):
+            item["approvals"][approval]=True
+        progress_path=self.root/"owner-reviewed-progress.json"
+        progress_path.write_text(json.dumps(progress),encoding="utf-8")
+        report=create_private_readiness(
+            self.drafts,self.exceptions,self.sidecar,research_path,
+            self.root/"private-readiness",review_progress=progress_path,
+        )
+        self.assertEqual(report["counts"]["identity_conflict_hold"],1)
+        self.assertEqual(report["counts"]["private_handoff_eligible"],0)
+        self.assertEqual(report["held_identity_exceptions"],11)
+        self.assertFalse(report["release_published"])
+        self.assertTrue((self.root/"private-readiness/private-first-release-worklist.csv").is_file())
+
+    def test_conflict_flag_cannot_be_removed_by_editing_private_notes(self):
+        self._assign_real_identity(0,"193858332383","CT35-1198-RH-D")
+        self._write_files()
+        self.build()
+        research_path=self.root/"private-research.json"
+        packet=prepare_research_packet(self.drafts,self.exceptions,
+                                       self.sidecar,research_path)
+        packet["items"][0]["identity_warnings"]=[]
+        research_path.write_text(json.dumps(packet),encoding="utf-8")
+        with self.assertRaisesRegex(ReviewError,"UPC conflict"):
+            make_batch_review(
+                self.drafts,self.exceptions,self.html,
+                evidence_file=self.sidecar,research_file=research_path
+            )
+        with self.assertRaisesRegex(ReviewError,"UPC conflict"):
+            create_private_readiness(
+                self.drafts,self.exceptions,self.sidecar,research_path,
+                self.root/"private-readiness"
+            )
+
+    def test_readiness_summarizes_first_owner_approved_text_and_held_drafts(self):
+        self._assign_real_identity(
+            0,"193858308937","CT35-0057-RH-D",model="Cloak Tuck",
+        )
+        self._assign_real_identity(
+            1,"193858309125","CT35-0939-RH-D",model="Cloak Tuck 3.5",
+        )
+        self._write_files()
+        self.build()
+        research_path=self.root/"private-research.json"
+        packet=prepare_research_packet(self.drafts,self.exceptions,
+                                       self.sidecar,research_path)
+        self.assertEqual(len([it for it in packet["items"] if it["sources"]]),2)
+        self.assertTrue(all(not f["owner_checked"] for it in packet["items"]
+                            for f in it["facts"]))
+        progress=json.loads(self.drafts.read_text())
+        one=progress[0]
+        one["status"]="published"
+        one["description"]="Independently reviewed source copy for a specific product."
+        one["content_origin"]="owner_written"
+        one["source_checked_at"]="2026-11-05"
+        one["identity_evidence_label"]="Manufacturer/model confirmed by owner"
+        for key in ("owner_publication","exact_identity","content_review","offered_for_sale"):
+            one["approvals"][key]=True
+        progress_path=self.root/"saved-progress.json"
+        progress_path.write_text(json.dumps(progress),encoding="utf-8")
+        report=create_private_readiness(
+            self.drafts,self.exceptions,self.sidecar,research_path,
+            self.root/"private-readiness",review_progress=progress_path
+        )
+        self.assertEqual(report["candidate_count"],49)
+        self.assertEqual(report["held_identity_exceptions"],11)
+        self.assertEqual(report["counts"]["private_handoff_eligible"],1)
+        self.assertEqual(report["counts"]["owner_review_pending"],1)
+        self.assertEqual(report["counts"]["independent_research_needed"],47)
+        self.assertEqual(report["counts"]["identity_conflict_hold"],0)
+        self.assertFalse(report["approval_created"])
+        self.assertFalse(report["public_site_modified"])
+        self.assertFalse(report["release_published"])
+        self.assertEqual(report["items"][0]["id"],one["id"])
+        self.assertNotIn("SECRET_SUPPLIER_COST_123",json.dumps(report))
+        self.assertNotIn("RSR-HOLD-",json.dumps(report))
+        page=make_batch_review(
+            self.drafts,self.exceptions,self.html,
+            evidence_file=self.sidecar,research_file=research_path,
+            saved_progress=progress_path,
+        ).read_text()
+        self.assertIn("Independently reviewed source copy",page)
+        self.assertEqual(self.records[0]["status"],"draft")
+
+    def test_saved_progress_cannot_swap_manufacturer_or_model_in_new_reviewer(self):
+        self.build()
+        research_path=self.root/"private-research.json"
+        prepare_research_packet(self.drafts,self.exceptions,self.sidecar,research_path)
+        progress=json.loads(self.drafts.read_text())
+        progress[0]["manufacturer"]="Other Manufacturer"
+        progress_path=self.root/"saved-progress.json"
+        progress_path.write_text(json.dumps(progress),encoding="utf-8")
+        with self.assertRaises(ReviewError):
+            make_batch_review(
+                self.drafts,self.exceptions,self.html,
+                evidence_file=self.sidecar,research_file=research_path,
+                saved_progress=progress_path
+            )
+        self.assertFalse(self.html.exists())
 
     def test_no_evidence_provided_preserves_existing_review_workflow(self):
         html=make_batch_review(self.drafts,self.exceptions,self.html)
