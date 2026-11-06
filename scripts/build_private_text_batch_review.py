@@ -179,6 +179,8 @@ nav input,nav select{width:100%;margin:0 0 8px;border:1px solid #aaa;border-radi
 .suggestion{padding:14px;background:white;border:1px solid #ddd;border-radius:10px;margin:14px 0}
 .suggestion p{margin:8px 0}
 .research{border:1px solid #ddd;border-radius:12px;padding:16px;margin:18px 0}
+.identity-warning{padding:12px;border:2px solid #a24328;background:#fff7f3;border-radius:10px;margin:12px 0}
+.identity-warning strong{display:block}.identity-warning a{overflow-wrap:anywhere}
 .research h3{font-size:16px;margin:0 0 10px}
 .research p{overflow-wrap:anywhere}
 .research a{color:inherit;text-decoration:underline;overflow-wrap:anywhere}
@@ -257,10 +259,15 @@ const CHECKS=[
 ];
 let selected=data.length?data[0].id:null;
 function node(tag,text){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;return el;}
+function hasIdentityConflict(item){
+ const rec=researchById.get(item.id);
+ return Boolean(rec && Array.isArray(rec.identity_warnings) && rec.identity_warnings.length);
+}
 function isReady(item){
  const approvals=item.approvals||{},date=String(item.source_checked_at||"");
  const parsed=new Date(date+"T00:00:00Z");
- return item.status==="published" && contentComplete(item) && CHECKS.every(pair=>approvals[pair[0]]===true);
+ return !hasIdentityConflict(item) && item.status==="published" && contentComplete(item) &&
+  CHECKS.every(pair=>approvals[pair[0]]===true);
 }
 function contentComplete(item){
  const date=String(item.source_checked_at||"");
@@ -278,6 +285,7 @@ function contentComplete(item){
 }
 function missing(item){
  const parts=[];
+ if(hasIdentityConflict(item))parts.push("HOLD: conflicting public UPCs require authoritative identity verification upstream");
  if(!String(item.manufacturer||"").trim()||!String(item.model||"").trim())parts.push("Exact model/manufacturer");
  if(!String(item.identity_evidence_label||"").trim())parts.push("Identity evidence");
  if(!item.source_checked_at)parts.push("Evidence review date");
@@ -435,6 +443,16 @@ function renderDetail(){
   lookup.target="_blank";lookup.rel="noopener noreferrer";
   panel.append(lookup);
   panel.append(node("p","This link opens an external search only when clicked; the recorded UPC and part number are sent to that search provider. No private distributor SKU is included."));
+  if(Array.isArray(r.identity_warnings)){
+   for(const warning of r.identity_warnings){
+    const alert=node("div");alert.className="identity-warning";
+    alert.append(node("strong","IDENTITY CONFLICT — HOLD, NOT ELIGIBLE FOR APPROVAL"));
+    alert.append(node("p",warning.explanation));
+    alert.append(node("p","Conflicting retailer UPCs: "+warning.observed_upcs.join(" vs. ")));
+    alert.append(node("p","Check the manufacturer's record or corrected distributor identity before publishing. Do not assume either retailer is right."));
+    panel.append(alert);
+   }
+  }
   for(let i=0;i<r.sources.length;i++){
    const source=r.sources[i];
    const sect=node("div");sect.className="research-source";
@@ -549,7 +567,9 @@ function renderDetail(){
  const hold=node("button","Keep as draft");hold.type="button";
  hold.addEventListener("click",()=>{item.status="draft";updateSummary();renderList();renderDetail();});
  const confirm=node("button","Confirm this product");confirm.type="button";confirm.className="primary";
+ if(hasIdentityConflict(item)){confirm.disabled=true;confirm.title="Hold this listing until conflicting UPC identity is resolved upstream";}
  confirm.addEventListener("click",()=>{
+  if(hasIdentityConflict(item)){alert("Identity conflict: this product must remain held until authoritative source identity is resolved upstream.");return;}
   if(!contentComplete(item)||!CHECKS.every(x=>item.approvals[x[0]]===true)){
    alert("Complete original copy, identity evidence, date and all four independent confirmations first.");
    return;
@@ -597,6 +617,7 @@ byId("research-resume").addEventListener("change",async ev=>{
    const prior=old.get(row.id);
    if(!prior||found.has(row.id)||row.recorded_upc!==prior.recorded_upc||
       row.recorded_mpn!==prior.recorded_mpn||row.research_query!==prior.research_query||
+      JSON.stringify(row.identity_warnings)!==JSON.stringify(prior.identity_warnings)||
       !Array.isArray(row.sources)||row.sources.length>8||
       !Array.isArray(row.facts)||row.facts.length>12)
     throw Error("Research identity mismatch");
