@@ -18,6 +18,7 @@ from import_randbeck_staging import _identity
 from prepare_private_catalog_evidence import build_private_evidence
 from prepare_private_product_research import prepare_research_packet,validate_research_packet
 from prepare_private_first_release_readiness import create_private_readiness
+from migrate_private_research_notes import migrate_saved_notes
 from prepare_private_text_batch_handoff import prepare_private_text_handoff
 
 
@@ -473,6 +474,82 @@ class PrivateIdentityEvidenceTests(unittest.TestCase):
                 saved_progress=progress_path
             )
         self.assertFalse(self.html.exists())
+
+    def test_saved_legacy_research_preserves_personally_checked_facts(self):
+        self._assign_real_identity(
+            0,"193858308883","CMCS-2-D",model="Single Mag Carrier",
+        )
+        self._write_files()
+        self.build()
+        research_path=self.root/"fresh-research.json"
+        packet=prepare_research_packet(
+            self.drafts,self.exceptions,self.sidecar,research_path
+        )
+        old=json.loads(json.dumps(packet))
+        for row in old["items"]:
+            del row["identity_warnings"]  # legacy saved research v1
+        old["items"][0]["facts"][0]["owner_checked"]=True
+        old["items"][0]["sources"].append({
+            "title":"Additional independently reviewed source",
+            "url":"https://example.com/review-1",
+            "source_kind":"other_public_reference",
+            "observed_on":"2026-11-05",
+        })
+        old["items"][0]["facts"].append({
+            "label":"Finish/color","value":"Black color confirmed in extra record",
+            "source_index":2,"owner_checked":True,
+        })
+        saved=self.root/"legacy-saved-notes.json"
+        saved.write_text(json.dumps(old),encoding="utf-8")
+        merged_path=self.root/"private-merged-research.json"
+        merged=migrate_saved_notes(
+            saved,research_path,self.drafts,self.exceptions,
+            self.sidecar,merged_path,
+        )
+        self.assertEqual(merged["candidate_count"],49)
+        self.assertEqual(sum(bool(x["identity_warnings"]) for x in merged["items"]),0)
+        item=merged["items"][0]
+        self.assertEqual(len(item["sources"]),3)
+        self.assertEqual(len(item["facts"]),3)
+        self.assertTrue(item["facts"][0]["owner_checked"])
+        self.assertTrue(item["facts"][2]["owner_checked"])
+        self.assertEqual(item["sources"][2]["url"],"https://example.com/review-1")
+        page=make_batch_review(
+            self.drafts,self.exceptions,self.html,
+            evidence_file=self.sidecar,research_file=merged_path,
+        ).read_text()
+        self.assertIn("Black color confirmed in extra record",page)
+        self.assertFalse(merged["publication_approved"])
+
+    def test_saved_notes_cannot_erase_newly_identified_upc_conflict(self):
+        self._assign_real_identity(
+            0,"193858332383","CT35-1198-RH-D",
+        )
+        self._write_files()
+        self.build()
+        packet_path=self.root/"fresh-research.json"
+        base=prepare_research_packet(
+            self.drafts,self.exceptions,self.sidecar,packet_path,
+        )
+        old=json.loads(json.dumps(base))
+        for row in old["items"]:
+            del row["identity_warnings"]
+        old["items"][0]["sources"]=[]
+        saved=self.root/"older-research-notes.json"
+        saved.write_text(json.dumps(old),encoding="utf-8")
+        merged=migrate_saved_notes(
+            saved,packet_path,self.drafts,self.exceptions,self.sidecar,
+            self.root/"migrated-research.json",
+        )
+        self.assertEqual(merged["items"][0]["identity_warnings"][0]["code"],
+                         "conflicting_public_upc")
+        self.assertEqual(len(merged["items"][0]["sources"]),2)
+        self.assertFalse(merged["publication_approved"])
+        with self.assertRaises(ReviewError):
+            migrate_saved_notes(
+                saved,packet_path,self.drafts,self.exceptions,
+                self.sidecar,self.root/"migrated-research.json",
+            )
 
     def test_no_evidence_provided_preserves_existing_review_workflow(self):
         html=make_batch_review(self.drafts,self.exceptions,self.html)
