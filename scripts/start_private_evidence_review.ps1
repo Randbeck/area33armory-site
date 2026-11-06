@@ -48,7 +48,15 @@ if ($SavedResearch) {
     if (-not (Test-Path -LiteralPath $SavedResearch -PathType Leaf)) {
         throw "Saved research-notes file missing: $SavedResearch"
     }
-    $researchToUse = $SavedResearch
+    $researchToUse = Join-Path $Pilot "catalog-private-research-preserved-$stamp.json"
+    & $Python (Join-Path $scriptDir 'migrate_private_research_notes.py') `
+        --saved $SavedResearch `
+        --new-research $research `
+        --drafts $drafts `
+        --exceptions $exceptions `
+        --evidence $evidence `
+        --out $researchToUse
+    if ($LASTEXITCODE -ne 0) { throw 'Saved research could not be safely migrated; no notes were deleted.' }
 }
 $reviewArgs = @(
     '--drafts', $drafts,
