@@ -697,10 +697,28 @@ renderList();renderDetail();
 
 
 def make_batch_review(input_file:Path,exceptions_file:Path,out:Path|None=None,
-                      *,evidence_file:Path|None=None,research_file:Path|None=None)->Path:
-    rows,exceptions=source_batch(input_file,exceptions_file)
-    evidence=(validated_private_evidence(evidence_file,input_file,exceptions_file,rows)
+                      *,evidence_file:Path|None=None,research_file:Path|None=None,
+                      saved_progress:Path|None=None)->Path:
+    original,exceptions=source_batch(input_file,exceptions_file)
+    evidence=(validated_private_evidence(evidence_file,input_file,exceptions_file,original)
               if evidence_file is not None else [])
+    rows=original
+    if saved_progress is not None:
+        saved,frames=validate_source(_private_file(saved_progress))
+        originals={row["id"]:row for row in original}
+        if (len(saved)!=len(originals) or any(frames)
+                or {row["id"] for row in saved}!=set(originals)):
+            raise ReviewError("Saved review progress must have all original candidate identities")
+        for row in saved:
+            old=originals[row["id"]]
+            if (row["manufacturer"]!=old["manufacturer"]
+                    or row["model"]!=old["model"] or
+                    row["listing_mode"]!="text_only" or row["photos"]!=[]
+                    or row["rights_source"]!="" or
+                    row["approvals"]["media_rights"] is not False):
+                raise ReviewError("Saved progress attempted to change exact source identity or photo rights")
+        by_id={row["id"]:row for row in saved}
+        rows=[by_id[item["id"]] for item in original]
     research=None
     if research_file is not None:
         if evidence_file is None:
@@ -734,12 +752,15 @@ def main(argv=None):
                    help="Private RSR UPC/MPN/SKU sidecar from original staged source")
     p.add_argument("--research",type=Path,
                    help="Private, source-linked research packet; no approval inferred")
+    p.add_argument("--saved-progress",type=Path,
+                   help="Original owner-reviewed progress JSON; never changes source drafts")
     p.add_argument("--out",type=Path)
     args=p.parse_args(argv)
     try:
         path=make_batch_review(args.drafts,args.exceptions,args.out,
                                evidence_file=args.evidence,
-                               research_file=args.research)
+                               research_file=args.research,
+                               saved_progress=args.saved_progress)
     except (ValueError,OSError,KeyError,TypeError) as exc:
         p.error(str(exc))
     print("PRIVATE, OFFLINE, FOCUSED owner-review workspace:")
