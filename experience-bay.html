@@ -202,9 +202,9 @@ if(typeof document!=="undefined"){
  }
  function update(){
   $("board").dataset.finish=state.finish;
-  $("optic-compact").hidden=compare||state.optic!=="compact";
-  $("optic-long").hidden=compare||state.optic!=="long";
-  $("light-compact").hidden=compare||state.light!=="compact";
+  $("optic-compact").toggleAttribute("hidden",compare||state.optic!=="compact");
+  $("optic-long").toggleAttribute("hidden",compare||state.optic!=="long");
+  $("light-compact").toggleAttribute("hidden",compare||state.light!=="compact");
   $("scene").style.setProperty("--tilt",tilt+"deg");
   $("scene").style.setProperty("--pitch",pitch+"deg");
   $("scene").style.setProperty("--zoom",String(zoom));
