@@ -9,3 +9,53 @@
 .product-media.text-first .text-first-brand{font-size:clamp(1.12rem,2vw,1.65rem);font-weight:850;line-height:1.13;letter-spacing:-.04em;overflow-wrap:anywhere}
 .product-media.text-first .text-first-model{color:#56565e;font-size:.9rem;overflow-wrap:anywhere}
 .product-media.text-first small{background:#e7e7e9;color:#303039;border-radius:4px}
+
+
+
+/* Approved-image product gallery. Text-only products never mount this module. */
+.approved-product-gallery{margin:20px 0 26px}
+.gallery-stage{position:relative;isolation:isolate;display:grid;place-items:center;width:100%;height:clamp(290px,40vw,450px);padding:0;border:1px solid #d6d6dc;border-radius:14px;background:#f7f7f8;overflow:hidden;cursor:zoom-in}
+.gallery-hero{width:100%;height:100%;max-width:100%;object-fit:contain;display:block;pointer-events:none;user-select:none;transition:transform .12s ease;transform-origin:50% 50%}
+.gallery-stage.hover-zooming .gallery-hero{transform:scale(2.25)}
+.gallery-hover-label{position:absolute;bottom:12px;right:12px;background:#17171ce3;color:#fff;padding:6px 10px;border-radius:7px;font-size:.74rem;font-weight:720;pointer-events:none}
+.gallery-caption{margin:9px 2px;color:#64646a;font-size:.77rem}
+.gallery-thumbnails{display:flex;gap:9px;overflow-x:auto;padding:7px 1px 13px}
+.gallery-thumb{position:relative;flex:0 0 76px;width:76px;height:76px;border:2px solid #c9c9d0;border-radius:9px;background:#f7f7f8;padding:4px;overflow:hidden}
+.gallery-thumb[aria-pressed="true"]{border-color:#202026;box-shadow:0 0 0 2px #2020262b}
+.gallery-thumb img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.gallery-thumb-count{position:absolute;right:2px;bottom:2px;min-width:18px;padding:1px 3px;font-size:.62rem;color:#fff;background:#14141aba;border-radius:4px}
+.gallery-image-error{padding:24px;text-align:center;color:#691f2d;font-size:.85rem}
+.gallery-image-error[hidden]{display:none!important}
+/* Full screen viewer is a modal opened only by an explicit customer click. */
+.approved-gallery-lightbox{position:fixed;inset:0;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0;padding:0;background:#111115;color:#fff}
+.approved-gallery-lightbox::backdrop{background:#000e}
+.gallery-lightbox-shell{display:flex;flex-direction:column;min-height:100%;height:100%}
+.gallery-lightbox-toolbar{display:flex;gap:18px;justify-content:space-between;align-items:center;padding:15px max(18px,env(safe-area-inset-left));border-bottom:1px solid #393940}
+.gallery-lightbox-toolbar strong{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw}
+.gallery-count{font-size:.8rem;color:#d3d3da;white-space:nowrap}
+.gallery-close,.gallery-lightbox-controls button{border:1px solid #72727b;background:#242429;color:#fff;border-radius:8px;padding:9px 14px}
+.gallery-close{white-space:nowrap}
+.gallery-lightbox-controls button:disabled{opacity:.35;cursor:not-allowed}
+.gallery-lightbox-stage{flex:1;min-height:0;display:grid;place-items:center;position:relative;overflow:hidden;touch-action:none;user-select:none}
+.gallery-lightbox-stage img{grid-area:1/1;display:block;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;transform-origin:center center;pointer-events:none}
+.gallery-lightbox-stage .gallery-image-error{grid-area:1/1;color:#fff;z-index:2}
+.gallery-lightbox-controls{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;padding:14px;border-top:1px solid #393940}
+.gallery-lightbox-controls button{min-width:42px}
+.gallery-zoom-label{min-width:54px;text-align:center;font-size:.8rem;font-variant-numeric:tabular-nums}
+.gallery-gesture-hint{text-align:center;color:#bdbdc4;font-size:.74rem;margin:0;padding:0 8px max(14px,env(safe-area-inset-bottom))}
+.approved-gallery-lightbox :focus-visible,.approved-product-gallery :focus-visible{outline:3px solid #e56f79;outline-offset:3px}
+@media(hover:none),(pointer:coarse){
+ .gallery-hover-label{font-size:.72rem}
+ .gallery-hover-label{font-size:0}
+ .gallery-hover-label:after{content:"Tap for full-screen zoom";font-size:.72rem}
+}
+@media(max-width:650px){
+ .gallery-stage{height:300px}
+ .gallery-thumb{flex-basis:68px;width:68px;height:68px}
+ .gallery-lightbox-toolbar{gap:9px;padding:10px 12px}
+ .gallery-lightbox-toolbar strong{font-size:.78rem;max-width:42vw}
+ .gallery-lightbox-controls{gap:6px;padding:10px 6px}
+ .gallery-lightbox-controls button{padding:8px 10px}
+ .gallery-gesture-hint{padding-bottom:12px}
+}
+@media(prefers-reduced-motion:reduce){.gallery-hero{transition:none}}
