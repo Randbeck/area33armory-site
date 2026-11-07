@@ -13,10 +13,20 @@ export function galleryPointerPercent(clientX,clientY,rect){
           y:clamp((clientY-rect.top)/rect.height*100)};
 }
 export function galleryAllowed(item){
-  return Boolean(item&&item.presentationMode!=="text_only"&&
-    Array.isArray(item.images)&&item.images.length>0&&item.images.length<=8&&
-    item.images.every(image=>image&&typeof image.url==="string"&&
-      image.url.startsWith("https://")&&typeof image.alt==="string"&&image.alt.trim()));
+  if(!item||item.presentationMode==="text_only"||
+     typeof item.id!=="string"||!/^catalog_[a-f0-9]{20}$/.test(item.id)||
+     !Array.isArray(item.images)||!item.images.length||item.images.length>8)return false;
+  const pattern=new RegExp("^/assets/approved/catalog/"+item.id+"/view-0[1-8]\\.jpg$");
+  return item.images.every(image=>{
+    if(!image||typeof image.url!=="string"||typeof image.alt!=="string"||
+       !image.alt.trim())return false;
+    try{
+      const url=new URL(image.url);
+      return ["https:","http:"].includes(url.protocol)&&!url.username&&!url.password&&
+        !url.search&&!url.hash&&pattern.test(url.pathname)&&
+        (typeof location==="undefined"||url.origin===location.origin);
+    }catch{return false;}
+  });
 }
 function el(tag,className,text){
   const node=document.createElement(tag);
