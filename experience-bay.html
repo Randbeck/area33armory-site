@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0b0e"><meta name="description" content="Experience Area 33: a working interactive concept for curiosity-led virtual product exploration. No real products, live prices or compatibility assertions.">
+<title>Experience Bay | Area 33 Armory</title><style>
+:root{color-scheme:dark;--ink:#f6f6f7;--muted:#b3b3bd;--red:#e45560;--line:#393a43;--max:1480px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#0a0b0e;color:var(--ink);font:16px/1.5 Inter,"Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,a:focus-visible{outline:3px solid #f47d82;outline-offset:3px}
+[hidden]{display:none!important}.wrap{width:min(var(--max),calc(100% - 44px));margin:auto}.skip{position:absolute;top:-80px;padding:12px;background:#fff;color:#111;z-index:100}.skip:focus{top:5px}
+.topbar{position:relative;z-index:5;border-bottom:1px solid #2e2e36;background:#0b0c10}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:20px;min-height:75px}
+.brand{font-size:.94rem;font-weight:900;letter-spacing:.13em}.brand strong{color:#ed666f}
+.nav nav{display:flex;gap:24px;font-size:.82rem;color:#babac4}.nav nav a:hover{color:#fff}
+.nav-meta{border:1px solid #50515a;padding:7px 13px;border-radius:18px;color:#d0d0d6;font-size:.65rem;letter-spacing:.1em}
+.hero{padding:50px 0 30px;background:radial-gradient(circle at 70% 15%,#352128,#0c0d11 45%,#090a0d 100%)}
+.eyebrow{color:#ff949c;font-weight:850;letter-spacing:.19em;font-size:.69rem;text-transform:uppercase}
+.hero-head{display:flex;align-items:end;justify-content:space-between;gap:30px}
+.hero h1{font-size:clamp(2.8rem,5.9vw,6.9rem);line-height:.96;letter-spacing:-.076em;margin:15px 0 16px;max-width:900px}
+.hero h1 em{font-style:normal;color:#f07b84}.hero p{color:#c8c8d1;font-size:1.03rem;max-width:720px;margin:0}
+.hero-side{max-width:250px;font-size:.76rem;color:#c2c2ca;border-left:2px solid #d7525e;padding-left:18px}
+.lab{padding:27px 0 95px}
+.experience{display:grid;grid-template-columns:minmax(205px,.62fr) minmax(0,2.1fr) minmax(255px,.8fr);align-items:stretch;gap:12px}
+.left-panel,.right-panel{background:#17181d;border:1px solid #32333d;border-radius:15px;overflow:hidden}
+.panel-inner{padding:21px}
+.module-title{font-weight:850;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:#e8e8ea;margin:0 0 13px}
+.small-label{display:block;font-size:.62rem;letter-spacing:.15em;font-weight:850;color:#92929e;margin-bottom:10px}
+.journey-list{display:grid;gap:9px}
+.journey{display:block;text-align:left;width:100%;padding:16px 14px;background:#22232b;color:#f6f6f8;border:1px solid #484951;border-radius:10px}
+.journey:hover{background:#292a33}.journey[aria-pressed=true]{border-color:#e77983;box-shadow:inset 3px 0 0 #e77983;background:#2c262c}
+.journey strong{display:block;font-size:.85rem}.journey span{display:block;font-size:.72rem;color:#b9b9c3;margin-top:4px}
+.left-foot{border-top:1px solid #33343c;margin-top:22px;padding-top:20px;font-size:.76rem;color:#b6b6c0}
+.left-foot strong{color:#fff}
+.center{min-width:0;border:1px solid #42434b;border-radius:15px;overflow:hidden;background:#121318}
+.stage-top{display:flex;align-items:center;justify-content:space-between;padding:14px 19px;gap:12px;border-bottom:1px solid #393942}
+.stage-top strong{font-size:.81rem}.stage-top span{color:#a9a9b4;font-size:.66rem}
+.stage{--metal1:#8a8e96;--metal2:#3d434b;--stock:#3b3f47;position:relative;display:grid;place-items:center;min-height:405px;overflow:hidden;background:radial-gradient(ellipse at 48% 44%,#343842 0%,#1a1b23 45%,#111216 82%);cursor:grab;touch-action:pan-y}
+.stage:active{cursor:grabbing}.stage[data-finish=sand]{--metal1:#c8bba4;--metal2:#7f7665;--stock:#a1957d}
+.stage[data-finish=slate]{--metal1:#b5c1ca;--metal2:#576878;--stock:#52677b}
+.stage::before{position:absolute;inset:0;content:"";background:linear-gradient(#ffffff05 1px,transparent 1px),linear-gradient(90deg,#ffffff05 1px,transparent 1px);background-size:39px 39px;pointer-events:none}
+.stage::after{position:absolute;inset:0;content:"";box-shadow:inset 0 0 100px #08080d70;pointer-events:none}
+.stage svg{position:relative;z-index:1;display:block;max-width:100%;width:100%;height:auto;user-select:none;pointer-events:none}
+.stage svg [hidden]{display:none!important}
+#scene{transform-origin:52% 52%;transform:perspective(950px) rotateY(var(--tilt,0deg)) rotateX(var(--pitch,0deg)) scale(var(--zoom,1));transition:transform .22s ease}
+.stage-flag{position:absolute;z-index:2;top:14px;left:17px;font-size:.62rem;letter-spacing:.12em;color:#ededf0;font-weight:850}
+.stage-corner{position:absolute;z-index:2;right:17px;bottom:14px;color:#b9b9c3;font-size:.67rem}
+.stage-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:12px 15px;background:#1d1e24;border-top:1px solid #34353d}
+.button-group{display:flex;gap:6px;align-items:center}
+.stage-bar button{padding:8px 11px;background:#30313a;border:1px solid #575862;border-radius:7px;color:#fff;font-size:.75rem}
+.stage-bar button:hover{background:#41424c}
+.stage-bar output{font-size:.75rem;color:#c9c9d1;font-variant-numeric:tabular-nums;min-width:66px;text-align:center}
+.scene-message{padding:14px 17px;border-top:1px solid #34353d;font-size:.77rem;color:#c7c7d1;min-height:54px}
+.right-panel{display:flex;flex-direction:column}
+.intel{font-size:.81rem;line-height:1.52;color:#d9d9df}
+.intel h2{font-size:1.65rem;line-height:1.13;letter-spacing:-.045em;margin:8px 0 12px}
+.intel p{color:#c0c0cb;margin:0 0 13px}
+.intel-state{display:flex;align-items:center;gap:8px;font-size:.69rem;color:#fcbbc2;text-transform:uppercase;font-weight:790;letter-spacing:.09em}
+.intel-dot{height:7px;width:7px;background:#f0a6a8;border-radius:50%}
+.evidence-list{display:grid;gap:10px;padding-top:13px;border-top:1px solid #383943}
+.evidence-line{display:flex;justify-content:space-between;gap:9px;font-size:.74rem}
+.evidence-line span{color:#a8a8b5}.evidence-line strong{font-weight:700;text-align:right}
+.value-card{background:#23242c;margin-top:auto;padding:20px;border-top:1px solid #3e3f49}
+.value-card strong{font-size:.8rem}.value-card p{color:#bdbdc7;font-size:.76rem;margin:8px 0 0}
+.shelf{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:12px;margin-top:12px}
+.shelf-left,.shelf-right{border:1px solid #393943;background:#17181d;border-radius:15px;padding:21px 24px}
+.shelf h2{font-size:1.07rem;letter-spacing:-.025em;margin:0 0 8px}
+.shelf p{font-size:.75rem;color:#bcbcc7;margin:0 0 15px}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.control-set{min-width:0}.control-set strong{font-size:.7rem;letter-spacing:.075em;text-transform:uppercase;color:#d6d6dc;display:block;margin-bottom:10px}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices button,.question-grid button{border:1px solid #5b5b65;border-radius:8px;background:#272831;color:#ededf1;padding:9px 11px;font-size:.73rem;font-weight:700}
+.choices button[aria-pressed=true]{background:#eeeef0;border-color:#fff;color:#17181c}
+.choices button:hover,.question-grid button:hover{border-color:#ef9199}
+.question-grid{display:flex;gap:7px;flex-wrap:wrap}
+.question-grid button{text-align:left}.answer{min-height:65px;background:#22232a;border-radius:8px;padding:13px;font-size:.79rem;color:#e8e8ec;margin-top:13px;border:1px solid #41424d}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.actions button{padding:11px 15px;border:1px solid #a8a8af;border-radius:8px;background:#e9e9ed;color:#111115;font-size:.8rem;font-weight:800}
+.actions button.secondary{background:transparent;color:#e8e8ea;border-color:#61616b}
+.actions output{display:block;flex-basis:100%;font-size:.7rem;color:#afafb8}
+.next{border-top:1px solid #2d2d35;background:#101115;padding:47px 0 70px}
+.next-row{display:flex;justify-content:space-between;align-items:center;gap:25px}
+.next h2{font-size:clamp(1.5rem,3vw,2.5rem);letter-spacing:-.05em;max-width:700px;margin:8px 0}
+.next p{max-width:650px;color:#bebec7;font-size:.83rem}
+.next a{display:inline-block;color:#17181c;background:#f0f0f0;border-radius:8px;padding:12px 17px;font-size:.81rem;font-weight:850}
+footer{padding:27px 0;background:#090a0d;border-top:1px solid #282931;font-size:.73rem;color:#a5a5b1}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px}
+@media(max-width:1120px){.experience{grid-template-columns:190px minmax(0,1fr)}.right-panel{grid-column:1/-1}.right-panel .panel-inner{display:grid;grid-template-columns:1fr 1fr;gap:24px}.value-card{margin-top:0}}
+@media(max-width:740px){.wrap{width:min(100% - 28px,var(--max))}.nav{padding:15px 0;flex-wrap:wrap;min-height:auto}.nav nav{gap:12px;flex-wrap:wrap}.nav-meta{display:none}.hero{padding:41px 0 16px}.hero-head{display:block}.hero-side{margin-top:16px}.experience{grid-template-columns:1fr}.left-panel .panel-inner{padding:16px}.journey-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.journey{padding:12px}.stage{min-height:270px}.stage-bar{justify-content:center}.stage-bar .button-group{flex-wrap:wrap}.right-panel{grid-column:auto}.right-panel .panel-inner{display:block}.shelf{grid-template-columns:1fr}.controls{grid-template-columns:1fr;gap:13px}.next-row{display:block}.next a{margin-top:16px}footer .wrap{display:block}}
+@media(max-width:430px){.journey-list{grid-template-columns:1fr}.stage{min-height:230px}.stage-top{padding:10px 12px}.stage-flag{top:7px;left:9px}.scene-message{padding:12px}.shelf-left,.shelf-right{padding:18px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}#scene{transition:none}}
+</style></head>
+<body><a href="#workbench" class="skip">Skip to interactive experience</a>
+<header class="topbar"><div class="wrap nav"><a href="index.html" class="brand" aria-label="Area 33 Armory home">AREA <strong>33</strong> ARMORY</a>
+<nav aria-label="Main navigation"><a href="index.html">Home</a><a href="studio.html">Concept Studio</a><a href="catalog.html">Catalog</a><a href="contact.html">Contact</a></nav>
+<span class="nav-meta">DEVELOPMENT CONCEPT · NOT LIVE INVENTORY</span></div></header>
+<main><section class="hero"><div class="wrap hero-head"><div><div class="eyebrow">AREA 33 / THE NEXT WAY TO DISCOVER</div><h1>Come in.<br><em>Get curious.</em></h1><p>Don't know what you're looking for? Perfect. Pick something up, change the look, and follow your curiosity instead of scrolling through thousands of product tiles.</p></div><div class="hero-side">The store should feel like an experience, not a search-results page. This is our interactive first step.</div></div></section>
+<section id="workbench" class="wrap lab" aria-label="Unified interactive showroom">
+<div class="experience">
+<aside class="left-panel" aria-label="How would you like to explore?"><div class="panel-inner"><span class="small-label">01 / WALK IN</span><h2 class="module-title">Where do you want to start?</h2>
+<div class="journey-list">
+<button type="button" class="journey" data-journey="surprise" aria-pressed="false"><strong>✦ Surprise me</strong><span>Take me somewhere interesting</span></button>
+<button type="button" class="journey" data-journey="explore" aria-pressed="true"><strong>◎ Let me explore</strong><span>Inspect it like it's in your hands</span></button>
+<button type="button" class="journey" data-journey="customize" aria-pressed="false"><strong>◈ Change the look</strong><span>Try visual styles together</span></button>
+<button type="button" class="journey" data-journey="intelligence" aria-pressed="false"><strong>◉ Help me understand</strong><span>Know what's verified, and what's not</span></button>
+</div><div class="left-foot"><strong>More than a store.</strong><p>This experience is built around discovery first, with shopping as a choice—not a requirement.</p></div></div></aside>
+<div class="center">
+<div class="stage-top"><strong>AREA 33 / HANDS-ON CONCEPT BAY</strong><span id="view-label">YOUR LOOK</span></div>
+<div class="stage" id="board" data-finish="graphite" tabindex="0" role="group" aria-label="Interactive fictional equipment illustration. Drag left and right for a stylized perspective preview.">
+<div class="stage-flag">ORIGINAL ILLUSTRATION · CONCEPT ONLY</div>
+<svg viewBox="0 0 1000 460" role="img" aria-labelledby="drawing-title drawing-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="drawing-title">Original interactive equipment silhouette</title><desc id="drawing-desc">Fictional simplified side-view silhouette with independently selectable stylistic optic, light and muzzle illustrations. Overlap does not indicate compatibility.</desc>
+<defs><linearGradient id="metal" x2="0" y2="1"><stop offset="0" stop-color="var(--metal1)"/><stop offset="1" stop-color="var(--metal2)"/></linearGradient><filter id="drop"><feDropShadow dx="0" dy="12" stdDeviation="8" flood-color="#000" flood-opacity=".65"/></filter></defs>
+<g id="scene" filter="url(#drop)">
+<path d="M112 211 L175 185 L238 206 L250 243 L208 283 L116 270 Z" fill="var(--stock)" stroke="#a8a9af" stroke-width="3"/><path d="M122 213V267 M151 199V279" stroke="#18191e" stroke-width="10"/>
+<rect x="230" y="213" width="120" height="24" rx="4" fill="url(#metal)" stroke="#a6a8af" stroke-width="2"/>
+<path d="M329 190 H488 L523 211 V259 L484 276 H336 L324 250 Z" fill="url(#metal)" stroke="#a4a7ad" stroke-width="3"/>
+<path d="M350 205 H470 V262 H349 Z" fill="var(--stock)" stroke="#9c9da4" stroke-width="2"/>
+<path d="M370 276 H427 L451 364 L413 373 L373 313 Z" fill="var(--stock)" stroke="#a0a3a8" stroke-width="3"/>
+<path d="M428 277 L482 274 L464 360 L416 348 Z" fill="url(#metal)" stroke="#989ba2" stroke-width="3"/>
+<rect x="511" y="211" width="297" height="62" rx="10" fill="url(#metal)" stroke="#a4a7af" stroke-width="3"/>
+<g stroke="#20232a" stroke-width="8"><path d="M542 218V266 M570 218V266 M598 218V266 M626 218V266 M654 218V266 M682 218V266 M710 218V266 M738 218V266 M766 218V266"/></g>
+<path d="M334 189H806" stroke="#b5b6bc" stroke-width="7" stroke-linecap="round"/><path d="M810 230 H941 V252 H810 Z" fill="url(#metal)" stroke="#a0a2a9" stroke-width="3"/>
+<g id="optic-compact" hidden><path d="M391 188 L399 165 H467 L474 188 Z" fill="var(--stock)" stroke="#b5b7bd" stroke-width="3"/><path d="M404 163V115 Q404 102 418 102 H449 Q462 102 462 115 V163Z" fill="url(#metal)" stroke="#b3b5bb" stroke-width="3"/><rect x="417" y="116" width="30" height="31" rx="7" fill="#153044" stroke="#90b2c5" stroke-width="3"/><path d="M422 131H440 M431 122V141" stroke="#e75e68" stroke-width="2"/></g>
+<g id="optic-long" hidden><path d="M390 189 L401 155 H477 L490 189 Z" fill="var(--stock)" stroke="#aeb1b7" stroke-width="3"/><rect x="371" y="125" width="158" height="29" rx="13" fill="url(#metal)" stroke="#b1b4ba" stroke-width="3"/><rect x="369" y="117" width="18" height="45" rx="5" fill="var(--stock)" stroke="#a6a8b0" stroke-width="3"/><rect x="508" y="116" width="28" height="47" rx="6" fill="var(--stock)" stroke="#a6a8b0" stroke-width="3"/><ellipse cx="528" cy="140" rx="10" ry="21" fill="#284657" stroke="#a4c0ce" stroke-width="3"/></g>
+<g id="light-compact" hidden><path d="M679 272 L693 296 H758 L767 272" fill="none" stroke="#b4b7be" stroke-width="6"/><rect x="689" y="292" width="104" height="33" rx="12" fill="url(#metal)" stroke="#afb2ba" stroke-width="3"/><ellipse cx="791" cy="308" rx="8" ry="17" fill="#b3c8d2" stroke="#f2f6f8" stroke-width="3"/></g>
+<g id="muzzle-cylinder" hidden><rect x="934" y="217" width="16" height="47" rx="3" fill="var(--metal2)"/><rect x="946" y="209" width="40" height="62" rx="10" fill="url(#metal)" stroke="#c0c3ca" stroke-width="3"/><path d="M958 216V263 M968 216V263" stroke="#b7b9c0" opacity=".5" stroke-width="3"/></g>
+</g><text x="32" y="432" font-size="14" fill="#a8a8b3" letter-spacing="2">ILLUSTRATION / NOT TO SCALE</text></svg>
+<div class="stage-corner">DRAG TO TILT / NOT TRUE 3D</div></div>
+<div class="stage-bar">
+<div class="button-group"><button type="button" id="turn-left" aria-label="Tilt illustration left">↶ Left</button><output id="angle-output">0°</output><button type="button" id="turn-right" aria-label="Tilt illustration right">Right ↷</button></div>
+<div class="button-group"><button type="button" id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-output">100%</output><button type="button" id="zoom-in" aria-label="Zoom in">+</button><button type="button" id="compare" aria-pressed="false">Compare with base</button></div>
+</div><div class="scene-message" id="view-status" role="status" aria-live="polite">Illustrative perspective preview.</div>
+</div>
+<aside class="right-panel" aria-label="Product-aware explanation preview"><div class="panel-inner intel">
+<span class="small-label">03 / THE INTELLIGENCE COUNTER</span>
+<div class="intel-state"><span class="intel-dot"></span> CONCEPT GUIDANCE</div>
+<h2 id="intel-heading">Understand what you're exploring</h2>
+<p id="intel-story">Choose a starting point or change a visual option. The scene responds immediately while keeping unknown product facts clearly marked.</p>
+<div class="evidence-list">
+<div class="evidence-line"><span>Current style</span><strong id="selection-status">Graphite finish</strong></div>
+<div class="evidence-line"><span>Exact product identity</span><strong>Not represented</strong></div>
+<div class="evidence-line"><span>Accessory fit</span><strong>Not verified</strong></div>
+<div class="evidence-line"><span>Media</span><strong>Original concept art</strong></div>
+</div></div>
+<div class="value-card"><span class="small-label">04 / SMARTER VALUE</span><strong>Pricing with evidence, not guesses.</strong><p>Future Randbeck sourcing will compare verified distributor availability and landed costs. No live supplier prices, inventory or checkout are connected to this concept.</p></div>
+</aside></div>
+<div class="shelf"><section class="shelf-left" aria-labelledby="shelf-title"><span class="small-label">02 / THE ACCESSORY WALL</span><h2 id="shelf-title">Change the look without leaving the room.</h2><p>Try original visual concepts together. They are not product selections or fitment recommendations.</p>
+<div class="controls">
+<div class="control-set"><strong>Finish</strong><div class="choices" role="group" aria-label="Finish concept">
+<button type="button" data-part="finish" data-value="graphite" aria-pressed="true">Graphite</button><button type="button" data-part="finish" data-value="slate" aria-pressed="false">Slate</button><button type="button" data-part="finish" data-value="sand" aria-pressed="false">Sand</button></div></div>
+<div class="control-set"><strong>Optic style</strong><div class="choices" role="group" aria-label="Optic silhouette">
+<button type="button" data-part="optic" data-value="none" aria-pressed="true">None</button><button type="button" data-part="optic" data-value="compact" aria-pressed="false">Compact</button><button type="button" data-part="optic" data-value="long" aria-pressed="false">Magnified</button></div></div>
+<div class="control-set"><strong>Light style</strong><div class="choices" role="group" aria-label="Light silhouette">
+<button type="button" data-part="light" data-value="none" aria-pressed="true">None</button><button type="button" data-part="light" data-value="compact" aria-pressed="false">Compact</button></div></div>
+</div></section>
+<section class="shelf-right"><span class="small-label">THE PERSON BEHIND THE COUNTER</span><h2>Ask before you decide.</h2>
+<p>Tap a question to see the kind of contextual guidance we want Randbeck to provide. These responses are scripted concept explanations, not live AI.</p>
+<div class="question-grid"><button type="button" data-question="difference">What's different?</button><button type="button" data-question="fit">Does this fit?</button><button type="button" data-question="value">What about price?</button><button type="button" data-question="discover">Show me something else</button></div>
+<div class="answer" id="counter-answer" role="status" aria-live="polite">Pick a question or choose “Surprise me” to begin a guided discovery.</div>
+<div class="actions"><button type="button" id="reset-scene" class="secondary">Start over</button><button type="button" id="copy">Copy concept</button><button type="button" id="share" class="secondary">Share this look</button><output id="share-status" role="status" aria-live="polite"></output></div>
+<p id="copy-summary" style="font-size:.71rem;color:#aeafba;line-height:1.5;margin-top:16px">Summary will appear here.</p>
+</section></div></section>
+<section class="next"><div class="wrap next-row"><div><span class="eyebrow">THE BRIDGE FROM CONCEPT TO REALITY</span><h2>Every real product deserves this much attention.</h2><p>This working illustration proves the discovery flow. Real 3D manipulation, accessory fitment, rights-cleared imagery and genuine all-in customer pricing require product-specific evidence and connected services. We won't fake them.</p></div><a href="catalog.html">See approved catalog status ↗</a></div></section>
+</main><footer><div class="wrap"><span>AREA 33 ARMORY · Experience first. Intelligence throughout. Value with evidence.</span><span>No live product sales, stock, prices, compatibility claims or 3D product models in this preview.</span></div></footer>
+<script>
+"use strict";
+/* Illustrative concept only. No sourceability, pricing, fitment or AI claims. */
+const looks={
+ clean:{finish:"graphite",optic:"none",light:"none",title:"The clean slate",story:"Start with the silhouette and notice its proportions before exploring different accessory styles."},
+ focus:{finish:"slate",optic:"long",light:"none",title:"A new perspective",story:"An alternate optic silhouette changes the overall visual balance. Its shape here is illustrative, not a verified part."},
+ unexpected:{finish:"sand",optic:"compact",light:"compact",title:"What if?",story:"Two visual accessory concepts and a finish change give the scene a different character. That is a preview idea, not physical-fit evidence."}
+};
+const defaults={finish:"graphite",optic:"none",light:"none"};
+const allowed={finish:["graphite","slate","sand"],optic:["none","compact","long"],light:["none","compact"]};
+function cleanState(raw){
+ const result={};for(const key of Object.keys(allowed))
+ result[key]=allowed[key].includes(raw?.[key])?raw[key]:defaults[key];
+ return result;
+}
+function conceptSummary(s){
+ const c=cleanState(s);
+ return "Area 33 concept study: "+c.finish+" finish, "+(c.optic==="none"?"no optic-style illustration":c.optic+" optic style")+", "+(c.light==="none"?"no light-style illustration":"compact light style")+". Visual illustration only—no exact product, compatibility, stock or price verified.";
+}
+function nextTurn(value,delta){
+ return Math.max(-26,Math.min(26,Math.round(value+delta)));
+}
+if(typeof document!=="undefined"){
+(function(){
+ const $=id=>document.getElementById(id);
+ const input=new URLSearchParams(location.search);
+ const state=cleanState({finish:input.get("finish"),optic:input.get("optic"),light:input.get("light")});
+ let tilt=0,pitch=0,zoom=1,compare=false,journey="explore",journeyIndex=0,drag=null,activeLook=null;
+ const journeyOrder=["clean","focus","unexpected"];
+ const questionAnswers={
+  difference:"A visual variation can help you notice size and shape differences. For real products, we'd compare exact model numbers, measured dimensions, and independently checked specifications.",
+  fit:"This illustration cannot establish fit. The real showroom will show a confirmed fit only when the exact item and pairing have supporting evidence. Otherwise, we will say that verification is needed.",
+  value:"Randbeck's future value view will compare available supplier offers and landed costs before presenting a customer price. No real-time supplier pricing or stock feed is connected to this concept.",
+  discover:"Try “Surprise me.” It moves among three designed looks and explains what changed. The finished experience will surface approved products and related discoveries without requiring a precise search term."
+ };
+ function setActiveJourney(name){
+ journey=name;
+ document.querySelectorAll("[data-journey]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.journey===name)));
+ }
+ function update(){
+  $("board").dataset.finish=state.finish;
+  $("optic-compact").hidden=compare||state.optic!=="compact";
+  $("optic-long").hidden=compare||state.optic!=="long";
+  $("light-compact").hidden=compare||state.light!=="compact";
+  $("scene").style.setProperty("--tilt",tilt+"deg");
+  $("scene").style.setProperty("--pitch",pitch+"deg");
+  $("scene").style.setProperty("--zoom",String(zoom));
+  $("angle-output").textContent=(tilt>0?"+":"")+tilt+"°";
+  $("zoom-output").textContent=Math.round(zoom*100)+"%";
+  $("view-status").textContent=compare?"Viewing the base illustration. Tap again to restore your selections.":"Illustrative perspective preview · drag to tilt · not a true 3D model";
+  $("view-label").textContent=compare?"BASE LOOK":"YOUR LOOK";
+  $("copy-summary").textContent=conceptSummary(state);
+  $("intel-heading").textContent=activeLook?looks[activeLook].title:"Understand what you're exploring";
+  $("intel-story").textContent=activeLook?looks[activeLook].story:"Choose a starting point or change a visual option. The scene responds immediately while keeping unknown product facts clearly marked.";
+  $("selection-status").textContent=[state.finish+" finish",state.optic==="none"?"no optic":state.optic+" optic",state.light==="none"?"no light":"light style"].join(" · ");
+  document.querySelectorAll("[data-part]").forEach(b=>b.setAttribute("aria-pressed",String(state[b.dataset.part]===b.dataset.value)));
+  $("compare").textContent=compare?"Restore selections":"Compare with base";
+  $("compare").setAttribute("aria-pressed",String(compare));
+  $("share-status").textContent="";
+ }
+ function setLook(id){
+ const preset=looks[id];if(!preset)return;
+ Object.assign(state,cleanState(preset));compare=false;activeLook=id;
+ $("counter-answer").textContent="You've discovered “"+preset.title+".” "+preset.story;
+ update();
+ }
+ document.querySelectorAll("[data-journey]").forEach(b=>b.addEventListener("click",()=>{
+  const next=b.dataset.journey;setActiveJourney(next);
+  if(next==="surprise"){setLook(journeyOrder[journeyIndex%journeyOrder.length]);journeyIndex++;}
+  if(next==="explore"){$("workbench").scrollIntoView({behavior:"smooth",block:"start"});$("counter-answer").textContent="Try dragging the image left or right for a conceptual perspective, or use the arrow buttons. This is a 2.5D illustration, not a real product model.";}
+  if(next==="customize"){$("shelf-title").scrollIntoView({behavior:"smooth",block:"center"});$("counter-answer").textContent="Select a finish, optic silhouette and light silhouette. Changes appear together in the same viewer.";}
+  if(next==="intelligence"){$("counter-answer").textContent=questionAnswers.fit; $("intel-heading").textContent="Evidence before assumptions";}
+ }));
+ document.querySelectorAll("[data-part]").forEach(b=>b.addEventListener("click",()=>{
+  const part=b.dataset.part,value=b.dataset.value;
+  if(!allowed[part]?.includes(value))return;
+  state[part]=value;compare=false;activeLook=null;setActiveJourney("customize");
+  $("counter-answer").textContent="Visual selection changed. This is a concept, not an accessory selection or a verified fit.";update();
+ }));
+ document.querySelectorAll("[data-question]").forEach(b=>b.addEventListener("click",()=>{
+  const answer=questionAnswers[b.dataset.question];if(answer)$("counter-answer").textContent=answer;
+ }));
+ $("compare").addEventListener("click",()=>{compare=!compare;update();});
+ $("reset-scene").addEventListener("click",()=>{Object.assign(state,defaults);compare=false;activeLook=null;tilt=0;pitch=0;zoom=1;setActiveJourney("explore");$("counter-answer").textContent="Back to the clean slate. Choose a curiosity path to continue.";update();});
+ $("turn-left").addEventListener("click",()=>{tilt=nextTurn(tilt,-13);update();});
+ $("turn-right").addEventListener("click",()=>{tilt=nextTurn(tilt,13);update();});
+ $("zoom-in").addEventListener("click",()=>{zoom=Math.min(1.7,Math.round((zoom+.15)*100)/100);update();});
+ $("zoom-out").addEventListener("click",()=>{zoom=Math.max(1,Math.round((zoom-.15)*100)/100);update();});
+ const board=$("board");
+ board.addEventListener("pointerdown",e=>{
+  if(e.pointerType==="mouse"&&e.button!==0)return;
+  drag={id:e.pointerId,x:e.clientX,y:e.clientY,tilt,pitch};
+  board.setPointerCapture?.(e.pointerId);
+ });
+ board.addEventListener("pointermove",e=>{
+  if(!drag||e.pointerId!==drag.id)return;
+  tilt=Math.max(-26,Math.min(26,Math.round(drag.tilt+(e.clientX-drag.x)*.17)));
+  pitch=Math.max(-10,Math.min(10,Math.round(drag.pitch-(e.clientY-drag.y)*.08)));
+  update();
+ });
+ const endDrag=e=>{if(drag?.id===e.pointerId)drag=null;};
+ board.addEventListener("pointerup",endDrag);board.addEventListener("pointercancel",endDrag);
+ async function copy(text){
+  if(!navigator.clipboard?.writeText)throw Error("Clipboard unavailable");
+  await navigator.clipboard.writeText(text);
+ }
+ $("copy").addEventListener("click",async()=>{
+  try{await copy(conceptSummary(state));$("share-status").textContent="Concept summary copied.";}
+  catch{$("share-status").textContent="Clipboard unavailable; select and copy the summary above.";}
+ });
+ $("share").addEventListener("click",async()=>{
+  try{
+   const url=new URL(location.href);url.search="";for(const [key,value] of Object.entries(cleanState(state)))url.searchParams.set(key,value);
+   await copy(url.href);$("share-status").textContent="Link copied. This preserves the illustrated style choices only.";
+  }catch{$("share-status").textContent="Sharing isn't available here. You can still copy the text summary.";}
+ });
+ document.addEventListener("keydown",event=>{
+  if(["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName))return;
+  if(event.key==="ArrowLeft"&&document.activeElement===board){event.preventDefault();tilt=nextTurn(tilt,-13);update();}
+  if(event.key==="ArrowRight"&&document.activeElement===board){event.preventDefault();tilt=nextTurn(tilt,13);update();}
+ });
+ update();
+})();
+}
+</script></body></html>
