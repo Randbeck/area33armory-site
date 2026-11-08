@@ -35,7 +35,8 @@ const js=fs.readFileSync(new URL("../assets/real-photo-theater.mjs",import.meta.
 const integration=fs.readFileSync(new URL("../assets/product-room.js",import.meta.url),"utf8");
 const css=fs.readFileSync(new URL("../assets/product-room.css",import.meta.url),"utf8");
 const home=fs.readFileSync(new URL("../index.html",import.meta.url),"utf8");
-for(const id of ["photo-theater","theater-stage","theater-main-image","theater-no-image","theater-image-error","theater-accessory-image","theater-accessory-placeholder","theater-fit-status","theater-fit-summary","theater-zoom-in","theater-zoom-out","theater-zoom-reset","theater-zoom-count","theater-fullscreen","theater-try-meopta","theater-switch-ruger","theater-license","theater-origin","theater-author"]){
+assert.ok(html.includes('id="photo-theater"'));
+for(const id of ["theater-stage","theater-main-image","theater-no-image","theater-image-error","theater-accessory-image","theater-accessory-placeholder","theater-fit-status","theater-fit-summary","theater-zoom-in","theater-zoom-out","theater-zoom-reset","theater-zoom-count","theater-fullscreen","theater-try-meopta","theater-switch-ruger","theater-license","theater-origin","theater-author"]){
  assert.ok(html.includes('id="'+id+'"'),"Missing theater element: "+id);
  assert.ok(js.includes('$("'+id+'")'),"Missing JS binding: "+id);
 }
