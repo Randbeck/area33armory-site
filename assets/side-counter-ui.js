@@ -201,6 +201,7 @@ function renderShop(){
    ACCESSORIES.filter(p=>group==="accessories"||p.accessoryType==="optics")
     .filter(p=>[p.brand,p.model,p.subtitle,p.note,...(p.facts||[])].join(" ").toLowerCase().includes(query)):
    group==="suppressors"?[]:findResearchProducts(query,group);
+ if(!query)items.sort((a,b)=>Number(!!researchPhotoFor(b))-Number(!!researchPhotoFor(a))||researchTitle(a).localeCompare(researchTitle(b)));
  const titles={all:"All researched firearms",pistols:"Pistols",rifles:"Rifles",shotguns:"Shotguns",
   suppressors:"Suppressors",optics:"Optics",accessories:"Accessories"};
  $("home-firearms-title").textContent=titles[group]||"Browse products";
