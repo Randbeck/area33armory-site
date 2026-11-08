@@ -11,6 +11,8 @@
   <meta property="og:url" content="https://area33armory.com/">
   <title>Area 33 Armory | Veteran-Owned • Missouri</title>
   <link rel="stylesheet" href="assets/featured-opportunities.css">
+  <link rel="stylesheet" href="assets/side-counter.css">
+  <script type="module" src="assets/side-counter-ui.js"></script>
   <script type="module" src="assets/featured-opportunities-ui.js"></script>
   <style>
     :root {
@@ -140,10 +142,14 @@
     <div class="container nav">
       <a class="identity" href="#top" aria-label="Area 33 Armory home"><img class="site-logo" src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="240" height="57"></a>
       <nav class="desktop-nav" aria-label="Main navigation">
-        <a href="six-view-counter.html">Discover &amp; Think</a><a href="six-view-counter.html">Discover &amp; Think</a><a href="product-room.html">Real Product Room</a><a href="experience-bay.html">Concept Bay</a><a href="studio.html">Concept Studio</a><a href="showroom.html">Real-Media Showroom</a><a href="portfolio.html">Work portfolios</a><a href="ffl-finder.html">FFL Finder</a><a href="explore.html">Explore</a>
+        <a href="#home-firearms" data-shop-department="pistols">Pistols</a>
+        <a href="#home-firearms" data-shop-department="rifles">Rifles</a>
+        <a href="#home-firearms" data-shop-department="shotguns">Shotguns</a>
+        <a href="#featured-opportunities">Featured</a>
+        <a href="catalog.html">Catalog</a>
+        <a href="#home-firearms" data-side-counter-product="glock-g19-gen5-mos" data-side-counter-tab="eva">Ask EVA</a>
         <a class="small-cta" href="contact.html">Contact</a>
-      </nav>
-      <details class="mobile-menu">
+      </nav>     <details class="mobile-menu">
         <summary>Menu</summary>
         <nav aria-label="Mobile navigation">
           <a href="product-room.html">Real Product Room</a><a href="experience-bay.html">Concept Bay</a><a href="studio.html">Concept Studio</a><a href="showroom.html">Real-Media Showroom</a><a href="portfolio.html">Work portfolios</a><a href="ffl-finder.html">FFL Finder</a>
@@ -157,17 +163,38 @@
       <div class="container hero-grid">
         <div>
           <div class="eyebrow"><span class="accent">●</span> Veteran-owned · Missouri-based</div>
-          <h1>Walk in curious.<br>Leave <span class="accent">inspired.</span></h1>
-          <p>Come in to look around. Explore real manufacturer references, discover something you didn’t know you wanted, compare models, and ask product-aware questions with Randbeck research guidance. No purchase required.</p>
-          <div class="actions"><a class="button button-primary" href="six-view-counter.html#discover-counter">Enter the Area 33 experience <span aria-hidden="true">↗</span></a><a class="button button-secondary" href="product-room.html?product=ruger-precision-308-gen1&amp;accessory=meopta-optika6-3-18x56-rd-sfp">Explore our first real-photo showcase <span aria-hidden="true">↗</span></a><a class="button button-secondary" href="six-view-counter.html#ask-eva">Ask EVA, Your Firearms Expert ↗</a><a class="button button-secondary" href="catalog.html">Browse catalog preview ↗</a></div>
-          <p class="hero-note">No online checkout or unverified inventory claims. Talk with us directly.</p>
+          <h1>Come for the firearms.<br><span class="accent">Stay for the experience.</span></h1>
+          <p>See what catches your eye. Browse firearms and featured discoveries, then open a product on your personal side counter. EVA is right there whenever you have a question.</p>
+          <div class="actions">
+           <a class="button button-primary" href="#home-firearms">Browse firearms ↗</a>
+           <a class="button button-secondary" href="#featured-opportunities">Featured discoveries ↗</a>
+           <a class="button button-secondary" href="#home-firearms" data-side-counter-product="glock-g19-gen5-mos" data-side-counter-tab="eva">Ask EVA — Your Firearms Expert ↗</a>
+           <a class="button button-secondary" href="catalog.html">Catalog preview ↗</a>
+          </div>
+          <p class="hero-note">Manufacturer research preview · No live inventory, verified deals or checkout yet · Receiving FFL fee separate from eventual Area 33 price.</p>
         </div>
-        <div class="hero-visual" aria-label="Area 33 Armory brand">
-          <img class="hero-logo" src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="550" height="129">
-          <span class="visual-label">Equipping Patriots · Supporting Heroes</span>
+        <div class="hero-visual" aria-label="Real firearm research photography">
+          <div class="hero-feature-photo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Ruger_Precision_Rifle_308_Gen_1.jpg"
+              referrerpolicy="no-referrer" alt="Documented first-generation Ruger Precision Rifle in .308 Winchester — original photograph, not current sale inventory">
+            <p>Ruger Precision Rifle · .308 Win Gen 1 · Coati077 / CC BY-SA 4.0</p>
+            <button type="button" class="hero-feature-open" data-side-counter-product="ruger-precision-308-gen1">Inspect at the counter ↗</button>
+          </div>
         </div>
       </div>
     </div>
+    <section class="home-firearms-section" id="home-firearms" aria-label="Browse firearms">
+      <div class="home-firearms-head">
+        <div><span class="eyebrow">THE AREA 33 SHOWROOM</span><h2>Firearms worth exploring.</h2>
+          <p>Browse available manufacturer research references and open any model in your right-side counter. Public distributor listings, verified offers and exact current finishes are still being integrated.</p></div>
+        <div class="home-firearms-tools"><input id="home-firearms-query" type="search" maxlength="120" placeholder="Search models…" aria-label="Search firearm research references">
+          <select id="home-firearms-category" aria-label="Filter firearm category">
+            <option value="all">All firearms</option><option value="pistols">Pistols</option><option value="rifles">Rifles</option><option value="shotguns">Shotguns</option>
+          </select></div>
+      </div>
+      <p id="home-firearms-count" class="home-firearms-count">Browse our current research set</p>
+      <div id="home-firearms-gallery" class="home-firearms-gallery" aria-live="polite"></div>
+    </section>
     <section class="featured-home" id="featured-opportunities" aria-label="Featured Area 33 discoveries">
       <div class="featured-header"><div><span class="eyebrow">FEATURED AT AREA 33</span><h2>Something worth a closer look.</h2>
         <p>Explore highlighted products at the counter. Randbeck opportunities can appear here after public review and approval; unverified deals never appear automatically.</p></div>
@@ -240,6 +267,29 @@
       </div>
     </section>
   </main>
+  <div class="side-counter-backdrop" id="area33-side-backdrop" hidden></div>
+  <button id="area33-reopen-counter" class="side-counter-reopen" type="button" hidden>YOUR COUNTER ↗</button>
+  <aside id="area33-side-counter" class="area33-side-counter" aria-label="Your Area 33 product counter" aria-hidden="true" hidden>
+    <div class="side-counter-header">
+      <div class="side-counter-heading"><div class="side-counter-brand"><small>AREA 33 · YOUR SIDE COUNTER</small><strong>Explore without leaving the store.</strong></div>
+        <button id="side-counter-close" type="button" class="side-counter-close">Close ✕</button></div>
+      <h2 id="side-counter-product-name">Selected firearm</h2>
+      <p id="side-counter-product-meta">Research reference · Not live inventory</p>
+    </div>
+    <div class="side-tabs" role="tablist" aria-label="Product counter sections">
+      <button id="side-tab-inspect" role="tab" aria-selected="true" type="button">Inspect</button>
+      <button id="side-tab-models" role="tab" aria-selected="false" type="button">Models</button>
+      <button id="side-tab-accessories" role="tab" aria-selected="false" type="button">Accessories</button>
+      <button id="side-tab-eva" role="tab" aria-selected="false" type="button">Ask EVA</button>
+    </div>
+    <div id="side-counter-body" class="side-counter-content" role="tabpanel" aria-label="Selected product information"></div>
+    <div class="side-counter-footer">
+      <div class="side-counter-actions"><button type="button" id="side-save">☆ Save</button><button type="button" id="side-compare">+ Compare</button></div>
+      <p id="side-saved-status">Saved here for this visit only.</p>
+      <div id="side-comparison-list" class="side-comparison-list"></div>
+      <a id="side-full-counter" class="side-full-link" href="six-view-counter.html">Open full product counter ↗</a>
+    </div>
+  </aside>
   <footer>
     <div class="container">
       <div class="footer-inner"><div class="footer-brand">AREA 33 ARMORY</div><nav class="footer-links" aria-label="Footer navigation"><a href="product-room.html">Real Product Room</a><a href="experience-bay.html">Concept Bay</a><a href="studio.html">Concept Studio</a><a href="showroom.html">Real-Media Showroom</a><a href="portfolio.html">Work portfolios</a><a href="ffl-finder.html">FFL Finder</a><a href="explore.html">Explore</a><a href="catalog.html">Catalog preview</a><a href="experience-lab.html">Experience Lab</a><a href="#services">Services</a><a href="#about">About</a><a href="contact.html">Contact</a></nav></div>
