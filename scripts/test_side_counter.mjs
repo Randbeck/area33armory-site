@@ -21,9 +21,16 @@ for(const id of testIds){
 }
 assert.equal([...home.matchAll(/\bid="([^"]+)"/g)].length,
  new Set([...home.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1])).size,"Unique DOM IDs");
-const hero=home.indexOf('<div class="hero"'),browse=home.indexOf('id="home-firearms"'),
- featuredSection=home.indexOf('id="featured-opportunities"');
-assert.ok(hero>=0&&browse>hero&&featuredSection>browse,"Firearms browse must appear immediately after hero and before featured");
+const hero=home.indexOf('<div class="hero"'),deals=home.indexOf('id="featured-opportunities"'),
+ departments=home.indexOf('id="shop-departments"'),browse=home.indexOf('id="home-firearms"');
+assert.ok(hero>=0&&hero<deals&&deals<departments&&departments<browse,
+ "Featured deals first, category cards second, browse-after-choice third");
+assert.match(home,/id="home-firearms"[^>]*hidden/,"Product grid is progressive until a category is chosen");
+assert.equal((home.match(/data-department-pick="/g)||[]).length,6);
+assert.match(js,/revealDepartment\(card\.dataset\.departmentPick\)/);
+assert.match(js,/section\.hidden=false/);
+assert.match(js,/MEET EVA \/ YOUR FIREARMS EXPERT/);
+assert.match(js,/Powered by Randbeck Intelligence in the planned live experience/);
 assert.match(home,/Ruger_Precision_Rifle_308_Gen_1\.jpg/,"An actual license-reviewed firearm visible above fold");
 assert.match(home,/Coati077 \/ CC BY-SA 4\.0/,"Image licensing visible");
 assert.match(home,/data-side-counter-product="ruger-precision-308-gen1"/);
