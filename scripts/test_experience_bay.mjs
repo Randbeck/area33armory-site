@@ -9,7 +9,7 @@ assert.match(html,/Get curious\./);
 assert.match(html,/Surprise me/);
 assert.match(html,/Experience Bay/);
 assert.match(home,/href="experience-bay\.html"/);
-assert.match(home,/Explore real models/);
+assert.match(home,/Explore our first real-photo showcase/);
 assert.match(home,/href="product-room\.html"/);
 assert.match(home,/href="studio\.html"/);
 assert.match(home,/href="showroom\.html"/);

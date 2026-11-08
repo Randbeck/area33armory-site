@@ -101,3 +101,23 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:1180px){.room-main{grid-template-columns:minmax(205px,.72fr) minmax(0,1.8fr)}.room-right{grid-column:1/-1}.room-right .room-inner{display:grid;grid-template-columns:1fr 1fr;gap:12px}.room-value{margin-top:0}}
 @media(max-width:740px){.room-wrap{width:min(100% - 28px,1510px)}.room-nav{flex-wrap:wrap}.room-nav nav{gap:13px}.room-top-note{display:none}.room-hero{padding:35px 0}.room-hero-grid{display:block}.room-hero-callout{margin-top:18px;max-width:none}.room-main,.room-accessory,.room-lower{grid-template-columns:1fr}.room-right{grid-column:auto}.room-right .room-inner{display:block}.room-stage{min-height:270px}.room-facts{gap:6px}.room-inner{padding:17px}.room-accessory-inner{padding:18px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Flagship rights-cleared photo viewer: real photograph, no simulated 3D or accessory overlays. */
+.room-feature-tip{background:#20242c;border:1px solid #454b56;border-left:3px solid #de6570;border-radius:10px;padding:14px 17px;margin:0 0 15px;font-size:.79rem;color:#d3d4dd}
+.room-feature-tip strong{color:#fff;margin-right:6px}
+.room-feature-tip a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.room-licensed-photo{position:relative;z-index:1;width:100%;max-width:920px;background:#181a20;border:1px solid #50525b;border-radius:12px;overflow:hidden;align-self:center}
+.room-photo-viewport{position:relative;min-height:235px;display:grid;place-items:center;overflow:hidden;background:#e9e3da;cursor:zoom-in;touch-action:none}
+.room-photo-viewport[data-zoomed=true]{cursor:grab}
+.room-photo-viewport[data-zoomed=true]:active{cursor:grabbing}
+.room-photo-viewport img{width:100%;height:100%;max-height:510px;min-height:235px;object-fit:contain;display:block;user-select:none;transform:translate(var(--photo-x,0px),var(--photo-y,0px)) scale(var(--photo-zoom,1));transform-origin:center;transition:transform .14s ease}
+.room-photo-viewport p{position:absolute;inset:15px;display:grid;place-items:center;text-align:center;background:#211e25ed;color:#fff;font-size:.8rem}
+.room-photo-tools{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap;border-top:1px solid #4a4d57;padding:10px 13px;background:#24262f}
+.room-photo-tools span{font-size:.63rem;letter-spacing:.12em;font-weight:850;color:#ffd1d5}
+.room-photo-tools div{display:flex;align-items:center;gap:6px}
+.room-photo-tools button{background:#363944;color:white;border:1px solid #656771;border-radius:7px;padding:6px 11px;font-size:.76rem}
+.room-photo-tools output{font-variant-numeric:tabular-nums;font-size:.71rem;color:#eeeef2;min-width:42px;text-align:center}
+.room-photo-credit{font-size:.7rem;color:#c3c4cf;padding:11px 14px;margin:0!important;line-height:1.65}
+.room-photo-credit a{color:#f8d8db;text-underline-offset:3px}
+@media(max-width:740px){.room-photo-viewport{min-height:175px}.room-photo-viewport img{min-height:175px}.room-photo-tools{justify-content:center;flex-direction:column;gap:8px}}
+@media(prefers-reduced-motion:reduce){.room-photo-viewport img{transition:none}}

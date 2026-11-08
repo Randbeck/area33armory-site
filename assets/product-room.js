@@ -2,6 +2,7 @@
 import {REFERENCE_PRODUCTS,REFERENCE_CHECKED,DEPARTMENTS,ACCESSORY_CATEGORIES,researchTitle,chooseDiscovery} from "./product-room-research.mjs";
 import {sanitizeCatalogManifest} from "./catalog-static-contract.mjs";
 import {createApprovedGallery,galleryAllowed} from "./catalog-gallery.mjs";
+import {createResearchPhotoViewer} from "./research-photo-viewer.mjs";
 
 const $=id=>document.getElementById(id);
 const research=REFERENCE_PRODUCTS;
@@ -10,6 +11,7 @@ const title=item=>researchTitle(item);
 let approved=[];
 let dept="pistols",accessoryCategory="optics";
 let current=null,accessory=null,compare=[],discoverSeed=1;
+const researchPhotoViewer=createResearchPhotoViewer();
 function element(tag,className,copy){
  const n=document.createElement(tag);
  if(className)n.className=className;
@@ -120,10 +122,15 @@ function presentApprovedMedia(item){
  const approvedItem=item?.approvedItem;
  const gallery=approvedItem&&galleryAllowed(approvedItem)?createApprovedGallery(approvedItem):null;
  if(gallery){
+  researchPhotoViewer.hide();
   slot.append(gallery);
   slot.hidden=false;missing.hidden=true;
   $("stage-approval").textContent="OWNER-APPROVED PRODUCT PHOTOS";
   $("media-tag").textContent="EXACT-PRODUCT APPROVED IMAGERY";
+ }else if(researchPhotoViewer.show(item)){
+  slot.hidden=true;missing.hidden=true;
+  $("stage-approval").textContent="CREATIVE COMMONS / RESEARCH PHOTO";
+  $("media-tag").textContent="ONE REAL PHOTOGRAPH · NOT AN AREA 33 LISTING";
  }else{
   slot.hidden=true;missing.hidden=false;
   $("stage-approval").textContent=approvedItem?"APPROVED TEXT PROFILE / NO PHOTOS":"PHOTO APPROVAL PENDING";
@@ -131,9 +138,10 @@ function presentApprovedMedia(item){
   missing.querySelector("strong").textContent=approvedItem?"This product is text-only.":"Real product. Official product photos.";
   missing.querySelector("p").textContent=approvedItem?
    "This Area 33 public product record does not have an approved photo set. We won't replace it with an unrelated image.":
-   "Area 33 hasn't approved an image set for this exact model yet. Open the manufacturer's page to see their real photos and documentation.";
+   "Area 33 hasn't approved an image set for this exact model yet. Open the manufacturer's page to see real photos and documentation.";
  }
 }
+
 function render(){
  if(!current){$("product-name").textContent="No research models available";return;}
  const item=current;
