@@ -9,7 +9,7 @@ const homepage=fs.readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const catalog=fs.readFileSync(new URL("../catalog.html",import.meta.url),"utf8");
 const publicCatalog=JSON.parse(fs.readFileSync(new URL("../assets/catalog-public.json",import.meta.url),"utf8"));
 assert.match(REFERENCE_CHECKED,/^\d{4}-\d\d-\d\d$/);
-assert.equal(REFERENCE_PRODUCTS.length,16);
+assert.equal(REFERENCE_PRODUCTS.length,18);
 assert.deepEqual(DEPARTMENTS,["pistols","rifles","shotguns"]);
 assert.deepEqual(ACCESSORY_CATEGORIES,["optics","lights","holsters","cases"]);
 assert.equal(new Set(REFERENCE_PRODUCTS.map(x=>x.id)).size,REFERENCE_PRODUCTS.length);
