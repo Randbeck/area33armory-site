@@ -59,32 +59,32 @@ export function accessoryIntelligence(firearm,accessory){
   source:pairing.evidence?.[0]?.url||accessory.source};
 }
 const ZIP=/^\d{5}$/;
-export function allInQuoteStatus({zip="",receivingDealerName="",dealerFeeKnown=false,selectedProducts=[],sourceQuote=null}={}){
- const inputs={
-  destinationKnown:ZIP.test(String(zip).trim()),
-  dealerSelected:typeof receivingDealerName==="string"&&receivingDealerName.trim().length>=2,
-  dealerFeeConfirmed:dealerFeeKnown===true
- };
+/* Area 33-delivered total includes ALL charges collected by Area 33,
+   NOT the independent receiving FFL's separately assessed transfer fee.
+   No transfer-fee amount or dealer-fee directory is collected/stored. */
+export function allInQuoteStatus({zip="",selectedProducts=[],sourceQuote=null}={}){
+ const destinationKnown=ZIP.test(String(zip).trim());
  const verifiedSource=sourceQuote?.verified===true&&sourceQuote?.isPublicCustomerQuote===true&&
   Number.isInteger(sourceQuote?.totalMinor)&&sourceQuote.totalMinor>=0&&
   sourceQuote?.includesTax===true&&sourceQuote?.includesShipping===true&&
-  sourceQuote?.includesTransferFee===true&&sourceQuote?.includesAllOtherFees===true&&
+  sourceQuote?.includesHandling===true&&sourceQuote?.includesOtherArea33Charges===true&&
+  sourceQuote?.receivingFflFeeExcluded===true&&
+  sourceQuote?.shippingDestinationVerified===true&&
   typeof sourceQuote?.expiresAt==="string"&&Number.isFinite(Date.parse(sourceQuote.expiresAt))&&
   Date.parse(sourceQuote.expiresAt)>Date.now();
  const completeItems=Array.isArray(selectedProducts)&&selectedProducts.length>0&&
   selectedProducts.every(item=>item&&item.publicSkuVerified===true&&item.stockVerified===true);
- const confirmed=inputs.destinationKnown&&inputs.dealerSelected&&inputs.dealerFeeConfirmed&&completeItems&&verifiedSource;
+ const confirmed=destinationKnown&&completeItems&&verifiedSource;
  const blockers=[];
- if(!inputs.destinationKnown)blockers.push("Enter a five-digit destination ZIP to determine the relevant tax and delivery region.");
- if(!inputs.dealerSelected)blockers.push("Select the receiving FFL dealer.");
- if(!inputs.dealerFeeConfirmed)blockers.push("Confirm the receiving dealer's transfer fee or Area 33's agreed coverage.");
- if(!completeItems)blockers.push("Exact sellable SKUs and current sourceable stock need verification.");
- if(!verifiedSource)blockers.push("Randbeck must supply a fresh all-in customer quote including tax, shipping, transfer and other applicable fees.");
+ if(!destinationKnown)blockers.push("Enter a five-digit ZIP for the intended receiving-FFL destination.");
+ if(!completeItems)blockers.push("Exact sellable SKUs and current sourceable stock must be verified.");
+ if(!verifiedSource)blockers.push("Randbeck must supply a fresh, destination-verified Area 33 quote including all Area 33 charges, applicable tax, shipping and handling.");
  return {confirmed,totalMinor:confirmed?sourceQuote.totalMinor:null,blockers,
-  label:confirmed?"Verified all-in customer quote":"ALL-IN PRICE PENDING",
-  notice:confirmed?"Public quote verified. Honor the listed quote expiry and seller terms.":
-  "No one-price guarantee can be made until destination, dealer fees, stock and source costs are confirmed.",
-  inputs};
+  label:confirmed?"Verified Area 33 delivered price":"AREA 33 PRICE PENDING",
+  notice:confirmed?"Area 33 total verified for this destination. The receiving FFL may separately charge its own transfer fee; that fee is NOT included.":
+   "Area 33 will show one delivered price for everything we charge, including applicable tax and shipping. Your receiving FFL's separate transfer fee is NOT included and varies by dealer.",
+  excludedCharge:"Receiving FFL transfer fee — charged separately by your chosen receiving dealer; amount is unknown to Area 33.",
+  inputs:{destinationKnown}};
 }
 const safeText=s=>String(s||"").slice(0,500).trim();
 export function interpretResearchQuestion(product,question,{selectedAccessories=[],comparison=[]}={}){
@@ -92,7 +92,7 @@ export function interpretResearchQuestion(product,question,{selectedAccessories=
  const q=safeText(question).toLowerCase(),title=researchTitle(product);
  const base={sources:[{label:"Official manufacturer or product reference",url:product.source}],mode:"research-preview",isLiveAI:false};
  if(!q)return {...base,heading:"Ask about "+title,text:"Ask about known details, related models, finishes, accessories, comparisons, availability or the all-in price."};
- if(/price|cost|shipping|tax|fee|transfer|total|cheap|deal/.test(q))return {...base,heading:"One price should mean everything",text:"There is no verified customer quote for this research reference. An Area 33 all-in price must cover the product, applicable tax, shipping, handling, receiving FFL transfer fee and any other applicable charges. We must first verify your location, receiving dealer, sellable SKU and current source. No amount is invented."};
+ if(/price|cost|shipping|tax|fee|transfer|total|cheap|deal/.test(q))return {...base,heading:"Area 33 delivered price — one clear total",text:"No verified customer quote is available for this research reference. Our goal is one Area 33 price including the product, chosen accessories, applicable tax, shipping, handling and every other Area 33 charge. The receiving FFL may charge its own transfer fee separately; that external fee is NOT included, and we do not collect or maintain those fee amounts. A final Area 33 quote requires a verified ship-to destination, exact sellable SKU and current source. No amount is invented."};
  if(/stock|inventory|available|order|purchase|buy|deliver/.test(q))return {...base,heading:"Availability needs live verification",text:"This research card is not a live inventory listing. We cannot promise sourceable stock, delivery or purchase eligibility without an approved distributor quote and current public listing."};
  if(/color|finish|variant|version|model|caliber|option/.test(q)){
   const v=variantDisclosure(product);
