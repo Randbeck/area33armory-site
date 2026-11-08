@@ -27,7 +27,7 @@ function photoFor(product,{large=false}={}){
  const wrapper=make("div",large?"research-modal-image":"research-card-image");
  if(!photo){
   const empty=make("div","research-photo-unavailable");
-  empty.append(make("span","","IMAGE PENDING"),make("small","","Only approved exact-product photography is shown."));
+  empty.append(make("span","research-photo-brand",product.brand),make("small","","Exact-product photo not yet approved."));
   wrapper.append(empty);
   return wrapper;
  }
@@ -70,6 +70,7 @@ function render(){
  if(!gallery)return;
  const query=search.value.trim(),category=select.value;
  const products=findResearchProducts(query,category,all);
+ if(!query&&category==="all")products.sort((a,b)=>Number(!!researchPhotoFor(b))-Number(!!researchPhotoFor(a))||researchTitle(a).localeCompare(researchTitle(b)));
  gallery.replaceChildren();
  total.textContent=products.length+" documented manufacturer references · not live inventory";
  if(!products.length){
