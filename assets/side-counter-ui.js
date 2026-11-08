@@ -143,8 +143,13 @@ function renderAccessories(parent,p){
 }
 const samplePrompts=["What makes this model different?","Show me every related model.","What accessories should I explore?","What does the Area 33 price include?"];
 function renderEva(parent,p){
- parent.append(make("h3","","Ask EVA, Your Firearms Expert"));
- parent.append(make("p","side-muted","EVA knows which model is at your counter. Right now this is a source-backed research preview, not live conversational Randbeck AI."));
+ const intro=make("section","side-eva-intro");
+ intro.append(make("span","side-eva-intro-eyebrow","MEET EVA / YOUR FIREARMS EXPERT"),
+  make("h3","","A knowledgeable guide, right at your counter."),
+  make("p","","EVA is Area 33's virtual firearms expert, designed to help you understand what you're looking at. She can explain product differences, explore known models, identify relevant accessories and show what evidence supports an answer. You don't have to know exactly what to ask."),
+  make("p","side-eva-disclosure","Powered by Randbeck Intelligence in the planned live experience. For now, EVA offers a limited, source-backed research preview—not a live AI conversation, current inventory confirmation or verified fit guarantee."));
+ parent.append(intro);
+ parent.append(make("h3","","What would you like to know?"));
  const log=make("div","side-eva-log");log.id="side-eva-log";log.setAttribute("aria-live","polite");log.setAttribute("role","log");
  const welcome=make("div","side-eva-answer");
  welcome.append(make("strong","","EVA · RESEARCH PREVIEW"),make("p","","You're looking at "+researchTitle(p)+". Ask about its documented specifications, related models, accessory evidence or the Area 33 delivered-price policy."));
@@ -190,23 +195,59 @@ function renderCompareStrip(){
 function renderShop(){
  const gallery=$("home-firearms-gallery"),count=$("home-firearms-count");
  if(!gallery)return;
- const products=findResearchProducts(state.search,state.department);
+ const group=state.department;
+ const query=state.search.trim().toLowerCase();
+ const items=group==="optics"||group==="accessories"?
+   ACCESSORIES.filter(p=>group==="accessories"||p.accessoryType==="optics")
+    .filter(p=>[p.brand,p.model,p.subtitle,p.note,...(p.facts||[])].join(" ").toLowerCase().includes(query)):
+   group==="suppressors"?[]:findResearchProducts(query,group);
+ const titles={all:"All researched firearms",pistols:"Pistols",rifles:"Rifles",shotguns:"Shotguns",
+  suppressors:"Suppressors",optics:"Optics",accessories:"Accessories"};
+ $("home-firearms-title").textContent=titles[group]||"Browse products";
+ $("home-firearms-description").textContent=group==="suppressors"?
+  "The NFA department is planned. Suppressor products will appear only after publication-approved catalog data and product details are connected.":
+  "Available manufacturer research references only, not a complete verified distributor catalog, price list or current inventory.";
  gallery.replaceChildren();
- count.textContent=products.length+" researched firearms · not the complete distributor catalog";
- if(!products.length){
-  gallery.append(make("p","home-no-results","No matches in this research sample. Try a different model or explore the full catalog preview."));
-  return;
+ count.textContent=items.length+" research references · not the complete distributor catalog";
+ if(!items.length){
+  const msg=group==="suppressors"?
+   "No publish-approved suppressor listings are connected yet. The department is ready for authorized catalog data; nothing is being presented as available for sale.":
+   "No matches in this limited research set. Search another term or browse the catalog preview.";
+  const box=make("div","home-empty-department");
+  box.append(make("strong","",group==="suppressors"?"Department coming soon":"Nothing matched this search"),
+    make("p","",msg));
+  const link=make("a","home-counter-button","Open catalog preview ↗");link.href="catalog.html";box.append(link);
+  gallery.append(box);return;
  }
- for(const p of products){
+ for(const p of items){
   const card=make("article","home-firearm-card");
   showProductPhoto(card,p);
   const body=make("div","home-firearm-copy");
-  body.append(make("span","home-product-category",p.department.toUpperCase()+" · "+p.brand),
+  body.append(make("span","home-product-category",(p.department||p.accessoryType||"research").toUpperCase()+" · "+p.brand),
     make("h3","",p.model),make("p","",p.subtitle||"Research model"),
-    make("span","home-card-price","Area 33 price pending · receiving FFL fee separate"));
-  const btn=eBtn("View at the side counter",()=>openCounter(p.id),"home-counter-button");
-  body.append(btn);card.append(body);gallery.append(card);
+    make("span","home-card-price","Public research only · Area 33 price pending"));
+  if(p.kind==="firearm"){
+   body.append(eBtn("Inspect at the side counter",()=>openCounter(p.id),"home-counter-button"));
+  }else{
+   const link=make("a","home-counter-button","View manufacturer reference ↗");
+   link.href=p.source;link.target="_blank";link.rel="noopener noreferrer";
+   body.append(link);
+  }
+  card.append(body);gallery.append(card);
  }
+}
+function revealDepartment(department,{scroll=true}={}){
+ if(!["all","pistols","rifles","shotguns","suppressors","optics","accessories"].includes(department))return;
+ state.department=department;
+ state.search="";
+ $("home-firearms-query").value="";
+ $("home-firearms-category").value=department;
+ const section=$("home-firearms");section.hidden=false;
+ renderShop();
+ document.querySelectorAll("[data-department-pick]").forEach(card=>{
+  card.setAttribute("aria-pressed",String(card.dataset.departmentPick===department));
+ });
+ if(scroll)section.scrollIntoView({behavior:"smooth",block:"start"});
 }
 $("side-counter-close").addEventListener("click",closeCounter);
 back.addEventListener("click",closeCounter);
@@ -219,17 +260,16 @@ $("side-compare").addEventListener("click",()=>{const p=current();if(!p)return;
 });
 for(const tab of ["inspect","models","accessories","eva"])$("side-tab-"+tab).addEventListener("click",()=>chooseTab(tab));
 $("home-firearms-query")?.addEventListener("input",e=>{state.search=e.target.value;renderShop();});
+document.querySelectorAll("[data-department-pick]").forEach(card=>{
+ card.addEventListener("click",()=>revealDepartment(card.dataset.departmentPick));
+});
 document.querySelectorAll("[data-shop-department]").forEach(a=>{
- a.addEventListener("click",()=>{
-  const value=a.dataset.shopDepartment;
-  if(!["all","pistols","rifles","shotguns"].includes(value))return;
-  state.department=value;
-  const select=$("home-firearms-category");
-  select.value=value;
-  renderShop();
+ a.addEventListener("click",e=>{
+  e.preventDefault();
+  revealDepartment(a.dataset.shopDepartment);
  });
 });
-$("home-firearms-category")?.addEventListener("change",e=>{state.department=e.target.value;renderShop();});
+$("home-firearms-category")?.addEventListener("change",e=>revealDepartment(e.target.value,{scroll:false}));
 document.addEventListener("keydown",e=>{
  if(e.key==="Escape"&&!panel.hidden)closeCounter();
  if(e.key==="Tab"&&!panel.hidden&&window.matchMedia("(max-width: 900px)").matches){
