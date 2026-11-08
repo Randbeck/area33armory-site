@@ -100,6 +100,8 @@ function renderInspect(parent,p){
  stack.append(list);
  stack.append(make("p","side-evidence-note",p.note));
  stack.append(safeLink("Manufacturer reference ↗",p.source));
+ const licensedPhoto=researchPhotoFor(p);
+ if(licensedPhoto)stack.append(safeLink("Photo credit and license ↗",licensedPhoto.sourcePage));
  const price=make("div","side-price");
  price.append(make("small","","AREA 33 DELIVERED PRICE"),make("strong","","Price pending"),make("p","","When verified, includes merchandise, applicable tax, shipping and all Area 33 charges. Receiving FFL transfer fee is charged separately by the chosen dealer and is not included."));
  stack.append(price);
@@ -216,14 +218,17 @@ $("side-compare").addEventListener("click",()=>{const p=current();if(!p)return;
  if(state.compare.has(p.id))state.compare.delete(p.id);else if(state.compare.size<3)state.compare.add(p.id);renderPanel();
 });
 for(const tab of ["inspect","models","accessories","eva"])$("side-tab-"+tab).addEventListener("click",()=>chooseTab(tab));
-$("home-firearms-query")?.addEventListener("input",e=>{state.search=e.target.value;renderShop();
+$("home-firearms-query")?.addEventListener("input",e=>{state.search=e.target.value;renderShop();});
 document.querySelectorAll("[data-shop-department]").forEach(a=>{
  a.addEventListener("click",()=>{
   const value=a.dataset.shopDepartment;
   if(!["all","pistols","rifles","shotguns"].includes(value))return;
-  state.department=value;const select=$("home-firearms-category");select.value=value;renderShop();
+  state.department=value;
+  const select=$("home-firearms-category");
+  select.value=value;
+  renderShop();
  });
-});});
+});
 $("home-firearms-category")?.addEventListener("change",e=>{state.department=e.target.value;renderShop();});
 document.addEventListener("keydown",e=>{
  if(e.key==="Escape"&&!panel.hidden)closeCounter();
