@@ -49,19 +49,28 @@ assert.match(interpretResearchQuestion(glock,"Quantum something unknown").text,/
 assert.match(interpretResearchQuestion(glock,"How does it differ?",{comparison:[standard]}).text,/G19 Gen5/);
 const notReady=allInQuoteStatus();
 assert.equal(notReady.confirmed,false);assert.equal(notReady.totalMinor,null);
-assert.ok(notReady.blockers.length>=4);
-assert.equal(allInQuoteStatus({zip:"abcde",receivingDealerName:"A",dealerFeeKnown:true}).confirmed,false);
+assert.equal(notReady.blockers.length,3);
+assert.match(notReady.excludedCharge,/receiving FFL transfer fee/i);
+assert.match(notReady.notice,/not included/i);
+assert.equal(allInQuoteStatus({zip:"abcde"}).confirmed,false);
 const items=[{id:glock.id,publicSkuVerified:true,stockVerified:true}];
 const goodQuote={verified:true,isPublicCustomerQuote:true,totalMinor:158735,
- includesTax:true,includesShipping:true,includesTransferFee:true,includesAllOtherFees:true,
+ includesTax:true,includesShipping:true,includesHandling:true,
+ includesOtherArea33Charges:true,receivingFflFeeExcluded:true,shippingDestinationVerified:true,
  expiresAt:"2099-01-01T00:00:00Z"};
-const ready={zip:"63640",receivingDealerName:"Example FFL",dealerFeeKnown:true,selectedProducts:items,sourceQuote:goodQuote};
+const ready={zip:"63640",selectedProducts:items,sourceQuote:goodQuote};
 assert.equal(allInQuoteStatus(ready).confirmed,true);
 assert.equal(allInQuoteStatus(ready).totalMinor,158735);
-for(const change of [{dealerFeeKnown:false},{zip:"1234"},{selectedProducts:[{id:glock.id,publicSkuVerified:false,stockVerified:true}]},
- {sourceQuote:{...goodQuote,includesTax:false}},{sourceQuote:{...goodQuote,expiresAt:"2000-01-01T00:00:00Z"}}]){
- assert.equal(allInQuoteStatus({...ready,...change}).confirmed,false,"Do not guarantee a price with missing fee, identity, tax or freshness");
+assert.match(allInQuoteStatus(ready).notice,/receiving FFL.*NOT included/i);
+for(const change of [{zip:"1234"},{selectedProducts:[{id:glock.id,publicSkuVerified:false,stockVerified:true}]},
+ {sourceQuote:{...goodQuote,includesTax:false}},{sourceQuote:{...goodQuote,includesShipping:false}},
+ {sourceQuote:{...goodQuote,includesHandling:false}},{sourceQuote:{...goodQuote,includesOtherArea33Charges:false}},
+ {sourceQuote:{...goodQuote,receivingFflFeeExcluded:false}},
+ {sourceQuote:{...goodQuote,shippingDestinationVerified:false}},
+ {sourceQuote:{...goodQuote,expiresAt:"2000-01-01T00:00:00Z"}}]){
+ assert.equal(allInQuoteStatus({...ready,...change}).confirmed,false,"Do not guarantee an Area 33 total with unknown source, tax, shipping, handling or quote validity");
 }
+assert.equal("dealerFeeKnown" in allInQuoteStatus(ready).inputs,false,"Never track independent receiving-FFL transfer fees");
 const html=fs.readFileSync(new URL("../six-view-counter.html",import.meta.url),"utf8");
 const js=fs.readFileSync(new URL("../assets/customer-experience-ui.js",import.meta.url),"utf8");
 const css=fs.readFileSync(new URL("../assets/customer-experience.css",import.meta.url),"utf8");
@@ -69,23 +78,28 @@ const main=fs.readFileSync(new URL("../assets/six-view-counter.js",import.meta.u
 for(const id of ["discover-counter","surprise-discovery","discovery-search","discovery-department","clear-discovery",
  "discovery-results","variant-results","thinking-room","thinking-conversation","thinking-query","thinking-form",
  "thinking-suggestions","thinking-product-context","compare-current","clear-compare","compare-cards",
- "save-current","saved-discoveries","all-in-form","delivery-zip","ffl-name","ffl-fee-known",
+ "save-current","saved-discoveries","all-in-form","delivery-zip",
  "all-in-label","quote-blockers","all-in-caption"]){
  assert.ok(html.includes('id="'+id+'"'),"Missing integrated storefront node "+id);
  if(!["discover-counter","thinking-room"].includes(id))assert.ok(js.includes('$("'+id+'")'),"Missing interaction handler "+id);
 }
-assert.match(html,/Full conversational Randbeck AI is <strong>not yet connected/);
-assert.match(html,/No total can be promised yet/);
+assert.match(html,/Full conversational EVA, powered by Randbeck Intelligence, is <strong>not yet connected/);
+assert.match(html,/not connected to live distributor quotes/i);
 assert.match(js,/interpretResearchQuestion\(state\.product/);
 assert.match(js,/goToCounter\(item\.id\)/);
 assert.match(js,/renderVariants\(\)/);
 assert.match(js,/allInQuoteStatus\(/);
 assert.match(main,/new CustomEvent\("area33:counter-update"/);
 assert.match(js,/window\.addEventListener\("area33:counter-update",syncFromCounter\)/);
+assert.match(js,/window\.addEventListener\("area33:featured-open"/);
 assert.match(js,/new Event\("change",\{bubbles:true\}\)/);
 assert.match(js,/state\.saved=/);
 assert.doesNotMatch(js,/localStorage|sessionStorage|credentials|private_supplier|dealer_cost|Authorization|fetch\(/);
 assert.doesNotMatch(html,/<script\b(?![^>]*\bsrc=)[^>]*>[\s\S]*<\/script>/i);
 assert.equal([...html.matchAll(/\bid="([^"]+)"/g)].length,new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1])).size);
+assert.match(html,/Ask EVA\. <em>Your Firearms Expert/);
+assert.doesNotMatch(html,/id="ffl-fee-known"|id="ffl-name"|includes the receiving FFL transfer fee/i);
+assert.match(html,/Receiving FFL transfer fee:<\/strong> Not included/i);
+assert.match(html,/id="featured-products"/);
 assert.match(css,/\.discovery-hub/);assert.match(css,/\.thinking-panel/);assert.match(css,/\.all-in-workspace/);
 console.log("Area 33 integrated discovery: catalog exploration without shortlist truncation, accurate variants, evidence Q&A, comparisons, session saves, and strict all-in quote readiness verified.");
