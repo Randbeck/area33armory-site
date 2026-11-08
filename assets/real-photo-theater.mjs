@@ -84,7 +84,11 @@ export function createPhotoTheater({chooseFirearm,chooseAccessory}={}){
    const link=document.createElement("a");
    link.textContent="Photo source ↗";link.href=optic.sourcePage;
    link.target="_blank";link.rel="noopener noreferrer";
-   node.append(link);
+   node.append(link,document.createTextNode(" · "));
+   const license=document.createElement("a");
+   license.textContent="License ↗";license.href=optic.licenseUrl;
+   license.target="_blank";license.rel="noopener noreferrer";
+   node.append(license,document.createTextNode(" · "+optic.modifications));
   }
   const proof=accessory?evaluatePairing(item,accessory):null;
   $("theater-fit-status").dataset.status=proof?.status||"none";
