@@ -3,6 +3,7 @@ import {REFERENCE_PRODUCTS,REFERENCE_CHECKED,DEPARTMENTS,ACCESSORY_CATEGORIES,re
 import {sanitizeCatalogManifest} from "./catalog-static-contract.mjs";
 import {createApprovedGallery,galleryAllowed} from "./catalog-gallery.mjs";
 import {createResearchPhotoViewer} from "./research-photo-viewer.mjs";
+import {PAIRING_REVIEWED,evaluatePairing,manufacturerListedSuggestions} from "./pairing-evidence.mjs";
 
 const $=id=>document.getElementById(id);
 const research=REFERENCE_PRODUCTS;
@@ -165,21 +166,63 @@ function render(){
  $("compare-add").disabled=hasCompare||compare.length>=3;
  $("compare-add").textContent=hasCompare?"Already on comparison shelf":"Save firearm to compare";
 }
+function presentPairingEvidence(record){
+ const panel=$("pairing-evidence"),sources=$("pairing-sources");
+ sources.replaceChildren();
+ if(!record){
+  panel.hidden=true;
+  $("fit-status").textContent="Not assessed";
+  return;
+ }
+ panel.hidden=false;
+ $("pairing-status").textContent=record.short;
+ $("pairing-status").dataset.status=record.status;
+ $("pairing-reviewed").textContent="Maker sources checked "+PAIRING_REVIEWED;
+ $("pairing-summary").textContent=record.summary;
+ $("pairing-why").textContent=record.why;
+ $("fit-status").textContent=record.status==="manufacturer-listed"?
+  "Manufacturer-listed (not independently tested)":
+  record.status==="factory-interface-differs"?"Not a factory direct match":
+  record.status==="family-guidance"?"Family guidance only":"Exact fit not assessed";
+ if(record.evidence.length===0){
+  sources.append(element("li","","No exact manufacturer fit evidence recorded for this combination."));
+ }else for(const citation of record.evidence){
+  const li=element("li"),link=element("a","",citation.label+" ↗");
+  link.href=citation.url;link.target="_blank";link.rel="noopener noreferrer";
+  li.append(link,element("small","",citation.checkedAt));
+  sources.append(li);
+ }
+}
+function updateSuggestion(){
+ const area=$("smart-suggestion-area");
+ const listed=manufacturerListedSuggestions(current,listItems("accessory","optics"));
+ const candidate=listed.find(x=>x.id!==accessory?.id);
+ area.hidden=!candidate;
+ if(candidate){
+  $("smart-suggestion-caption").textContent=title(candidate)+". A manufacturer names this firearm model in its fitment list. No image overlay or physical fit test has been performed.";
+  $("smart-suggestion").dataset.accessoryId=candidate.id;
+ }else delete $("smart-suggestion").dataset.accessoryId;
+}
 function renderPairing(){
  if(!current)return;
+ updateSuggestion();
  if(!accessory){
   $("pairing-title").textContent="Select an accessory to explore.";
-  $("pairing-copy").textContent="Products are kept separate until an exact pairing has been independently verified.";
-  $("pairing-warning").textContent="There is no visual fitment claim or compatibility confirmation in this preview.";
+  $("pairing-copy").textContent="Products are kept separate until you explicitly select an exact accessory. The system will then look for available manufacturer fitment evidence.";
+  $("pairing-warning").textContent="No accessory has been selected, and no fitment or visual pairing is implied.";
   $("accessory-official-link").hidden=true;
+  presentPairingEvidence(null);
   return;
  }
  $("pairing-title").textContent=title(current)+" + "+title(accessory);
  $("pairing-copy").textContent=accessory.subtitle+". "+accessory.facts.join(". ")+".";
- $("pairing-warning").textContent="Compatibility not verified. "+accessory.note+" The showroom will only render a physical try-on if a matching exact-product pairing and licensed media are approved.";
+ const result=evaluatePairing(current,accessory);
+ presentPairingEvidence(result);
+ $("pairing-warning").textContent=result.caution;
  const a=$("accessory-official-link");a.hidden=!accessory.source;
  if(accessory.source)a.href=accessory.source;
 }
+
 function renderCompare(){
  const list=$("compare-list");list.replaceChildren();
  if(!compare.length){list.append(element("p","room-small-status","Your comparison shelf is empty. Choose a real model above to start."));return;}
@@ -195,7 +238,7 @@ function answerQuestion(q){
  const prefix=title(current)+": ";
  const answers={
  differences:prefix+current.facts.join("; ")+". These are manufacturer research highlights, not a complete comparison of every variant. Use the official documentation for exact specs.",
- fit:accessory?"With "+title(accessory)+", fit is NOT VERIFIED. A model-family label or visual resemblance is not enough. Check exact variants, maker fit guides and any required adapter, then professional confirmation where appropriate.":
+ fit:accessory?((p)=>p.short+". "+p.summary+" "+p.caution)(evaluatePairing(current,accessory)):
  "Choose an exact accessory first. Even then, the showroom will not label it compatible without specific, reviewed pairing evidence.",
  value:"No current Area 33 customer quote is connected. Verified pricing will use exact distributor offers, recorded availability freshness, freight, fees, promotions and margin. No lowest-price promise is made."
  };
@@ -203,7 +246,10 @@ function answerQuestion(q){
 }
 function copySelection(){
  const selected=title(current)+(accessory?" + research accessory: "+title(accessory):"");
- return "Area 33 product research: "+selected+". Reference only; no compatibility, stock, price or offer verified. "+(current.source||"")+" "+(accessory?.source||"");
+ const proof=evaluatePairing(current,accessory);
+ return "Area 33 product research: "+selected+". "+
+   (proof?("Evidence status: "+proof.short+". "+proof.summary+" "):"")+
+   "No independent physical inspection, verified stock, customer price or offer. "+(current.source||"")+" "+(accessory?.source||"");
 }
 async function copyText(text){
  if(!navigator.clipboard?.writeText)throw Error("Clipboard unavailable");
@@ -247,6 +293,13 @@ function init(){
  $("compare-add").addEventListener("click",()=>{
   if(!current||compare.some(x=>x.id===current.id)||compare.length>=3)return;
   compare.push(current);renderCompare();render();
+ });
+ $("smart-suggestion").addEventListener("click",()=>{
+  const id=$("smart-suggestion").dataset.accessoryId;
+  const suggested=listItems("accessory","optics").find(x=>x.id===id);
+  if(!suggested)return;
+  selectAccessoryCategory("optics",suggested.brand,suggested.id);
+  $("intel-answer").textContent="One manufacturer-listed possibility to understand: "+title(suggested)+". See the exact fitment evidence below, including the limits of the claim.";
  });
  $("share-selection").addEventListener("click",async()=>{
   try{await copyText(copySelection());$("sharing-status").textContent="Research summary copied. No fit or price has been claimed.";}
