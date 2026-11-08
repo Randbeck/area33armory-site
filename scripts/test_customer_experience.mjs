@@ -83,7 +83,7 @@ for(const id of ["discover-counter","surprise-discovery","discovery-search","dis
  assert.ok(html.includes('id="'+id+'"'),"Missing integrated storefront node "+id);
  if(!["discover-counter","ask-eva"].includes(id))assert.ok(js.includes('$("'+id+'")'),"Missing interaction handler "+id);
 }
-assert.match(html,/Full conversational EVA, powered by Randbeck Intelligence, is <strong>not yet connected/);
+assert.match(html,/Full conversational EVA powered by Randbeck Intelligence is <strong>not yet connected/);
 assert.match(html,/not connected to live distributor quotes/i);
 assert.match(js,/interpretResearchQuestion\(state\.product/);
 assert.match(js,/goToCounter\(item\.id\)/);
@@ -98,6 +98,7 @@ assert.doesNotMatch(js,/localStorage|sessionStorage|credentials|private_supplier
 assert.doesNotMatch(html,/<script\b(?![^>]*\bsrc=)[^>]*>[\s\S]*<\/script>/i);
 assert.equal([...html.matchAll(/\bid="([^"]+)"/g)].length,new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1])).size);
 assert.match(html,/Ask EVA\. <em>Your Firearms Expert/);
+assert.match(html,/Meet EVA:<\/strong> Area 33’s virtual firearms expert/);
 assert.doesNotMatch(html,/id="ffl-fee-known"|id="ffl-name"|includes the receiving FFL transfer fee/i);
 assert.match(html,/Receiving FFL transfer fee:<\/strong> Not included/i);
 assert.match(html,/id="featured-products"/);
