@@ -6,6 +6,8 @@ import {REFERENCE_PRODUCTS} from "../assets/product-room-research.mjs";
 import {evaluatePairing} from "../assets/pairing-evidence.mjs";
 const html=fs.readFileSync(new URL("../counter-3d.html",import.meta.url),"utf8");
 const code=fs.readFileSync(new URL("../assets/counter-3d.js",import.meta.url),"utf8");
+const optics=fs.readFileSync(new URL("../optic-lab.html",import.meta.url),"utf8");
+const opticsCode=fs.readFileSync(new URL("../assets/optic-lab.js",import.meta.url),"utf8");
 const css=fs.readFileSync(new URL("../assets/counter-3d.css",import.meta.url),"utf8");
 assert.equal(COUNTER_SCENE_SCHEMA,"area33.counter.scene.v1");
 assert.deepEqual(Object.keys(FINISHES),["graphite","sand","slate"]);
@@ -43,10 +45,19 @@ for(const phrase of ["illustrative procedural pistol model","not a 3D scan","inv
 }
 for(const id of ["model-canvas","mode-blueprint","mode-finish","mode-transition","view-left","view-right","view-top",
  "view-reset","spin-toggle","zoom-minus","zoom-plus","zoom-status","evidence-status","evidence-copy","evidence-source",
- "reticle-canvas","ffp","sfp","magnification","mag-label","focal-copy","receipt-lines","total","reset-selection","copy-summary","copy-status"]){
+ "receipt-lines","total","reset-selection","copy-summary","copy-status"]){
  assert.ok(html.includes('id="'+id+'"'),"Missing control "+id);
  assert.ok(code.includes('$("'+id+'")'),"Missing JS control "+id);
 }
+assert.ok(html.includes('href="optic-lab.html"'),"Optics lab is navigable but not forced into a pistol experience");
+assert.ok(!html.includes('id="reticle-canvas"'),"Pistol page must not contain a scope focal-plane lab");
+assert.ok(!code.includes('$("reticle-canvas")'),"Pistol renderer must not depend on absent optics nodes");
+for(const id of ["reticle-canvas","ffp","sfp","magnification","mag-label","focal-heading","focal-copy"]){
+ assert.ok(optics.includes('id="'+id+'"'),"Missing optics education control: "+id);
+ assert.ok(opticsCode.includes('$("'+id+'")'),"Missing optics JS binding: "+id);
+}
+assert.match(opticsCode,/paintReticle\(ctx,width,height,mag,plane\)/);
+assert.match(optics,/first and second focal plane behavior/i);
 assert.equal([...html.matchAll(/\bid="([^"]+)"/g)].length,new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1])).size,"Unique DOM IDs");
 assert.match(code,/paintConcept\(stageCtx/);
 assert.match(code,/stage\.addEventListener\("pointermove"/);
@@ -57,4 +68,4 @@ assert.match(code,/samplePackage\(\[\.\.\.chosen\]\)/);
 assert.match(css,/\.viewport canvas/);
 assert.doesNotMatch(code,/localStorage|sessionStorage|dealer_cost|private_supplier|checkout|fetch\(/);
 assert.doesNotMatch(html,/<iframe|<script\b(?![^>]*\bsrc=)[^>]*>[\s\S]*<\/script>/i);
-console.log("Area 33 3D pilot: real geometric orbit/projection, optic evidence gate, visual states, reticle focal-plane scaling and nonbinding package verified.");
+console.log("Area 33 3D pilot: real geometric orbit/projection, optic evidence gate, visual states, separated optics lesson, reticle focal-plane scaling and nonbinding package verified.");
