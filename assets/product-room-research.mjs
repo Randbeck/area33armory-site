@@ -85,7 +85,7 @@ export const REFERENCE_PRODUCTS=Object.freeze([
    note:"The product page alone is not confirmation for any firearm/accessory combination.",
    source:"https://aliengearholsters.com/products/cloak-tuck-3-5-iwb-holster"}
 ]);
-const ids=new Set(),allowHosts=new Set(["us.glock.com","www.sigsauer.com","www.canik.com","ruger.com","www.ruger.com","resources.mossberg.com","dam.beretta.com","www.holosun.com","www.streamlight.com","aliengearholsters.com"]);
+const ids=new Set(),allowHosts=new Set(["us.glock.com","www.sigsauer.com","www.canik.com","ruger.com","www.ruger.com","resources.mossberg.com","dam.beretta.com","www.holosun.com","www.streamlight.com","aliengearholsters.com","www.meoptasportsoptics.com"]);
 for(const item of REFERENCE_PRODUCTS){
  if(ids.has(item.id)||!/^[a-z0-9-]{5,65}$/.test(item.id))throw Error("Duplicate or invalid research id");
  ids.add(item.id);
