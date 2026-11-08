@@ -41,7 +41,7 @@ for(const id of ["theater-stage","theater-main-image","theater-no-image","theate
  assert.ok(js.includes('$("'+id+'")'),"Missing JS binding: "+id);
 }
 assert.match(html,/product=ruger-precision-308-gen1&amp;accessory=meopta-optika6-3-18x56-rd-sfp/);
-assert.match(home,/product=ruger-precision-308-gen1&amp;accessory=meopta-optika6-3-18x56-rd-sfp/);
+assert.match(home,/data-side-counter-product="ruger-precision-308-gen1"/,"Homepage opens its actual photographed rifle in the new side counter");
 assert.match(js,/researchPhotoFor\(item\)/);
 assert.match(js,/benchPhotoFor\(accessory\)/);
 assert.match(js,/evaluatePairing\(item,accessory\)/);
