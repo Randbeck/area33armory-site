@@ -81,7 +81,7 @@ export function researchAccessories(category){
 export function chooseDiscovery(items,currentId,seed){
  if(!Array.isArray(items)||!items.length)return null;
  const sorted=items.slice().sort((a,b)=>a.id.localeCompare(b.id));
- let i=(Math.abs(Number.isFinite(seed)?Math.trunc(seed):0))%sorted.length);
+ let i=Math.abs(Number.isFinite(seed)?Math.trunc(seed):0)%sorted.length;
  if(sorted.length>1&&sorted[i].id===currentId)i=(i+1)%sorted.length;
  return sorted[i];
 }
