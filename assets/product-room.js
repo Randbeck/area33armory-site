@@ -4,6 +4,7 @@ import {sanitizeCatalogManifest} from "./catalog-static-contract.mjs";
 import {createApprovedGallery,galleryAllowed} from "./catalog-gallery.mjs";
 import {createResearchPhotoViewer} from "./research-photo-viewer.mjs";
 import {PAIRING_REVIEWED,evaluatePairing,manufacturerListedSuggestions} from "./pairing-evidence.mjs";
+import {createExperienceBench} from "./experience-bench.mjs";
 
 const $=id=>document.getElementById(id);
 const research=REFERENCE_PRODUCTS;
@@ -13,6 +14,11 @@ let approved=[];
 let dept="pistols",accessoryCategory="optics";
 let current=null,accessory=null,compare=[],discoverSeed=1;
 const researchPhotoViewer=createResearchPhotoViewer();
+const experienceBench=createExperienceBench({
+ getKnownItems:()=>[...research,...approved],
+ onChooseAccessory:item=>selectAccessoryCategory(item.accessoryType,item.brand,item.id),
+ onClearAccessory:()=>selectAccessoryCategory(accessoryCategory,$("accessory-brand").value)
+});
 function element(tag,className,copy){
  const n=document.createElement(tag);
  if(className)n.className=className;
@@ -162,6 +168,7 @@ function render(){
  $("reference-note").textContent=item.approvedItem?"Approved public record; not current stock.":"Official model research checked "+REFERENCE_CHECKED+".";
  presentApprovedMedia(item);
  renderPairing();
+ experienceBench.render(current,accessory);
  const hasCompare=compare.some(x=>x.id===item.id);
  $("compare-add").disabled=hasCompare||compare.length>=3;
  $("compare-add").textContent=hasCompare?"Already on comparison shelf":"Save firearm to compare";
