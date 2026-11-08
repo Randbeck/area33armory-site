@@ -1,7 +1,7 @@
 name: Area 33 draft website validation
 on:
   push:
-    branches: [site-refresh-v1, work/approved-catalog-thumbnails, work/randbeck-catalog-bridge-v1, work/scalable-approved-catalog-v2, work/distributor-scope-authorization-v1, work/rights-safe-text-catalog-v1, work/private-media-withdrawal-v1, work/approved-catalog-release-preflight-v1, work/controlled-catalog-release-v1, work/github-pages-controlled-publish-v1, work/private-text-batch-review-v1, work/private-evidence-assisted-review-v1, work/referenced-product-research-v1, work/first-catalog-readiness-v1, work/storefront-approved-image-zoom-v1, work/experience-bay-discovery-v1, work/real-product-showroom-v2, work/flagship-real-photo-viewer-v1]
+    branches: [site-refresh-v1, work/approved-catalog-thumbnails, work/randbeck-catalog-bridge-v1, work/scalable-approved-catalog-v2, work/distributor-scope-authorization-v1, work/rights-safe-text-catalog-v1, work/private-media-withdrawal-v1, work/approved-catalog-release-preflight-v1, work/controlled-catalog-release-v1, work/github-pages-controlled-publish-v1, work/private-text-batch-review-v1, work/private-evidence-assisted-review-v1, work/referenced-product-research-v1, work/first-catalog-readiness-v1, work/storefront-approved-image-zoom-v1, work/experience-bay-discovery-v1, work/real-product-showroom-v2, work/flagship-real-photo-viewer-v1, work/verified-pairing-experience-v1]
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,6 +25,7 @@ jobs:
           node --check assets/catalog-gallery.mjs
           node --check assets/product-room-research.mjs
           node --check assets/research-photo-license.mjs
+          node --check assets/pairing-evidence.mjs
           node --check assets/research-photo-viewer.mjs
           node --input-type=module --check < assets/product-room.js
           node --check assets/catalog-static-contract.mjs
@@ -41,4 +42,5 @@ jobs:
           node scripts/test_experience_bay.mjs
           node scripts/test_product_room.mjs
           node scripts/test_flagship_research_photo.mjs
+          node scripts/test_pairing_evidence.mjs
           node scripts/test_catalog_shards_contract.mjs
