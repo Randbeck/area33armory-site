@@ -22,7 +22,7 @@ const has=(list,x)=>list.includes(x);
 const localFor=(id)=>Object.fromEntries(localByProduct.get(id)||[]);
 function getCurrentViews(){return getViewsForProduct(selected,approvedViews,localFor(selected.id));}
 function fitPhoto(){
- if(!activeView?.photo){$("zoom-out").disabled=true;$("zoom-in").disabled=true;$("reset-image").disabled=true;$("fullscreen").disabled=true;return;}
+ if(!activeView?.photo){$("zoom-amount").textContent="100%";$("zoom-out").disabled=true;$("zoom-in").disabled=true;$("reset-image").disabled=true;$("fullscreen").disabled=true;return;}
  pan=clampPan(pan,zoom);
  $("main-photo").style.setProperty("--scale",String(zoom));
  $("main-photo").style.setProperty("--pan-x",pan.x+"px");
@@ -81,7 +81,8 @@ function rebuildAngles(){
   const btn=create("button","angle-button");btn.type="button";
   btn.dataset.angle=slot.angle;btn.disabled=!slot.available;
   btn.setAttribute("aria-pressed",String(active.angle===slot.angle));
-  const icon=create("span","",angleIcons[slot.angle]);icon.setAttribute("aria-hidden","true");
+  const icon=slot.available?create("img","angle-thumb"):create("span","",angleIcons[slot.angle]);
+  if(slot.available){icon.src=slot.photo.src;icon.alt="";icon.loading="lazy";icon.referrerPolicy="no-referrer";}else icon.setAttribute("aria-hidden","true");
   btn.append(icon,create("strong","",slot.angle.charAt(0).toUpperCase()+slot.angle.slice(1)),
    create("small","",slot.mode==="local-preview"?"Local preview":slot.mode==="approved-public"?"Approved view":"Not available"));
   btn.title=slot.available?"Show actual "+slot.angle+" photograph":"No authorized exact "+slot.angle+" view yet";
