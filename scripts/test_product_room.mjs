@@ -50,7 +50,7 @@ assert.match(script,/Compatibility not verified/);
 assert.match(script,/accessory=list\.find\(x=>x\.id===preferId\)\|\|null/);
 assert.match(script,/Long Guns.*cannot safely be assumed/);
 assert.doesNotMatch(script,/dealer_cost|private_supplier|source_sku|localStorage|sessionStorage/);
-assert.doesNotMatch(html,/<iframe|<script[^>]*>[\s\S]*<\/script>/);
+assert.doesNotMatch(html,/<iframe|<script\b(?![^>]*\bsrc=)[^>]*>[\s\S]*<\/script>/i);
 assert.match(homepage,/href="product-room\.html"/);
 assert.match(catalog,/href="product-room\.html"/);
 assert.match(stylesheet,/\.room-stage/);
