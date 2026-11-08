@@ -4,16 +4,38 @@
 <meta name="description" content="Area 33 multi-angle product counter: exact real product research photos, available views, firearm-aware accessories and transparent quote status. Development preview.">
 <title>The Product Counter | Area 33 Armory</title>
 <link rel="stylesheet" href="assets/six-view-counter.css">
-<script type="module" src="assets/six-view-counter.js"></script></head>
+<link rel="stylesheet" href="assets/customer-experience.css">
+<script type="module" src="assets/six-view-counter.js"></script>
+<script type="module" src="assets/customer-experience-ui.js"></script></head>
 <body>
 <a class="skip" href="#view-stage">Skip to product inspection</a>
 <header class="site-top"><div class="top-inner"><a href="index.html" class="mark">AREA <strong>33</strong> ARMORY<span>/ PRODUCT COUNTER</span></a>
 <nav aria-label="Site navigation"><a href="product-room.html">Research showroom</a><a href="index.html">Home</a></nav><span class="development">DRAFT EXPERIENCE · NO PUBLIC OFFERS</span></div></header>
 <main>
-<section class="hero wrap"><div><span class="eyebrow">WELCOME TO THE COUNTER / EXPERIENCE 01</span><h1>Look closer.<br><em>Know what you're looking at.</em></h1><p>Choose a real firearm, inspect every documented photograph, explore relevant products and see what we know about compatibility—without losing your place.</p></div>
+<section class="hero wrap"><div><span class="eyebrow">DISCOVER · INSPECT · ASK · COMPARE</span><h1>You don't have to know <em>what you want yet.</em></h1><p>Come in curious. Discover real models, bring them to the counter, compare what matters, explore accessories and ask questions without starting over. Just browsing? That’s the point.</p></div>
 <div class="hero-note"><span class="hero-note-line"></span><strong>Real products. Real evidence.</strong><p>Only documented views appear. Missing directions stay unavailable until we have an exact-product photograph and publication permission.</p></div></section>
-<section class="counter wrap" aria-label="Multi-angle digital product counter">
+<section class="discovery-hub wrap" id="discover-counter" aria-label="Guided product discovery">
+  <div class="discovery-heading"><div><span class="eyebrow">START ANYWHERE / NO ACCOUNT REQUIRED</span><h2>What caught your eye today?</h2>
+    <p>Use the search, explore everything in this research set, or let us show you something unexpected. Full distributor-catalog integration is still pending.</p></div>
+    <button id="surprise-discovery" type="button" class="surprise-button">✦ Surprise me with something real</button>
+  </div>
+  <div class="discovery-search">
+    <label for="discovery-search">Find a model, brand, feature or category</label>
+    <div class="discovery-search-row"><input id="discovery-search" type="search" maxlength="120" placeholder="Try: optic ready, Ruger, compact, 9mm…">
+    <select id="discovery-department" aria-label="Filter research models"><option value="all">All firearms</option><option value="pistols">Pistols</option><option value="rifles">Rifles</option><option value="shotguns">Shotguns</option></select>
+    <button id="clear-discovery" type="button">Clear search</button></div>
+    <p class="research-coverage" id="discovery-coverage">Curated manufacturer research references only. Not live inventory.</p>
+  </div>
+  <div class="discovery-results-head"><strong id="discovery-result-count">Available research references</strong>
+   <span>No forced purchase. Browse everything or take something to the counter.</span></div>
+  <div class="discovery-results" id="discovery-results" aria-live="polite"></div>
+</section>
+<section class="counter wrap" id="product-counter" aria-label="Multi-angle digital product counter">
 <div class="counter-head"><div><span class="eyebrow">01 / INSPECT THE PRODUCT</span><h2 id="headline">Ruger Precision Rifle</h2><p id="model-subtitle">Choose an exact manufacturer research reference.</p></div><div class="view-progress"><strong id="coverage-number">0 / 6</strong><span id="coverage-caption">Six-direction coverage</span></div></div>
+<section class="known-variants" aria-label="Known related models and finishes"><div class="variant-heading">
+  <div><span class="eyebrow">RELATED MODELS & FINISHES</span><h3>Explore every documented option we actually know.</h3></div>
+  <p id="variant-coverage">No verified finish or complete variant coverage is connected yet.</p></div>
+  <div id="variant-results" class="variant-results"></div></section>
 <div class="counter-main">
 <div class="visual-column">
 <div class="scene-shell" id="view-stage" tabindex="0" aria-label="Product photo stage. Select a documented angle, zoom using controls, then drag to pan. Arrow keys switch among available views when not zoomed.">
@@ -65,6 +87,32 @@
 </aside>
 </div>
 </section>
+<section class="intelligence-workspace wrap" id="thinking-room" aria-label="Randbeck Thinking Room research preview">
+  <div class="thinking-intro"><span class="eyebrow">THE THINKING ROOM / AT YOUR COUNTER</span>
+   <h2>Ask the question you haven’t figured out how to ask yet.</h2>
+   <p>This preview can explain documented model facts, manufacturer pairing evidence, comparisons and why all-in pricing is pending. It follows your current selection. Full conversational Randbeck AI is <strong>not yet connected</strong>.</p>
+   <div class="thinking-context"><span>NOW EXPLORING</span><strong id="thinking-product-context">Select a product</strong></div>
+   <div class="thinking-quick" id="thinking-suggestions" aria-label="Suggested product questions"></div></div>
+  <div class="thinking-panel">
+   <div class="thinking-panel-head"><span class="thinking-live-indicator"></span><strong>AREA 33 / RANDBECK</strong><span>OFFLINE EVIDENCE PREVIEW</span></div>
+   <div id="thinking-conversation" class="thinking-conversation" role="log" aria-live="polite" aria-label="Product research conversation"></div>
+   <form id="thinking-form" class="thinking-form"><label for="thinking-query">Ask about the selected product</label>
+     <div><input id="thinking-query" autocomplete="off" maxlength="500" placeholder="Why is this model different? What fits?">
+     <button type="submit">Ask →</button></div></form>
+   <p class="thinking-disclaimer">This is not a live AI answer or product fit certificate. Linked sources and uncertainty remain visible.</p>
+  </div>
+</section>
+<section class="compare-workspace wrap" id="compare-area" aria-label="Compare real research models">
+  <div class="compare-head"><div><span class="eyebrow">COMPARE WITHOUT LOSING YOUR PLACE</span><h2>See the real differences.</h2>
+    <p>Choose up to three manufacturer research references. Missing specifications stay unknown instead of being guessed.</p></div>
+    <div class="compare-actions"><button id="compare-current" type="button">+ Compare current product</button><button id="clear-compare" type="button">Clear comparison</button></div></div>
+  <div class="compare-cards" id="compare-cards" aria-live="polite"><p>Open a product and add it here to compare.</p></div>
+</section>
+<section class="saved-workspace wrap" aria-label="Your discoveries"><span class="eyebrow">YOUR CURRENT VISIT / NO ACCOUNT</span>
+ <div class="saved-line"><div><h2>Worth another look?</h2><p>Keep interesting research models close while browsing. Saved here only during this page visit, not in a server account.</p></div>
+ <button id="save-current" type="button">☆ Save this discovery</button></div>
+ <div id="saved-discoveries" class="saved-results" aria-live="polite"><p>Nothing saved yet.</p></div>
+</section>
 <section class="package wrap" aria-label="Research selection and price breakdown">
 <div class="package-about"><span class="eyebrow">03 / YOUR COUNTER SELECTION</span><h2>See the whole picture.</h2><p>Keep multiple accessories together in one researched package. Every product is listed by its real reference name, and unresolved fitment stays visible.</p>
  <p class="price-explanation">We will show a customer price only after Randbeck has actual sourceable products, applicable charges and verified availability. This draft deliberately doesn't invent a price.</p>
@@ -72,7 +120,23 @@
 <div class="receipt"><div class="receipt-top"><strong>AREA 33 ARMORY</strong><span>RESEARCH ONLY · NOT A QUOTE</span></div><div id="package-lines"></div>
 <div class="receipt-total"><span>Verified complete package price</span><strong id="package-total">Quote pending</strong></div><p id="package-note">No live sourcing or customer price connected.</p><button id="copy-selection" type="button">Copy research selection link</button><output id="copy-result" aria-live="polite"></output></div>
 </section>
-<section class="next wrap"><span class="eyebrow">REALITY CHECK / THIS DEVELOPMENT BATCH</span><div><p><strong>Works now:</strong> exact-product photo selection, six directional slots with clear missing states, high-resolution zoom/pan, optional temporary local six-view preview, accessories with manufacturer evidence, and a researched package.</p>
-<p><strong>Still needed:</strong> published, rights-cleared exact-product images for all six sides, more exact accessory records, verified fitment for complete combinations and actual Randbeck supplier quotes. A 2D photo never proves physical attachment.</p></div></section>
+<section class="all-in-workspace wrap" id="all-in" aria-label="Area 33 one-price readiness">
+ <div class="all-in-heading"><div><span class="eyebrow">THE AREA 33 ALL-IN PROMISE / NOT A TEASER PRICE</span>
+ <h2>One price. <em>What you actually pay.</em></h2>
+ <p>Our goal is a confirmed total that includes the firearm, chosen accessories, applicable taxes, shipping, handling, receiving-dealer transfer fees and other required charges. No surprises at checkout.</p>
+ <p class="all-in-warning">This draft is NOT connected to live distributor pricing or a receiving-FFL fee network. No total can be promised yet.</p></div>
+ <div class="all-in-status"><span>QUOTE STATE</span><strong id="all-in-label">ALL-IN PRICE PENDING</strong><span id="all-in-caption">The full amount cannot yet be verified.</span></div></div>
+ <div class="all-in-details"><form id="all-in-form" class="all-in-form"><h3>What a real all-in quote needs</h3>
+  <label for="delivery-zip">Delivery / receiving FFL ZIP (5 digits)</label><input id="delivery-zip" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="ZIP" autocomplete="off">
+  <label for="ffl-name">Receiving FFL dealer (name only)</label><input id="ffl-name" maxlength="100" placeholder="Dealer name, if known" autocomplete="off">
+  <label class="confirmed-fee"><input id="ffl-fee-known" type="checkbox"> I have confirmation of the receiving dealer's transfer fee or Area 33's coverage</label>
+  <button type="submit">Check quote requirements</button>
+  <p>Inputs stay in this browser page only. They are not submitted to any server or saved.</p>
+ </form>
+ <div class="requirements"><h3 id="quote-readiness-title">What remains to verify</h3><ul id="quote-blockers"><li>Verify the destination, receiving dealer, sourceable stock, shipping, applicable tax and all fees.</li></ul>
+ <p>Once verified, Randbeck should provide one time-limited customer quote. Internal supplier costs remain private.</p></div></div>
+ </section>
+ <section class="next wrap"><span class="eyebrow">REALITY CHECK / THIS DEVELOPMENT BATCH</span><div><p><strong>Works now:</strong> exact-product photo selection, six directional slots with clear missing states, high-resolution zoom/pan, optional temporary local six-view preview, accessories with manufacturer evidence, and a researched package.</p>
+<p><strong>Still needed:</strong> licensed exact-product multi-angle images, full distributor catalog and color/variant coverage, secure live Randbeck Thinking Room service, verified combined accessory fitment and actual all-in quotes. A 2D photo never proves physical attachment.</p></div></section>
 </main><footer>AREA 33 ARMORY · NO LIVE INVENTORY, PRICES OR CHECKOUT · <a href="product-room.html">Return to photo research</a></footer>
 </body></html>
