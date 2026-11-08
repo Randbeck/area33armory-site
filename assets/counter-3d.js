@@ -2,7 +2,7 @@
 import {REFERENCE_PRODUCTS,researchTitle} from "./product-room-research.mjs";
 import {evaluatePairing} from "./pairing-evidence.mjs";
 import {reviewAccessoryContext} from "./accessory-context.mjs";
-import {buildConceptMesh,paintConcept,paintReticle,clampCamera,samplePackage} from "./counter-3d-scene.mjs";
+import {buildConceptMesh,paintConcept,clampCamera,samplePackage} from "./counter-3d-scene.mjs";
 /* Interactive counter *prototype*. No backend calls, permissions to sell,
    exact CAD geometry, private catalog records, or unverified accessory claims. */
 const $=id=>document.getElementById(id);
@@ -15,8 +15,8 @@ let camera=clampCamera({yaw:-.25,pitch:-.15,zoom:1});
 let mix=0,targetMix=0,finish="graphite",spin=false,lastTime=0,lastSelected=null;
 const chosen=new Set();
 const reducedMotion=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches||false;
-const stage=$("model-canvas"),reticle=$("reticle-canvas"),stageCtx=stage.getContext("2d"),retCtx=reticle.getContext("2d");
-let plane="ffp",mag=4,drag=null;
+const stage=$("model-canvas"),stageCtx=stage.getContext("2d");
+let drag=null;
 function resizeCanvas(canvas){
  const rect=canvas.getBoundingClientRect(),ratio=Math.min(2,window.devicePixelRatio||1);
  const w=Math.max(1,Math.round(rect.width*ratio)),h=Math.max(1,Math.round(rect.height*ratio));
@@ -29,11 +29,6 @@ function draw3D(){
  const mesh=buildConceptMesh({finish,optic:chosen.has("holosun-scs-m-gr")&&
   evaluatePairing(reference,products.get("holosun-scs-m-gr")).status==="manufacturer-listed"});
  paintConcept(stageCtx,width,height,camera,mix,mesh);
-}
-function drawOpticEducation(){
- if(!retCtx)return;
- const {width,height}=resizeCanvas(reticle);
- paintReticle(retCtx,width,height,mag,plane);
 }
 function syncMode(){
  const finished=targetMix>.5;
@@ -148,16 +143,6 @@ function wireEvents(){
   $("evidence-copy").textContent="A product category or reference never establishes exact fit. Select an item to see documented evidence.";
   $("evidence-source").hidden=true;
  });
- for(const id of ["ffp","sfp"])$(id).addEventListener("click",()=>{
-  plane=id;$("ffp").setAttribute("aria-pressed",String(plane==="ffp"));
-  $("sfp").setAttribute("aria-pressed",String(plane==="sfp"));
-  $("focal-heading").textContent=plane==="ffp"?"First focal plane":"Second focal plane";
-  $("focal-copy").textContent=plane==="ffp"?
-   "The reticle appears to change size together with the magnified scene. Watch both the scene's geometric background and the red/black reticle scale.":
-   "The scene magnifies, but the reticle stays about the same apparent size. Compare the crosshair to the geometric background as you move the slider.";
-  drawOpticEducation();
- });
- $("magnification").addEventListener("input",e=>{mag=Number(e.target.value);$("mag-label").textContent=mag+"×";drawOpticEducation();});
  $("copy-summary").addEventListener("click",async()=>{
   const data=samplePackage([...chosen]);
   const text=[
@@ -172,9 +157,9 @@ function wireEvents(){
    await navigator.clipboard.writeText(text);$("copy-status").textContent="Demonstration summary copied (not an order or quote).";
   }catch{$("copy-status").textContent="Clipboard unavailable; summary is visible on this page.";}
  });
- window.addEventListener("resize",()=>{draw3D();drawOpticEducation();});
+ window.addEventListener("resize",draw3D);
 }
 wireEvents();
 refreshReceipt();
-syncMode();draw3D();drawOpticEducation();
+syncMode();draw3D();
 window.requestAnimationFrame(step);
