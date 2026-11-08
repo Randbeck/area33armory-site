@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#09090c">
+<meta name="description" content="Area 33 interactive optics education laboratory—compare an illustrative first versus second focal plane reticle.">
+<title>Area 33 — Optics Learning Lab</title>
+<link rel="stylesheet" href="assets/counter-3d.css">
+<script type="module" src="assets/optic-lab.js"></script></head><body>
+<a class="skip" href="#reticle-canvas">Skip to reticle illustration</a>
+<header class="nav"><a class="brand" href="index.html">AREA <b>33</b> ARMORY<span> / OPTICS LAB</span></a>
+<nav aria-label="Navigation"><a href="counter-3d.html">Return to the pistol counter</a><a href="product-room.html">Product room</a></nav>
+<span class="draft">DEVELOPMENT PREVIEW · EDUCATIONAL DEMONSTRATION</span></header><main>
+<section class="intro"><div class="eyebrow"><span class="dot"></span> AREA 33 KNOWLEDGE COUNTER / OPTICS</div>
+<h1>Explore what you <em>see.</em></h1>
+<p>Learn how an optical sight's reticle behaves as magnification changes. This lesson belongs to the optics department, rather than appearing automatically during handgun selection.</p>
+<div class="honesty"><strong>Educational visualization:</strong> This is a conceptual focal-plane comparison, not the actual reticle of a specific optic. No live product specs, manufacturer endorsements, compatibility, ballistic calculations or prices are implied.</div></section>
+<section class="learning" aria-label="Interactive optic education"><div class="section-title"><span class="overline">THE KNOWLEDGE COUNTER / OPTICS LAB</span><h2>Don't just read about a reticle. <em>See the difference.</em></h2><p>A conceptual comparison of first and second focal plane behavior. The sample reticle is educational artwork, not any manufacturer's actual reticle or ballistic calibration.</p></div>
+<div class="learning-grid"><div class="reticle-card"><div class="reticle-controls"><div class="segmented" role="group" aria-label="Focal plane demonstration"><button id="ffp" aria-pressed="true" type="button">First focal plane</button><button id="sfp" aria-pressed="false" type="button">Second focal plane</button></div><label for="magnification">Magnification illustration <output id="mag-label">4×</output></label><input id="magnification" type="range" min="1" max="8" value="4" step="1"></div>
+<div class="reticle-stage"><canvas id="reticle-canvas" role="img" aria-label="Conceptual focal-plane reticle illustration"></canvas><div class="reticle-corner">ILLUSTRATIVE OPTICAL VIEW</div></div></div>
+<div class="explain"><span class="overline">RANDBECK / EXPLAINED SIMPLY</span><h3 id="focal-heading">First focal plane</h3><p id="focal-copy">As magnification changes, the reticle changes apparent size with the magnified scene. This is a relative-size demonstration, not a shooting guide.</p><div class="teaching-points"><p><b>FFP:</b> The reticle scales along with the image.</p><p><b>SFP:</b> The reticle appears approximately the same size as the image changes magnification.</p><p><b>Important:</b> Appearance and reticle details differ by exact optic model.</p></div></div></div></section>
+<section class="roadmap"><span class="overline">WHERE THIS BELONGS IN THE FINISHED SHOWROOM</span><p>When a customer selects an exact rifle scope, Randbeck should offer this lesson as an optional deep-dive. The production experience will show the selected optic's manufacturer-documented reticle and optical specifications only after those assets and rights have been reviewed.</p></section>
+</main><footer>AREA 33 ARMORY · OPTICS EDUCATION · <a href="counter-3d.html">Return to the 3D counter</a></footer></body></html>
