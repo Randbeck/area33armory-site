@@ -5,6 +5,7 @@ import {createApprovedGallery,galleryAllowed} from "./catalog-gallery.mjs";
 import {createResearchPhotoViewer} from "./research-photo-viewer.mjs";
 import {PAIRING_REVIEWED,evaluatePairing,manufacturerListedSuggestions} from "./pairing-evidence.mjs";
 import {createExperienceBench} from "./experience-bench.mjs";
+import {createPhotoTheater} from "./real-photo-theater.mjs";
 
 const $=id=>document.getElementById(id);
 const research=REFERENCE_PRODUCTS;
@@ -14,6 +15,10 @@ let approved=[];
 let dept="pistols",accessoryCategory="optics";
 let current=null,accessory=null,compare=[],discoverSeed=1;
 const researchPhotoViewer=createResearchPhotoViewer();
+const photoTheater=createPhotoTheater({
+ chooseFirearm:id=>{const item=research.find(x=>x.id===id&&x.kind==="firearm");if(item)selectDepartment(item.department,item.brand,item.id);},
+ chooseAccessory:id=>{const item=research.find(x=>x.id===id&&x.kind==="accessory");if(item)selectAccessoryCategory(item.accessoryType,item.brand,item.id);}
+});
 const experienceBench=createExperienceBench({
  getKnownItems:()=>[...research,...approved],
  onChooseAccessory:item=>selectAccessoryCategory(item.accessoryType,item.brand,item.id),
@@ -169,6 +174,7 @@ function render(){
  presentApprovedMedia(item);
  renderPairing();
  experienceBench.render(current,accessory);
+ photoTheater.render(current,accessory);
  const hasCompare=compare.some(x=>x.id===item.id);
  $("compare-add").disabled=hasCompare||compare.length>=3;
  $("compare-add").textContent=hasCompare?"Already on comparison shelf":"Save firearm to compare";
