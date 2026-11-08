@@ -29,6 +29,7 @@ jobs:
           node --check assets/featured-opportunities.mjs
           node --input-type=module --check < assets/featured-opportunities-ui.js
           node --input-type=module --check < assets/customer-experience-ui.js
+          node --input-type=module --check < assets/side-counter-ui.js
           node --input-type=module --check < assets/six-view-counter.js
           node --check assets/accessory-context.mjs
           node --check assets/research-photo-license.mjs
@@ -53,6 +54,8 @@ jobs:
         run: node scripts/test_catalog_gallery_contract.mjs
       - name: Validate test experience bay
         run: node scripts/test_experience_bay.mjs
+      - name: Validate merchandise-first side counter
+        run: node scripts/test_side_counter.mjs
       - name: Validate approved featured opportunities
         run: node scripts/test_featured_opportunities.mjs
       - name: Validate integrated intelligent customer storefront
