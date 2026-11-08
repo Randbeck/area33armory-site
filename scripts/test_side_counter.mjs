@@ -15,7 +15,8 @@ const testIds=["home-firearms-gallery","home-firearms-query","home-firearms-cate
  "side-compare","side-saved-status","side-comparison-list","side-full-counter"];
 for(const id of testIds){
  assert.ok(home.includes('id="'+id+'"'),"Missing side-counter element "+id);
- assert.ok(js.includes('$("'+id+'")')||id==="area33-side-backdrop"||id==="area33-side-counter"||id==="area33-reopen-counter",
+ assert.ok(js.includes('$("'+id+'")')||id.startsWith("side-tab-")&&js.includes('"side-tab-"+tab')||
+  id==="area33-side-backdrop"||id==="area33-side-counter"||id==="area33-reopen-counter",
   "Missing side-counter behavior "+id);
 }
 assert.equal([...home.matchAll(/\bid="([^"]+)"/g)].length,
