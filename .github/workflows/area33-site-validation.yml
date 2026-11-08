@@ -1,7 +1,7 @@
 name: Area 33 draft website validation
 on:
   push:
-    branches: [site-refresh-v1, work/approved-catalog-thumbnails, work/randbeck-catalog-bridge-v1, work/scalable-approved-catalog-v2, work/distributor-scope-authorization-v1, work/rights-safe-text-catalog-v1, work/private-media-withdrawal-v1, work/approved-catalog-release-preflight-v1, work/controlled-catalog-release-v1, work/github-pages-controlled-publish-v1, work/private-text-batch-review-v1, work/private-evidence-assisted-review-v1, work/referenced-product-research-v1, work/first-catalog-readiness-v1, work/storefront-approved-image-zoom-v1, work/experience-bay-discovery-v1, work/real-product-showroom-v2, work/flagship-real-photo-viewer-v1, work/verified-pairing-experience-v1, work/interactive-real-product-bench-v1, work/immersive-licensed-photo-showroom-v1]
+    branches: [site-refresh-v1, work/approved-catalog-thumbnails, work/randbeck-catalog-bridge-v1, work/scalable-approved-catalog-v2, work/distributor-scope-authorization-v1, work/rights-safe-text-catalog-v1, work/private-media-withdrawal-v1, work/approved-catalog-release-preflight-v1, work/controlled-catalog-release-v1, work/github-pages-controlled-publish-v1, work/private-text-batch-review-v1, work/private-evidence-assisted-review-v1, work/referenced-product-research-v1, work/first-catalog-readiness-v1, work/storefront-approved-image-zoom-v1, work/experience-bay-discovery-v1, work/real-product-showroom-v2, work/flagship-real-photo-viewer-v1, work/verified-pairing-experience-v1, work/interactive-real-product-bench-v1, work/immersive-licensed-photo-showroom-v1, work/area33-six-view-counter-v1]
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,6 +24,8 @@ jobs:
           node --input-type=module --check < assets/catalog.js
           node --check assets/catalog-gallery.mjs
           node --check assets/product-room-research.mjs
+          node --check assets/six-view-contract.mjs
+          node --input-type=module --check < assets/six-view-counter.js
           node --check assets/accessory-context.mjs
           node --check assets/research-photo-license.mjs
           node --check assets/pairing-evidence.mjs
@@ -47,6 +49,8 @@ jobs:
         run: node scripts/test_catalog_gallery_contract.mjs
       - name: Validate test experience bay
         run: node scripts/test_experience_bay.mjs
+      - name: Validate six-view product counter
+        run: node scripts/test_six_view_counter.mjs
       - name: Validate test product room
         run: node scripts/test_product_room.mjs
       - name: Validate context-aware accessories
