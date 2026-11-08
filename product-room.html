@@ -16,7 +16,7 @@
 <p>Start with pistols, rifles, or shotguns. Choose a manufacturer and actual model—or let us surprise you. Then explore real accessory products without losing sight of what you're looking at.</p></div><p class="room-hero-callout">Real product names. Manufacturer references. Rights-cleared photography only. Honest answers when compatibility or pricing is not confirmed.</p></div></section>
 <section class="room-wrap room-work" id="room-work" aria-label="Product discovery workspace">
 <div class="room-bar"><strong>EXPLORE THE STORE</strong><span id="research-coverage">Loading manufacturer research references…</span></div>
-<div class="room-feature-tip"><strong>Start with a real photograph.</strong> <a href="product-room.html?product=ruger-precision-308-gen1">Open the Ruger Precision Rifle .308 Gen 1 spotlight</a> · One documented view, zoomable and properly credited.</div>
+<div class="room-feature-tip"><strong>Discover a manufacturer-listed pairing:</strong> <a href="product-room.html?product=glock-g19-gen5-mos&amp;accessory=holosun-scs-m-gr">Explore the GLOCK G19 Gen5 MOS + Holosun SCS-M-GR</a> · Real models, named primary-source fitment evidence, no simulated fit image. <span class="room-feature-divider">|</span> <a href="product-room.html?product=ruger-precision-308-gen1">Or open the real-photo Ruger spotlight</a>.</div>
 <div class="room-main">
 <aside class="room-panel" aria-label="Choose a firearm"><div class="room-inner">
 <span class="room-section-tag">01 / CHOOSE A DEPARTMENT</span><h2>What catches your interest?</h2>
@@ -72,6 +72,7 @@
 <p>Research guidance follows the exact product you've selected. This preview uses manufacturer notes—not a live AI model.</p>
 <div class="room-status-row"><span>Product</span><strong id="identity-status">Manufacturer reference</strong></div>
 <div class="room-status-row"><span>Accessory fit</span><strong id="fit-status">Not verified</strong></div>
+<div class="room-suggestion" id="smart-suggestion-area" hidden><strong>AN INTERESTING MATCH TO EXPLORE</strong><button type="button" id="smart-suggestion">Explore manufacturer-listed accessory ↗</button><p id="smart-suggestion-caption"></p></div>
 <div class="room-status-row"><span>Pricing / stock</span><strong>Not connected</strong></div>
 <div class="room-intel"><strong>Area 33 research guidance</strong><p id="intel-answer" role="status" aria-live="polite">Choose a product to explore.</p></div>
 <div class="room-question-row" aria-label="Ask an example research question">
@@ -98,6 +99,14 @@
 <h2 id="pairing-title">Pick an accessory to explore.</h2>
 <p id="pairing-copy">You can inspect the firearm and accessory as separate verified identities. A visual try-on is available only when the exact pairing and media are approved.</p>
 <a id="accessory-official-link" href="https://area33armory.com" target="_blank" rel="noopener noreferrer" hidden>View accessory on manufacturer site ↗</a>
+<div class="room-pairing-evidence" id="pairing-evidence" hidden>
+  <div class="room-evidence-head"><span class="room-pair-status" id="pairing-status">Awaiting selection</span><small id="pairing-reviewed">Research status</small></div>
+  <p class="room-evidence-summary" id="pairing-summary"></p>
+  <div class="room-evidence-why"><strong>Why this result?</strong><p id="pairing-why"></p></div>
+  <strong class="room-evidence-label">Manufacturer references</strong>
+  <ul id="pairing-sources" class="room-evidence-links"></ul>
+  <div class="room-visual-limit"><strong>Actual-product try-on</strong><p>No composed product image is shown yet. The exact pairing may have a manufacturer fitment statement, but a true photo/3D try-on requires separately approved media and visual alignment.</p></div>
+</div>
 <div class="room-match-note" id="pairing-warning">No physical compatibility, installation, or safe-use claim is made by a visual selection.</div>
 <div class="room-actions"><button type="button" id="compare-add">Save firearm to compare</button><button class="secondary" type="button" id="share-selection">Copy this research selection</button></div>
 <p class="room-small-status" id="sharing-status" role="status" aria-live="polite"></p>
