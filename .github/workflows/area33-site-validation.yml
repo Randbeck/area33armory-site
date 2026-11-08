@@ -24,6 +24,7 @@ jobs:
           node --input-type=module --check < assets/catalog.js
           node --check assets/catalog-gallery.mjs
           node --check assets/product-room-research.mjs
+          node --check assets/accessory-context.mjs
           node --check assets/research-photo-license.mjs
           node --check assets/pairing-evidence.mjs
           node --check assets/showroom-inspiration.mjs
@@ -48,6 +49,8 @@ jobs:
         run: node scripts/test_experience_bay.mjs
       - name: Validate test product room
         run: node scripts/test_product_room.mjs
+      - name: Validate context-aware accessories
+        run: node scripts/test_accessory_context.mjs
       - name: Validate test flagship research photo
         run: node scripts/test_flagship_research_photo.mjs
       - name: Validate test pairing evidence
