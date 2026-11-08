@@ -101,7 +101,7 @@ const PROMPTS=[
  "What makes this model interesting?",
  "Show every related model and finish we actually know.",
  "Which selected accessories have documented fit?",
- "What would the all-in price include?",
+ "What does the Area 33 delivered price include?",
  "Can you compare this with another model?"
 ];
 function renderThinkingContext(){
@@ -140,18 +140,16 @@ function ask(text){
 }
 function resetThinking(){
  $("thinking-conversation").replaceChildren();
- addMessage("assistant","Welcome to the Area 33 research counter",
-  "You're exploring "+researchTitle(state.product)+". I can explain the documented facts, known related references and manufacturer compatibility evidence. This is an offline evidence preview, not the live Randbeck Thinking Room.");
+ addMessage("assistant","Hi, I’m EVA — your Area 33 firearms expert (research preview)",
+  "You're exploring "+researchTitle(state.product)+". Ask me about documented facts, related models and compatibility evidence. This is an offline preview, not yet live EVA powered by Randbeck.");
  renderThinkingContext();
 }
 function renderAllIn(){
  const info=allInQuoteStatus({zip:$("delivery-zip").value,
-  receivingDealerName:$("ffl-name").value,
-  dealerFeeKnown:$("ffl-fee-known").checked,
   selectedProducts:[{id:state.product?.id,publicSkuVerified:false,stockVerified:false}],sourceQuote:null});
  $("all-in-label").textContent=info.label;
  $("all-in-caption").textContent=info.notice;
- $("quote-readiness-title").textContent=info.confirmed?"Quote status":"Still needed before an honest one-price offer";
+ $("quote-readiness-title").textContent=info.confirmed?"Verified Area 33 delivery quote":"Still needed before the Area 33 delivered price can be confirmed";
  const blockers=$("quote-blockers");blockers.replaceChildren();
  for(const issue of info.blockers)blockers.append(el("li","",issue));
 }
@@ -191,8 +189,9 @@ function bind(){
  });
  $("thinking-form").addEventListener("submit",e=>{e.preventDefault();ask($("thinking-query").value);});
  $("all-in-form").addEventListener("submit",e=>{e.preventDefault();renderAllIn();});
- for(const id of ["delivery-zip","ffl-name","ffl-fee-known"])$(id).addEventListener("input",renderAllIn);
+ $("delivery-zip").addEventListener("input",renderAllIn);
  window.addEventListener("area33:counter-update",syncFromCounter);
+ window.addEventListener("area33:featured-open",e=>goToCounter(e.detail?.productId));
 }
 function init(){
  bind();
