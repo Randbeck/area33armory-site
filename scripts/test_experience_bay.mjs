@@ -9,7 +9,7 @@ assert.match(html,/Get curious\./);
 assert.match(html,/Surprise me/);
 assert.match(html,/Experience Bay/);
 assert.match(home,/href="experience-bay\.html"/);
-assert.match(home,/Browse firearms/,"New homepage prioritizes actual firearm browsing");
+assert.match(home,/Browse the catalog/,"New homepage prioritizes customer-facing product browsing");
 assert.match(home,/data-side-counter-product="ruger-precision-308-gen1"/,"Real firearm hero opens the side counter");
 assert.match(home,/href="studio\.html"/);
 assert.match(home,/href="showroom\.html"/);
