@@ -1,14 +1,49 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101013"><meta name="description" content="Area 33 Armory product catalog preview. Public product information will appear after source verification and approval."><title>Product Catalog | Area 33 Armory</title>
-<link rel="stylesheet" href="assets/catalog.css"></head><body>
+<link rel="stylesheet" href="assets/catalog.css">
+<link rel="stylesheet" href="assets/retail-finish.css">
+<link rel="stylesheet" href="assets/catalog-research.css">
+<script type="module" src="assets/catalog-research.js"></script></head><body>
 <a class="skip" href="#main">Skip to catalog</a>
-<header class="site-header"><div class="shell nav"><a href="index.html" aria-label="Area 33 Armory home"><img src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="210" height="50"></a><nav aria-label="Primary"><a href="index.html">Home</a><a href="explore.html">Explore & Learn</a><a href="catalog.html" aria-current="page">Product Catalog</a><a href="experience-lab.html">Experience Lab</a><a href="contact.html">Contact</a></nav></div></header>
-<main id="main"><section class="intro"><div class="shell"><span class="kicker">AREA 33 / INTELLIGENT DISCOVERY</span><h1>Know what you're <em>looking at.</em></h1><p>Explore independently reviewed product details, compare models, and view photographs when their use has been authorized. Some approved profiles may intentionally be text-only.</p><div class="intro-foot"><span class="dot"></span> Research information is not verified stock, a price quote, or an offer to sell.</div></div></section>
-<section class="shell workspace" aria-labelledby="browse-title"><div class="section-heading"><div><span class="kicker dark">PRODUCT RESEARCH</span><h2 id="browse-title">Find the details.</h2></div><a href="explore.html">Not sure where to begin? Explore our guides ↗</a></div>
+<header class="site-header"><div class="shell nav"><a href="index.html" aria-label="Area 33 Armory home"><img src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="210" height="50"></a><nav aria-label="Primary"><a href="index.html">Home</a><a href="catalog.html" aria-current="page">Catalog</a><a href="index.html#shop-departments">Departments</a><a href="index.html?inspect=glock-g19-gen5-mos&amp;eva=1">Ask EVA</a><a href="contact.html">Contact</a></nav></div></header>
+<main id="main"><section class="intro"><div class="shell">
+ <span class="kicker">AREA 33 / EXPLORE THE COLLECTION</span>
+ <h1>Find something <em>worth exploring.</em></h1>
+ <p>Search documented firearm models, compare what makes them different, and bring an interesting one to the counter with EVA. No account or purchase required.</p>
+ <div class="intro-foot"><span class="dot"></span> Manufacturer references are not live distributor inventory, prices, or offers.</div>
+ </div></section>
+ <section class="research-catalog shell" aria-labelledby="research-catalog-title">
+  <div class="research-catalog-heading">
+   <div><span class="kicker dark">BROWSE / MANUFACTURER RESEARCH</span>
+    <h2 id="research-catalog-title">Explore firearms.</h2>
+    <p>These are real, individually identified manufacturer references. Approved photographs appear only for exact documented models; missing images stay missing.</p></div>
+   <a href="index.html#shop-departments">Shop by department ↗</a>
+  </div>
+  <div class="research-catalog-controls">
+    <label class="research-search-label" for="research-catalog-search">Search models and manufacturers
+      <input id="research-catalog-search" type="search" maxlength="120" placeholder="Ruger Precision, G19, optic-ready…" autocomplete="off"></label>
+    <label class="research-search-label research-filter" for="research-catalog-type">Category
+      <select id="research-catalog-type"><option value="all">All firearms</option><option value="pistols">Pistols</option>
+       <option value="rifles">Rifles</option><option value="shotguns">Shotguns</option></select></label>
+    <button id="research-catalog-clear" class="research-clear" type="button">Clear</button>
+  </div>
+  <div class="research-catalog-result-line"><strong id="research-catalog-total">Loading manufacturer references…</strong>
+    <span>Explore now · no price or stock claims</span></div>
+  <div id="research-catalog-grid" class="research-catalog-grid" aria-live="polite">
+    <p>Loading available research references…</p>
+  </div>
+ </section>
+ <dialog id="research-catalog-dialog" class="research-catalog-dialog" aria-label="Manufacturer research product detail">
+  <div class="research-dialog-head"><strong>AREA 33 / PRODUCT RESEARCH</strong><button id="research-dialog-close" type="button" aria-label="Close product detail">Close ×</button></div>
+  <div id="research-catalog-detail"></div>
+ </dialog>
+<section class="shell workspace" aria-labelledby="browse-title"><div class="section-heading"><div><span class="kicker dark">PUBLISHED AREA 33 CATALOG</span><h2 id="browse-title">Approved listings.</h2></div><a href="#research-catalog-title">Explore the research collection ↗</a></div>
 <form id="catalog-form" class="search" role="search"><label for="query">Product search</label><div class="search-line"><input id="query" name="query" type="search" placeholder="Manufacturer, model, UPC or keywords" autocomplete="off"><button type="submit">Search catalog</button></div></form>
 <div class="layout"><aside class="filters" aria-label="Catalog filters"><h3>Refine results</h3><label for="category">Category</label><select id="category"><option value="">All categories</option></select><label for="product-type">Product type</label><select id="product-type"><option value="">All product types</option><option value="complete">Complete product</option><option value="part">Part</option><option value="accessory">Accessory</option><option value="ammunition">Ammunition</option><option value="other">Other</option></select><label for="brand">Manufacturer</label><input id="brand" placeholder="Filter manufacturer"><div class="filter-actions"><button id="apply" type="button">Apply filters</button><button id="clear" type="button" class="plain">Clear</button></div><p class="tiny">Filters cover all owner-approved products in the published catalog, not distributor inventory.</p></aside>
 <div class="results"><div class="result-top"><h3>Product records</h3><span id="coverage" class="muted">Connection pending</span></div>
-<div class="mode-offer" aria-label="Real product discovery experience"><div><strong>Not sure what you want yet?</strong><p>Enter the real-product research room: choose pistols, rifles or shotguns by manufacturer and model, then explore real accessory references. Approved images appear only when published.</p></div><a href="product-room.html">Explore real models ↗</a></div><div id="message" class="message" role="status" aria-live="polite"><strong>Catalog not connected yet</strong><p>Our product research interface is being prepared. No verified public catalog is available here yet. You can still explore educational guides or contact Area 33 with a product question.</p><a href="explore.html">Explore guides →</a></div>
+<div class="mode-offer" aria-label="Approved catalog and discovery distinction"><div><strong>Browse now above. Approved listings are being prepared.</strong>
+ <p>The manufacturer references above are available for learning today. Sellable product listings, licensed photos, current availability and customer pricing appear here only after publication review.</p></div><a href="#research-catalog-title">Browse research references ↗</a></div><div id="message" class="message" role="status" aria-live="polite"><strong>Published product listings are not yet connected.</strong>
+ <p>You can explore the manufacturer research collection above right now. This approved-listings section will populate as soon as exact products, publication permissions and source details are verified.</p><a href="#research-catalog-title">Explore researched models ↑</a></div>
 <p id="catalog-context" class="muted" hidden role="status"></p><div id="grid" class="cards" aria-live="polite" hidden></div><div id="pagination" class="pagination" hidden><span id="page-label"></span><button id="next" type="button">Load more results</button></div></div></div>
 </section><section id="compare" class="compare-section" hidden aria-labelledby="compare-title"><div class="shell"><div class="section-heading"><div><span class="kicker dark">FACTS SIDE BY SIDE</span><h2 id="compare-title">Compare products</h2></div><button id="reset-compare" type="button" class="plain">Clear comparison</button></div><div id="compare-content" class="compare-wrap" tabindex="0"></div></div></section>
 <section class="trust"><div class="shell trust-grid"><div><span class="kicker">WHAT THE LABELS MEAN</span><h2>Evidence before assumptions.</h2><p>Every public listing must be separately approved. A recorded source date does not mean a live inventory check. Any missing field stays unknown rather than guessed.</p></div><div class="trust-points"><p><strong>Exact identity</strong><span>Model and variant must correspond to a supported product record.</span></p><p><strong>Image rights</strong><span>Only authorized product photographs appear. Some reviewed products are intentionally presented as text-only profiles.</span></p><p><strong>Source transparency</strong><span>Approved records show a source label and observation date where provided.</span></p></div></div></section></main>
