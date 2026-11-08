@@ -36,16 +36,25 @@ jobs:
           node --check assets/experience-lab.js
           node --check assets/showroom-contract.mjs
           node --input-type=module --check < assets/showroom.js
-      - name: Test public website contract
-        run: |
-          node scripts/test_public_site.mjs
-          node scripts/test_showroom_contract.mjs
-          node scripts/test_catalog_static_contract.mjs
-          node scripts/test_catalog_gallery_contract.mjs
-          node scripts/test_experience_bay.mjs
-          node scripts/test_product_room.mjs
-          node scripts/test_flagship_research_photo.mjs
-          node scripts/test_pairing_evidence.mjs
-          node scripts/test_experience_bench.mjs
-          node scripts/test_immersive_photo_theater.mjs
-          node scripts/test_catalog_shards_contract.mjs
+      - name: Validate test public site
+        run: node scripts/test_public_site.mjs
+      - name: Validate test showroom contract
+        run: node scripts/test_showroom_contract.mjs
+      - name: Validate test catalog static contract
+        run: node scripts/test_catalog_static_contract.mjs
+      - name: Validate test catalog gallery contract
+        run: node scripts/test_catalog_gallery_contract.mjs
+      - name: Validate test experience bay
+        run: node scripts/test_experience_bay.mjs
+      - name: Validate test product room
+        run: node scripts/test_product_room.mjs
+      - name: Validate test flagship research photo
+        run: node scripts/test_flagship_research_photo.mjs
+      - name: Validate test pairing evidence
+        run: node scripts/test_pairing_evidence.mjs
+      - name: Validate test experience bench
+        run: node scripts/test_experience_bench.mjs
+      - name: Validate test immersive photo theater
+        run: node scripts/test_immersive_photo_theater.mjs
+      - name: Validate test catalog shards contract
+        run: node scripts/test_catalog_shards_contract.mjs
