@@ -16,7 +16,8 @@ const allowedKeys=new Set(["productId","angle","src","alt","rights","verifiedExa
 const exactly=(o,keys)=>o&&typeof o==="object"&&!Array.isArray(o)&&Object.keys(o).every(k=>keys.has(k));
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 const date=s=>typeof s==="string"&&/^\d{4}-\d\d-\d\d$/.test(s)&&!Number.isNaN(Date.parse(s+"T00:00:00Z"));
-const urlHost=src=>{try{const u=new URL(src);return u.protocol==="https:"&&!u.username&&!u.password&&!u.search&&!u.hash&&u.hostname==="commons.wikimedia.org";}catch{return false;}};
+const SOURCE_HOSTS=new Set(["commons.wikimedia.org","area33armory.com","www.area33armory.com",...REFERENCE_PRODUCTS.map(item=>new URL(item.source).hostname)]);
+const urlHost=src=>{try{const u=new URL(src);return u.protocol==="https:"&&!u.username&&!u.password&&!u.hash&&SOURCE_HOSTS.has(u.hostname);}catch{return false;}};
 export function validateSixViewManifest(manifest,{origin="https://area33armory.com"}={}){
  if(!exactly(manifest,new Set(["schema","views"]))||manifest.schema!==SIX_VIEW_SCHEMA||!Array.isArray(manifest.views)||manifest.views.length>600)return null;
  let base;try{base=new URL(origin);}catch{return null;}
