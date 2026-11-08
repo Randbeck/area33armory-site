@@ -285,3 +285,12 @@ document.querySelectorAll("[data-side-counter-product]").forEach(button=>{
  button.addEventListener("click",e=>{e.preventDefault();openCounter(button.dataset.sideCounterProduct,button.dataset.sideCounterTab||"inspect");});
 });
 renderShop();
+/* Catalog research links may return to the homepage with an exact reviewed
+ * public ID; open only an allowed model. No browsing state is persisted. */
+try{
+ const args=new URL(location.href).searchParams;
+ const initial=args.get("inspect");
+ if(initial&&FIREARMS.some(p=>p.id===initial)){
+  openCounter(initial,args.get("eva")==="1"?"eva":"inspect");
+ }
+}catch{/* Regular storefront without a deep-link fallback. */}
