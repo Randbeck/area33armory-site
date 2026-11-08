@@ -29,7 +29,13 @@ function draw(rows){
    el("span","featured-product-name",researchTitle(product)));
   const a=el("a","featured-link","Bring to the counter ↗");
   a.href="six-view-counter.html?product="+encodeURIComponent(product.id)+"#product-counter";
-  if(document.getElementById("product-counter")){
+  if(document.getElementById("area33-side-counter")){
+   a.textContent="Inspect beside the shop ↗";
+   a.addEventListener("click",e=>{
+    e.preventDefault();
+    window.dispatchEvent(new CustomEvent("area33:side-counter-open",{detail:{productId:product.id}}));
+   });
+  }else if(document.getElementById("product-counter")){
    a.addEventListener("click",e=>{
     e.preventDefault();
     window.dispatchEvent(new CustomEvent("area33:featured-open",{detail:{productId:product.id}}));
