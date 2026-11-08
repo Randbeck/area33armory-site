@@ -101,12 +101,12 @@ function drawAccessoryChoices(preferId){
   render();
   return;
  }
- accessory=list.find(x=>x.id===preferId)||list[0];
+ accessory=list.find(x=>x.id===preferId)||null;
  for(const product of list){
   const btn=element("button","room-accessory-item");
   btn.type="button";
   btn.dataset.accessoryId=product.id;
-  btn.setAttribute("aria-pressed",String(product.id===accessory.id));
+  btn.setAttribute("aria-pressed",String(product.id===accessory?.id));
   const name=element("span");name.append(element("strong","",title(product)),element("small","",product.subtitle));
   btn.append(name,element("span","","›"));
   btn.addEventListener("click",()=>{accessory=product;drawAccessoryChoices(product.id);});
