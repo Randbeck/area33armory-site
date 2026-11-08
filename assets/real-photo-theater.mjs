@@ -7,8 +7,8 @@ import {researchTitle} from "./product-room-research.mjs";
 export const theaterZoom=v=>Number.isFinite(v)?Math.max(1,Math.min(4,v)):1;
 export function theaterPan(p,rect,zoom){
  const x=Math.max(0,(rect.width||0)*(zoom-1)/2),y=Math.max(0,(rect.height||0)*(zoom-1)/2);
- return {x:Math.max(-x,Math.min(x,Number.isFinite(p?.x)?p.x:0)),
-  y:Math.max(-y,Math.min(y,Number.isFinite(p?.y)?p.y:0))};
+ return {x:x===0?0:Math.max(-x,Math.min(x,Number.isFinite(p?.x)?p.x:0)),
+  y:y===0?0:Math.max(-y,Math.min(y,Number.isFinite(p?.y)?p.y:0))};
 }
 export function createPhotoTheater({chooseFirearm,chooseAccessory}={}){
  if(typeof document==="undefined")return {render(){}};
