@@ -76,12 +76,12 @@ const js=fs.readFileSync(new URL("../assets/customer-experience-ui.js",import.me
 const css=fs.readFileSync(new URL("../assets/customer-experience.css",import.meta.url),"utf8");
 const main=fs.readFileSync(new URL("../assets/six-view-counter.js",import.meta.url),"utf8");
 for(const id of ["discover-counter","surprise-discovery","discovery-search","discovery-department","clear-discovery",
- "discovery-results","variant-results","thinking-room","thinking-conversation","thinking-query","thinking-form",
+ "discovery-results","variant-results","ask-eva","thinking-conversation","thinking-query","thinking-form",
  "thinking-suggestions","thinking-product-context","compare-current","clear-compare","compare-cards",
  "save-current","saved-discoveries","all-in-form","delivery-zip",
  "all-in-label","quote-blockers","all-in-caption"]){
  assert.ok(html.includes('id="'+id+'"'),"Missing integrated storefront node "+id);
- if(!["discover-counter","thinking-room"].includes(id))assert.ok(js.includes('$("'+id+'")'),"Missing interaction handler "+id);
+ if(!["discover-counter","ask-eva"].includes(id))assert.ok(js.includes('$("'+id+'")'),"Missing interaction handler "+id);
 }
 assert.match(html,/Full conversational EVA, powered by Randbeck Intelligence, is <strong>not yet connected/);
 assert.match(html,/not connected to live distributor quotes/i);
