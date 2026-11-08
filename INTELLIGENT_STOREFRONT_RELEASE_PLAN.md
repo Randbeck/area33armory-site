@@ -92,3 +92,17 @@ Owner feedback: "Firearms worth exploring" and "Something worth a closer look" w
 - EVA's side counter now explains: "EVA is Area 33's virtual firearms expert..." including what she can explain, that she knows the current selection, and that live Randbeck AI is **not connected** to this preview. The full-page counter also introduces EVA above the question area.
 - Tests: `scripts/test_deals_departments_eva.mjs` plus existing site, side counter, publishing, photo and customer experience regressions.
 - Current state: **development draft only**. No real verified deals, public distributor feed, live EVA backend or payment/fulfillment system connected; no live site publication.
+
+## Customer feedback — retail design and Catalog route repair (November 8)
+
+Owner observed: the browsing flow was improving, but still looked "a little amateur"; clicking **Catalog** appeared to lead mainly to Experience Lab rather than a firearms catalog.
+
+**Findings and changes**
+- The published catalog feed `assets/catalog-public.json` is genuinely empty. The previous `catalog.html` showed search controls and a 'catalog not connected' placeholder as its main content, plus prominent alternate experiment links, with **no actual browsable manufacturer research collection on that page**. This was confusing.
+- `catalog.html` now puts an actual searchable **manufacturer-reference gallery** FIRST, backed by the separately labeled `REFERENCE_PRODUCTS` research data and the exact-identity Creative Commons photo manifest. Search by brand, model, or description; filter pistols/rifles/shotguns; inspect a product via a right-side native dialog, and open exact research IDs with EVA on the home side counter.
+- This gallery is **not** the approved distributor catalog and shows no sourceable stock, fabricated prices, invented photographs, or questionable exact SKU claims. The original authorized `assets/catalog.js` approved-listings mechanism remains beneath it and will take precedence for real sellable catalog items once the publisher is connected.
+- Experimental 'Experience Lab' is no longer in the primary Catalog navigation. Customers can explore a real reference collection without being pushed into experiments.
+- Introduced `assets/retail-finish.css` and `assets/catalog-research.css`: clean black/white/neutral design with restrained red accents, less visual noise, smaller navigational emphasis, a clearer editorial product hero, consistent spacing and buttons, more legible department tiles and a right-hand inspector that shares the retail design.
+- Product cards with separately licensed photographs sort first in unfiltered browsing. Missing images remain text-only with intentionally styled manufacturer labels—never a picture of a similar firearm or an unverified distributor image. This improves the draft but does **not** replace the need for authentic, authorized product photography across the eventual catalog.
+- Tests include `scripts/test_retail_catalog.mjs`, existing catalog rights checks, all website route tests and the new side-counter deep-link support.
+- This is still **draft only**: no real complete distributor feed, live customer pricing, checkout or secure live EVA integration. Manual visual and accessibility checks on desktop and phone remain required before publication.
