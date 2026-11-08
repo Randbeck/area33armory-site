@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111315">
+<meta name="description" content="Area 33 multi-angle product counter: exact real product research photos, available views, firearm-aware accessories and transparent quote status. Development preview.">
+<title>The Product Counter | Area 33 Armory</title>
+<link rel="stylesheet" href="assets/six-view-counter.css">
+<script type="module" src="assets/six-view-counter.js"></script></head>
+<body>
+<a class="skip" href="#view-stage">Skip to product inspection</a>
+<header class="site-top"><div class="top-inner"><a href="index.html" class="mark">AREA <strong>33</strong> ARMORY<span>/ PRODUCT COUNTER</span></a>
+<nav aria-label="Site navigation"><a href="product-room.html">Research showroom</a><a href="index.html">Home</a></nav><span class="development">DRAFT EXPERIENCE · NO PUBLIC OFFERS</span></div></header>
+<main>
+<section class="hero wrap"><div><span class="eyebrow">WELCOME TO THE COUNTER / EXPERIENCE 01</span><h1>Look closer.<br><em>Know what you're looking at.</em></h1><p>Choose a real firearm, inspect every documented photograph, explore relevant products and see what we know about compatibility—without losing your place.</p></div>
+<div class="hero-note"><span class="hero-note-line"></span><strong>Real products. Real evidence.</strong><p>Only documented views appear. Missing directions stay unavailable until we have an exact-product photograph and publication permission.</p></div></section>
+<section class="counter wrap" aria-label="Multi-angle digital product counter">
+<div class="counter-head"><div><span class="eyebrow">01 / INSPECT THE PRODUCT</span><h2 id="headline">Ruger Precision Rifle</h2><p id="model-subtitle">Choose an exact manufacturer research reference.</p></div><div class="view-progress"><strong id="coverage-number">0 / 6</strong><span id="coverage-caption">Six-direction coverage</span></div></div>
+<div class="counter-main">
+<div class="visual-column">
+<div class="scene-shell" id="view-stage" tabindex="0" aria-label="Product photo stage. Select a documented angle, zoom using controls, then drag to pan. Arrow keys switch among available views when not zoomed.">
+ <div class="scene-light"></div>
+ <div class="scene-topline"><span class="eyebrow">AREA 33 / THE INSPECTION STAGE</span><span class="scene-chip" id="view-label">REFERENCE PHOTO</span></div>
+ <div class="image-space" id="image-space">
+  <img id="main-photo" alt="" referrerpolicy="no-referrer" draggable="false" hidden>
+  <div id="no-photo" class="no-photo" hidden><span class="no-photo-icon">◇</span><strong>No image cleared for this selection</strong><p>We won't use a different product's photograph or invent missing angles.</p><a id="maker-page" href="index.html" target="_blank" rel="noopener noreferrer" hidden>Inspect manufacturer details ↗</a></div>
+  <div id="image-error" class="no-photo" hidden><span class="no-photo-icon">◇</span><strong>Photograph could not load</strong><p>Open the credited original image, or choose another available view.</p></div>
+ </div>
+ <div class="scene-foot"><span>INSPECT • NOT 3D</span><span id="mode-caption">Original licensed reference photo</span></div>
+</div>
+<div class="toolbar" aria-label="Product image controls">
+ <div class="zoom-controls"><button id="zoom-out" type="button" aria-label="Zoom out">−</button><output id="zoom-amount">100%</output><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="reset-image" type="button">Reset</button></div>
+ <button id="fullscreen" type="button">Fullscreen inspection <span aria-hidden="true">↗</span></button>
+</div>
+<div class="angles"><div class="angle-title"><div><span class="eyebrow">SELECT YOUR VIEW</span><h3>Every side of the story.</h3></div><p>Unavailable angles are intentionally locked, never mirrored or guessed.</p></div>
+ <div class="angles-grid" id="angles-grid" role="group" aria-label="Six camera directions"></div>
+ <button class="reference-view" id="reference-view" type="button">View original documented reference photograph</button>
+</div>
+<div class="credit" id="image-credit" aria-live="polite">Select a product to view source and photographer credit.</div>
+<div class="local-capture" id="local-preview"><div><span class="eyebrow">OPTIONAL / LOCAL PHOTO PROOF OF CONCEPT</span><h3>See your own six-view set here.</h3><p>Load photographs of the <strong>same exact selected product</strong> for a temporary browser-only demonstration. Files are never uploaded, saved or published by this page. This is not a rights approval.</p></div>
+<div class="local-fields"><label>Direction to preview<select id="local-direction"><option value="left">Left</option><option value="right">Right</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="front">Front</option><option value="rear">Rear</option></select></label>
+<label class="file-picker">Choose local photo<input id="local-photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
+<button id="clear-local" type="button">Clear local photos</button></div>
+<output id="local-status" aria-live="polite">Nothing uploaded. Accepted: JPG, PNG or WebP, up to 15 MB each.</output></div>
+</div>
+<aside class="control-column" aria-label="Guided product research and accessories">
+ <section class="selector-panel"><span class="eyebrow">STEP 01 / YOUR PRODUCT</span><h3>What can I show you?</h3>
+  <div class="department" role="group" aria-label="Choose a department"><button data-department="rifles" type="button" aria-pressed="true">Rifles</button><button data-department="pistols" type="button" aria-pressed="false">Pistols</button><button data-department="shotguns" type="button" aria-pressed="false">Shotguns</button></div>
+  <label class="field">Manufacturer<select id="product-brand" aria-label="Product manufacturer"></select></label>
+  <label class="field">Exact research model<select id="product-model" aria-label="Product model"></select></label>
+  <p id="product-description" class="model-note"></p>
+  <a id="manufacturer-link" href="https://ruger.com" target="_blank" rel="noopener noreferrer" hidden>Manufacturer's product research ↗</a>
+ </section>
+ <section class="accessory-panel"><div class="section-head"><span class="eyebrow">STEP 02 / THE ACCESSORY WALL</span><h3>What belongs with it?</h3><p id="context-message">Randbeck research guidance changes with the selected firearm.</p></div>
+  <label class="all-toggle"><input id="browse-all" type="checkbox"> Browse all references, including unrelated products</label>
+  <div id="accessory-choices" class="accessory-choices" aria-label="Contextual real-product accessories"></div>
+  <div id="accessory-detail" class="accessory-detail" hidden>
+   <div class="accessory-photo" id="accessory-photo-wrap"><img id="accessory-photo" alt="" referrerpolicy="no-referrer" hidden><div id="accessory-photo-missing">No approved photo for this exact accessory.</div></div>
+   <span class="eyebrow">CURRENTLY EXPLORING</span><h4 id="accessory-name">Choose an accessory</h4>
+   <p id="accessory-evidence">Select an accessory to read verified source status.</p>
+   <span class="evidence-status" id="fit-label">NOT REVIEWED</span>
+   <a id="accessory-maker-link" href="index.html" target="_blank" rel="noopener noreferrer" hidden>Visit manufacturer ↗</a>
+   <a id="accessory-evidence-link" href="index.html" target="_blank" rel="noopener noreferrer" hidden>View compatibility evidence ↗</a>
+   <p id="accessory-credit" class="accessory-credit"></p>
+  </div>
+ </section>
+</aside>
+</div>
+</section>
+<section class="package wrap" aria-label="Research selection and price breakdown">
+<div class="package-about"><span class="eyebrow">03 / YOUR COUNTER SELECTION</span><h2>See the whole picture.</h2><p>Keep multiple accessories together in one researched package. Every product is listed by its real reference name, and unresolved fitment stays visible.</p>
+ <p class="price-explanation">We will show a customer price only after Randbeck has actual sourceable products, applicable charges and verified availability. This draft deliberately doesn't invent a price.</p>
+ <button id="clear-package" type="button">Remove selected accessories</button></div>
+<div class="receipt"><div class="receipt-top"><strong>AREA 33 ARMORY</strong><span>RESEARCH ONLY · NOT A QUOTE</span></div><div id="package-lines"></div>
+<div class="receipt-total"><span>Verified complete package price</span><strong id="package-total">Quote pending</strong></div><p id="package-note">No live sourcing or customer price connected.</p><button id="copy-selection" type="button">Copy research selection link</button><output id="copy-result" aria-live="polite"></output></div>
+</section>
+<section class="next wrap"><span class="eyebrow">REALITY CHECK / THIS DEVELOPMENT BATCH</span><div><p><strong>Works now:</strong> exact-product photo selection, six directional slots with clear missing states, high-resolution zoom/pan, optional temporary local six-view preview, accessories with manufacturer evidence, and a researched package.</p>
+<p><strong>Still needed:</strong> published, rights-cleared exact-product images for all six sides, more exact accessory records, verified fitment for complete combinations and actual Randbeck supplier quotes. A 2D photo never proves physical attachment.</p></div></section>
+</main><footer>AREA 33 ARMORY · NO LIVE INVENTORY, PRICES OR CHECKOUT · <a href="product-room.html">Return to photo research</a></footer>
+</body></html>
