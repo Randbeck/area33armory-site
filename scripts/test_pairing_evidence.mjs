@@ -56,7 +56,7 @@ for(const id of ["pairing-evidence","pairing-evidence","pairing-status","pairing
 }
 assert.match(html,/glock-g19-gen5-mos&amp;accessory=holosun-scs-m-gr/);
 assert.match(html,/No composed product image is shown yet/);
-assert.match(html,/actual pairing may have a manufacturer fitment statement/);
+assert.match(html,/The exact pairing may have a manufacturer fitment statement/);
 assert.match(code,/evaluatePairing\(current,accessory\)/);
 assert.match(code,/manufacturerListedSuggestions\(current,listItems\("accessory","optics"\)\)/);
 assert.match(code,/citation\.url/);
