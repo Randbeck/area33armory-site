@@ -180,7 +180,10 @@ function renderCompareStrip(){
    state.compare.delete(id);renderPanel();
   },"side-compare-chip");chip.setAttribute("aria-label","Remove "+researchTitle(p)+" from comparison");strip.append(chip);
  }
- if(state.compare.size>1)strip.append(safeLink("Open full comparison ↗","https://area33armory.com/six-view-counter.html#compare-area"));
+ if(state.compare.size>1){
+  const link=make("a","counter-source-link","Open full comparison ↗");
+  link.href="six-view-counter.html#compare-area";strip.append(link);
+ }
 }
 function renderShop(){
  const gallery=$("home-firearms-gallery"),count=$("home-firearms-count");
@@ -213,7 +216,14 @@ $("side-compare").addEventListener("click",()=>{const p=current();if(!p)return;
  if(state.compare.has(p.id))state.compare.delete(p.id);else if(state.compare.size<3)state.compare.add(p.id);renderPanel();
 });
 for(const tab of ["inspect","models","accessories","eva"])$("side-tab-"+tab).addEventListener("click",()=>chooseTab(tab));
-$("home-firearms-query")?.addEventListener("input",e=>{state.search=e.target.value;renderShop();});
+$("home-firearms-query")?.addEventListener("input",e=>{state.search=e.target.value;renderShop();
+document.querySelectorAll("[data-shop-department]").forEach(a=>{
+ a.addEventListener("click",()=>{
+  const value=a.dataset.shopDepartment;
+  if(!["all","pistols","rifles","shotguns"].includes(value))return;
+  state.department=value;const select=$("home-firearms-category");select.value=value;renderShop();
+ });
+});});
 $("home-firearms-category")?.addEventListener("change",e=>{state.department=e.target.value;renderShop();});
 document.addEventListener("keydown",e=>{
  if(e.key==="Escape"&&!panel.hidden)closeCounter();
@@ -227,6 +237,6 @@ document.addEventListener("keydown",e=>{
 });
 window.addEventListener("area33:side-counter-open",e=>openCounter(e.detail?.productId||"",e.detail?.tab||"inspect"));
 document.querySelectorAll("[data-side-counter-product]").forEach(button=>{
- button.addEventListener("click",e=>{e.preventDefault();openCounter(button.dataset.sideCounterProduct);});
+ button.addEventListener("click",e=>{e.preventDefault();openCounter(button.dataset.sideCounterProduct,button.dataset.sideCounterTab||"inspect");});
 });
 renderShop();
