@@ -45,7 +45,7 @@ assert.equal(answer.isLiveAI,false);
 assert.match(interpretResearchQuestion(glock,"Show every finish").text,/not a complete list/i);
 assert.match(interpretResearchQuestion(rifle,"What is the total price?").text,/tax|shipping/i);
 assert.match(interpretResearchQuestion(glock,"Is it available to buy?").text,/not a live inventory listing/i);
-assert.match(interpretResearchQuestion(glock,"Quantum something unknown").text,/not live Thinking Room/i);
+assert.match(interpretResearchQuestion(glock,"Quantum something unknown").text,/not connected in this preview/i);
 assert.match(interpretResearchQuestion(glock,"How does it differ?",{comparison:[standard]}).text,/G19 Gen5/);
 const notReady=allInQuoteStatus();
 assert.equal(notReady.confirmed,false);assert.equal(notReady.totalMinor,null);
