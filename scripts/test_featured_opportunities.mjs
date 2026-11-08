@@ -41,7 +41,7 @@ for(const html of [home,counter]){
  assert.match(html,/assets\/featured-opportunities-ui\.js/);
 }
 assert.match(home,/Ask EVA, Your Firearms Expert/);
-assert.match(home,/Receiving dealer’s separate transfer fee is excluded/i);
+assert.match(home,/Receiving FFL transfer fee is separate/i);
 assert.match(counter,/id="ask-eva"/);
 assert.doesNotMatch(counter,/id="ffl-name"|id="ffl-fee-known"/);
 assert.match(ui,/validateFeaturedPublic\(await response\.json\(\)\)/);
