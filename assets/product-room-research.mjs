@@ -37,6 +37,11 @@ export const REFERENCE_PRODUCTS=Object.freeze([
    facts:["A specific first-generation Ruger Precision Rifle","Photographed in .308 Winchester","One documented real photograph; not a model's full specifications"],
    note:"The licensed third-party photograph identifies this older rifle as .308 Winchester, Generation 1. It is not a current Ruger SKU or verified sale item. Details beyond the photo require Ruger model-specific documentation.",
    source:"https://ruger.com/products/precisionRifle/overview.html"},
+  {id:"ruger-precision-6mm-2019-photo",kind:"firearm",department:"rifles",brand:"Ruger",model:"Precision Rifle · 6mm Creedmoor · photographed example",
+   subtitle:"Photographed Ruger Precision Rifle in 6mm Creedmoor · 2019 image",
+   facts:["A real photographed example identified as a Ruger Precision Rifle","Photo identifies 6mm Creedmoor chambering","Shows a previously photographed optic; exact optic model unverified"],
+   note:"Photographed rifle example from Tactical Accountants (2019); this is not the same rifle or an alternative view of the .308 Generation 1. Any pictured accessory is not independently identified or confirmed as an exact sellable pairing.",
+   source:"https://www.ruger.com/products/precisionRifle/overview.html"},
   {id:"ruger-precision",kind:"firearm",department:"rifles",brand:"Ruger",model:"Precision Rifle",
    subtitle:"Precision bolt-action rifle family",facts:["Ruger Precision Rifle family","Multiple calibers and model numbers","Configurations vary by SKU"],
    note:"A family-level research page; do not infer caliber, accessories or price.",
@@ -54,6 +59,11 @@ export const REFERENCE_PRODUCTS=Object.freeze([
    facts:["Holosun names G19 Gen5 MOS under Direct Mount fitment","Designed for full-size GLOCK MOS slide interface","Not an interchangeable generic K-footprint optic"],
    note:"Holosun's fitment list specifically names the G19 Gen5 MOS for the SCS-M-GR. Still verify exact variants, manufacturer updates and safe professional installation before use.",
    source:"https://www.holosun.com/products/scs-m-gr"},
+  {id:"meopta-optika6-3-18x56-rd-sfp",kind:"accessory",accessoryType:"optics",brand:"Meopta",model:"MeoPro Optika6 3–18×56 RD SFP",
+   subtitle:"Real photographed Meopta riflescope · 3–18×56 RD SFP",
+   facts:["Photograph identifies an Optika6 RD SFP scope","Meopta names a 3–18×56 RD SFP variant","Mounting requires independently verified rifle, rail and rings"],
+   note:"The actual Meopta scope photo is licensed for use, but there is no manufacturer-verified pairing with the Ruger photographs here. The two items are displayed separately, not digitally attached.",
+   source:"https://www.meoptasportsoptics.com/Aton/FileRepository/aton_file_repository_HtmlEditorRepositoryDoc/Root/manual-optika6.pdf"},
   {id:"holosun-hs507k-x2",kind:"accessory",accessoryType:"optics",brand:"Holosun",model:"HS507K-X2",
    subtitle:"Compact reflex optic",facts:["K-footprint optic","Multi-Reticle System","Maker's fitment notes are product-specific"],
    note:"Do not infer fit from 'optic-ready' alone; interface and any adapters need verification.",
@@ -75,7 +85,7 @@ export const REFERENCE_PRODUCTS=Object.freeze([
    note:"The product page alone is not confirmation for any firearm/accessory combination.",
    source:"https://aliengearholsters.com/products/cloak-tuck-3-5-iwb-holster"}
 ]);
-const ids=new Set(),allowHosts=new Set(["us.glock.com","www.sigsauer.com","www.canik.com","ruger.com","www.ruger.com","resources.mossberg.com","dam.beretta.com","www.holosun.com","www.streamlight.com","aliengearholsters.com"]);
+const ids=new Set(),allowHosts=new Set(["us.glock.com","www.sigsauer.com","www.canik.com","ruger.com","www.ruger.com","resources.mossberg.com","dam.beretta.com","www.holosun.com","www.streamlight.com","aliengearholsters.com","www.meoptasportsoptics.com"]);
 for(const item of REFERENCE_PRODUCTS){
  if(ids.has(item.id)||!/^[a-z0-9-]{5,65}$/.test(item.id))throw Error("Duplicate or invalid research id");
  ids.add(item.id);

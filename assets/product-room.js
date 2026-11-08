@@ -5,6 +5,8 @@ import {createApprovedGallery,galleryAllowed} from "./catalog-gallery.mjs";
 import {createResearchPhotoViewer} from "./research-photo-viewer.mjs";
 import {PAIRING_REVIEWED,evaluatePairing,manufacturerListedSuggestions} from "./pairing-evidence.mjs";
 import {createExperienceBench} from "./experience-bench.mjs";
+import {createPhotoTheater} from "./real-photo-theater.mjs";
+import {firearmContext,reviewAccessoryContext,suggestedAccessories} from "./accessory-context.mjs";
 
 const $=id=>document.getElementById(id);
 const research=REFERENCE_PRODUCTS;
@@ -14,6 +16,10 @@ let approved=[];
 let dept="pistols",accessoryCategory="optics";
 let current=null,accessory=null,compare=[],discoverSeed=1;
 const researchPhotoViewer=createResearchPhotoViewer();
+const photoTheater=createPhotoTheater({
+ chooseFirearm:id=>{const item=research.find(x=>x.id===id&&x.kind==="firearm");if(item)selectDepartment(item.department,item.brand,item.id);},
+ chooseAccessory:id=>{const item=research.find(x=>x.id===id&&x.kind==="accessory");if(item)selectAccessoryCategory(item.accessoryType,item.brand,item.id);}
+});
 const experienceBench=createExperienceBench({
  getKnownItems:()=>[...research,...approved],
  onChooseAccessory:item=>selectAccessoryCategory(item.accessoryType,item.brand,item.id),
@@ -52,6 +58,28 @@ function listItems(kind,filter){
  return [...research,...approved].filter(item=>item.kind===kind&&
   (kind==="firearm"?item.department===filter:item.accessoryType===filter));
 }
+function visibleAccessories(category){
+ const items=listItems("accessory",category);
+ return $("accessory-show-all").checked?items:suggestedAccessories(current,items);
+}
+function updateAccessoryContext(){
+ const context=firearmContext(current);
+ $("accessory-context").textContent=context.name+": "+context.message;
+ $("accessory-mode").textContent=$("accessory-show-all").checked?
+  "Browsing all available references. Unrelated items are research only, not Randbeck recommendations.":
+  "Showing context-relevant examples only. Category relevance does NOT confirm exact mounting or physical fit.";
+ document.querySelectorAll("[data-accessory-category]").forEach(btn=>{
+  btn.disabled=!visibleAccessories(btn.dataset.accessoryCategory).length;
+  btn.setAttribute("aria-pressed",String(btn.dataset.accessoryCategory===accessoryCategory));
+ });
+}
+function refreshAccessoryContext(){
+ const categories=ACCESSORY_CATEGORIES.filter(category=>visibleAccessories(category).length);
+ if(!categories.includes(accessoryCategory))accessoryCategory=categories[0]||"optics";
+ if(accessory&&!$("accessory-show-all").checked&&reviewAccessoryContext(current,accessory).tier!=="explore")accessory=null;
+ updateAccessoryContext();
+ fillAccessoryBrand(accessory?.brand,accessory?.id);
+}
 function uniqueBrands(items){return [...new Set(items.map(x=>x.brand))].sort((a,b)=>a.localeCompare(b));}
 function option(value,label){return new Option(label,value);}
 function fillSelect(node,values,selected){
@@ -67,7 +95,7 @@ function selectCurrent(id){
   $("brand").value=picked.brand;
   $("model").value=picked.id;
  }
- render();
+ refreshAccessoryContext();
 }
 function fillModelOptions(prefer){
  const models=listItems("firearm",dept).filter(x=>x.brand===$("brand").value);
@@ -76,7 +104,7 @@ function fillModelOptions(prefer){
  const chosen=models.find(x=>x.id===prefer)||models[0]||null;
  if(chosen) $("model").value=chosen.id;
  current=chosen;
- render();
+ refreshAccessoryContext();
 }
 function fillBrandOptions(prefer,modelId){
  const brands=uniqueBrands(listItems("firearm",dept));
@@ -90,23 +118,23 @@ function selectDepartment(next,brand,modelId){
  fillBrandOptions(brand,modelId);
 }
 function fillAccessoryBrand(prefer,accessoryId){
- const brands=uniqueBrands(listItems("accessory",accessoryCategory));
+ const brands=uniqueBrands(visibleAccessories(accessoryCategory));
  fillSelect($("accessory-brand"),brands,prefer);
  drawAccessoryChoices(accessoryId);
 }
 function selectAccessoryCategory(next,brand,id){
- if(!ACCESSORY_CATEGORIES.includes(next))return;
+ if(!ACCESSORY_CATEGORIES.includes(next)||!visibleAccessories(next).length)return;
  accessoryCategory=next;
- document.querySelectorAll("[data-accessory-category]").forEach(btn=>btn.setAttribute("aria-pressed",String(btn.dataset.accessoryCategory===next)));
+ updateAccessoryContext();
  fillAccessoryBrand(brand,id);
 }
 function drawAccessoryChoices(preferId){
- const list=listItems("accessory",accessoryCategory).filter(x=>x.brand===$("accessory-brand").value);
+ const list=visibleAccessories(accessoryCategory).filter(x=>x.brand===$("accessory-brand").value);
  const shelf=$("accessory-items");
  shelf.replaceChildren();
  if(!list.length){
   accessory=null;
-  shelf.append(element("p","room-small-status","No manufacturer reference in this category yet. Approved Area 33 products can appear here when their category is verified."));
+  shelf.append(element("p","room-small-status","No context-relevant products are available in this category. Try another category or turn on Browse all for research."));
   render();
   return;
  }
@@ -116,7 +144,8 @@ function drawAccessoryChoices(preferId){
   btn.type="button";
   btn.dataset.accessoryId=product.id;
   btn.setAttribute("aria-pressed",String(product.id===accessory?.id));
-  const name=element("span");name.append(element("strong","",title(product)),element("small","",product.subtitle));
+  const guidance=reviewAccessoryContext(current,product);
+  const name=element("span");name.append(element("strong","",title(product)),element("small","",product.subtitle+" · "+guidance.label));
   btn.append(name,element("span","","›"));
   btn.addEventListener("click",()=>{accessory=product;drawAccessoryChoices(product.id);});
   shelf.append(btn);
@@ -159,6 +188,14 @@ function render(){
  $("identity-status").textContent=item.approvedItem?"Area 33 published record":"Maker reference only";
  $("intel-title").textContent="Exploring "+item.model;
  $("intel-answer").textContent=item.note;
+ const context=firearmContext(item);
+ $("intel-context").textContent=context.name+" — "+context.message;
+ const meopta=research.find(x=>x.id==="meopta-optika6-3-18x56-rd-sfp");
+ $("theater-try-meopta").hidden=reviewAccessoryContext(item,meopta).tier!=="explore";
+ document.querySelectorAll("[data-bench-try]").forEach(btn=>{
+  const candidate=research.find(x=>x.id===btn.dataset.benchTry);
+  btn.hidden=reviewAccessoryContext(item,candidate).tier!=="explore";
+ });
  $("fit-status").textContent="Not verified";
  const facts=$("product-facts");facts.replaceChildren(...item.facts.map(f=>element("span","room-fact",cleanText(f))));
  const link=$("official-link"),photoLink=$("manufacturer-photos");
@@ -169,6 +206,7 @@ function render(){
  presentApprovedMedia(item);
  renderPairing();
  experienceBench.render(current,accessory);
+ photoTheater.render(current,accessory);
  const hasCompare=compare.some(x=>x.id===item.id);
  $("compare-add").disabled=hasCompare||compare.length>=3;
  $("compare-add").textContent=hasCompare?"Already on comparison shelf":"Save firearm to compare";
@@ -225,7 +263,8 @@ function renderPairing(){
  $("pairing-copy").textContent=accessory.subtitle+". "+accessory.facts.join(". ")+".";
  const result=evaluatePairing(current,accessory);
  presentPairingEvidence(result);
- $("pairing-warning").textContent=result.caution;
+ const contextGuidance=reviewAccessoryContext(current,accessory);
+ $("pairing-warning").textContent=contextGuidance.label+": "+contextGuidance.reason+" "+result.caution;
  const a=$("accessory-official-link");a.hidden=!accessory.source;
  if(accessory.source)a.href=accessory.source;
 }
@@ -281,14 +320,16 @@ async function loadApproved(){
 function init(){
  const qs=new URLSearchParams(location.search);
  const selectedResearch=research.find(x=>x.id===qs.get("product")&&x.kind==="firearm");
- selectDepartment(selectedResearch?.department||"pistols",selectedResearch?.brand,selectedResearch?.id);
  const selectedAccessory=research.find(x=>x.id===qs.get("accessory")&&x.kind==="accessory");
+ if(selectedResearch&&selectedAccessory&&reviewAccessoryContext(selectedResearch,selectedAccessory).tier!=="explore")$("accessory-show-all").checked=true;
+ selectDepartment(selectedResearch?.department||"pistols",selectedResearch?.brand,selectedResearch?.id);
  selectAccessoryCategory(selectedAccessory?.accessoryType||"optics",selectedAccessory?.brand,selectedAccessory?.id);
  renderCompare();
  document.querySelectorAll("[data-department]").forEach(b=>b.addEventListener("click",()=>selectDepartment(b.dataset.department)));
  $("brand").addEventListener("change",()=>fillModelOptions());
  $("model").addEventListener("change",()=>selectCurrent($("model").value));
  document.querySelectorAll("[data-accessory-category]").forEach(b=>b.addEventListener("click",()=>selectAccessoryCategory(b.dataset.accessoryCategory)));
+ $("accessory-show-all").addEventListener("change",refreshAccessoryContext);
  $("accessory-brand").addEventListener("change",()=>drawAccessoryChoices());
  $("surprise").addEventListener("click",()=>{
   const item=chooseDiscovery(listItems("firearm","pistols").concat(listItems("firearm","rifles"),listItems("firearm","shotguns")),current?.id,discoverSeed++);

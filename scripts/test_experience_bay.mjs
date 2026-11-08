@@ -10,7 +10,7 @@ assert.match(html,/Surprise me/);
 assert.match(html,/Experience Bay/);
 assert.match(home,/href="experience-bay\.html"/);
 assert.match(home,/Explore our first real-photo showcase/);
-assert.match(home,/href="product-room\.html"/);
+assert.match(home,/href="product-room\.html\?product=ruger-precision-308-gen1/);
 assert.match(home,/href="studio\.html"/);
 assert.match(home,/href="showroom\.html"/);
 assert.match(html,/No live supplier prices, inventory or checkout are connected/);
