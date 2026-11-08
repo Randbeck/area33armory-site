@@ -70,3 +70,7 @@ body{background:#f3f4f5;color:#16191b}
 @media(max-width:950px){.research-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.research-catalog-controls{grid-template-columns:1fr 210px auto}}
 @media(max-width:650px){.site-header .nav{align-items:center}.site-header nav{gap:10px;font-size:.72rem}.site-header .nav img{width:120px}.intro .shell{padding:32px 0}.research-catalog{padding:25px 0}.research-catalog-heading{display:block}.research-catalog-heading>a{display:inline-block;margin-top:12px}.research-catalog-controls{grid-template-columns:1fr 1fr}.research-search-label:first-child{grid-column:1/-1}.research-clear{min-height:44px}.research-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.research-card-image{height:120px}.research-listing-content{padding:11px;min-height:210px}.research-listing h3{font-size:.93rem}.research-listing-content p{font-size:.69rem}.research-type-label{font-size:.57rem}.research-listing-status{font-size:.57rem}.research-inspect{font-size:.68rem;padding:9px}.research-catalog-dialog{width:100%}.research-catalog-result-line span{display:none}}
 @media(prefers-reduced-motion:reduce){.research-listing{transition:none}}
+
+/* Text-only manufacturer records look deliberately editorial, not like broken images. */
+.research-photo-brand{font-size:clamp(1.25rem,2.2vw,1.9rem);font-weight:850;letter-spacing:-.055em;color:#75828a;text-transform:uppercase;line-height:1.2}
+.research-photo-unavailable small{font-size:.69rem;color:#87929a;max-width:215px}
