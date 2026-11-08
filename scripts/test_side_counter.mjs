@@ -34,7 +34,8 @@ assert.match(js,/Powered by Randbeck Intelligence in the planned live experience
 assert.match(home,/Ruger_Precision_Rifle_308_Gen_1\.jpg/,"An actual license-reviewed firearm visible above fold");
 assert.match(home,/Coati077 \/ CC BY-SA 4\.0/,"Image licensing visible");
 assert.match(home,/data-side-counter-product="ruger-precision-308-gen1"/);
-assert.match(home,/Ask EVA — Your Firearms Expert/);
+assert.match(home,/Meet EVA/);
+assert.match(js,/new URL\(location.href\).searchParams/);
 assert.match(home,/receiving FFL fee separate/i);
 assert.match(home,/Not live inventory|No live inventory/i);
 assert.match(home,/assets\/side-counter-ui\.js/);
