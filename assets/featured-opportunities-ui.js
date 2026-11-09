@@ -76,6 +76,17 @@ function drawDeals(deals){
  if(status)status.textContent="Only owner-approved, current public promotions are shown. Verify the destination quote; receiving FFL transfer fees are separate.";
 }
 function initLz33EmailPreview(){
+ // Internal design preview only; this contains no private data and never sends mail.
+ // Server-side authentication will be required for any future campaign tooling.
+ const ownerTools=document.querySelector(".lz33-owner-tools");
+ const previewEnabled=new URLSearchParams(location.search).get("area33_lz33_owner_preview")==="1";
+ if(ownerTools&&previewEnabled)ownerTools.hidden=false;
+ const inspect=document.getElementById("lz33-hero-inspect");
+ inspect?.addEventListener("click",event=>{
+  if(!landingForEmail||!document.getElementById("area33-side-counter"))return;
+  event.preventDefault();
+  window.dispatchEvent(new CustomEvent("area33:side-counter-open",{detail:{productId:landingForEmail.productId}}));
+ });
  const dialog=document.getElementById("lz33-email-preview");
  const open=document.getElementById("lz33-email-preview-open");
  const close=document.getElementById("lz33-email-preview-close");
