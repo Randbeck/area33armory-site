@@ -136,6 +136,7 @@
   <link rel="stylesheet" href="assets/site-polish.css">
   <link rel="stylesheet" href="assets/ecosystem.css">
   <link rel="stylesheet" href="assets/retail-finish.css">
+  <link rel="stylesheet" href="assets/lz33.css">
 </head>
 <body>
   <a class="skip-site" href="#top">Skip to main content</a>
@@ -168,29 +169,33 @@
           <p>Browse the collection. Discover a model you never considered. Inspect it beside the storefront, and ask EVA when you want to know more.</p>
           <div class="actions">
            <a class="button button-primary" href="catalog.html">Browse the catalog ↗</a>
-           <a class="button button-secondary" href="#featured-opportunities">Deals &amp; Specials ↗</a>
            <a class="button button-secondary" href="#shop-departments" data-side-counter-product="glock-g19-gen5-mos" data-side-counter-tab="eva">Meet EVA ↗</a>
 
           </div>
           <p class="hero-note">Manufacturer research preview · No live inventory, verified deals or checkout yet · Receiving FFL fee separate from eventual Area 33 price.</p>
         </div>
-        <div class="hero-visual" aria-label="Real firearm research photography">
-          <div class="hero-feature-photo">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Ruger_Precision_Rifle_308_Gen_1.jpg"
-              referrerpolicy="no-referrer" alt="Documented first-generation Ruger Precision Rifle in .308 Winchester — original photograph, not current sale inventory">
-            <p>Ruger Precision Rifle · .308 Win Gen 1 · Coati077 / CC BY-SA 4.0</p>
-            <button type="button" class="hero-feature-open" data-side-counter-product="ruger-precision-308-gen1">Inspect at the counter ↗</button>
+        <aside class="lz33-hero" id="lz33" aria-label="LZ 33 Landing Zone 33 featured promotion">
+          <div class="lz33-hero-top"><span>AREA 33 ARMORY / SIGNATURE LANDING ZONE</span><span id="lz33-hero-state">AWAITING APPROVED LANDING</span></div>
+          <div class="lz33-masthead" aria-label="LZ 33"><span>LZ</span> <strong>33</strong></div>
+          <p class="lz33-tagline">Where the best deals land.</p>
+          <div class="lz33-spotlight">
+            <div class="lz33-spotlight-label">TODAY'S LANDING</div>
+            <h2 id="lz33-hero-headline">Something worth landing for.</h2>
+            <p id="lz33-hero-description">No verified feature has landed yet. When an exceptional Area 33 offer passes product, pricing, availability and owner review, you'll find it here.</p>
+            <p id="lz33-hero-terms" class="lz33-terms">An Area 33 delivered quote will include applicable tax, shipping and Area 33 charges. Receiving FFL transfer fee separate.</p>
+            <a id="lz33-hero-inspect" class="lz33-inspect" href="#shop-departments" hidden>Inspect this landing ↗</a>
           </div>
-        </div>
+          <div class="lz33-hero-foot"><span>EXACT PRODUCT · VERIFIED OFFER · OWNER APPROVAL</span><span>NO UNVERIFIED PRICE CLAIMS</span></div>
+        </aside>
       </div>
     </div>
     <section class="featured-home" id="featured-opportunities" data-featured-mode="deals" aria-label="Area 33 featured deals and specials">
-      <div class="featured-header"><div><span class="eyebrow">AREA 33 / CURRENT OPPORTUNITIES</span>
-        <h2>Featured Deals &amp; Specials.</h2>
-        <p>Real Area 33 deals will appear here after Randbeck confirms the product, sourceable inventory and public offer, and we approve the listing. We won't invent savings or show an unverified price.</p></div>
-        <a class="featured-browse" href="#shop-departments">Shop departments ↗</a></div>
-      <div id="featured-products" class="featured-products" aria-live="polite"><p>Checking approved Area 33 specials…</p></div>
-      <p id="featured-coverage" class="featured-coverage">No unverified deals are displayed. Receiving FFL transfer fee is separate from the eventual Area 33 delivered price.</p>
+      <div class="featured-header"><div><span class="eyebrow">LZ 33 / MORE APPROVED LANDINGS</span>
+        <h2>Just Landed.</h2>
+        <p>Additional verified offers land here, after the featured landing above. No invented discounts, inventory or prices.</p></div>
+      </div>
+      <div id="featured-products" class="featured-products" aria-live="polite"></div>
+      <p id="featured-coverage" class="featured-coverage">No additional offers have been approved for public release.</p>
     </section>
     <section class="shop-departments" id="shop-departments" aria-label="Shop Area 33 by category">
       <div class="department-heading"><div><span class="eyebrow">THE COLLECTION</span>
@@ -291,7 +296,17 @@
         </div>
       </div>
     </section>
+    <div class="lz33-owner-tools container" aria-label="Owner preview tools">
+      <button id="lz33-email-preview-open" class="lz33-owner-email" type="button">Owner: Preview LZ 33 email</button>
+      <span>Preview only · No subscribers or sending connected</span>
+    </div>
   </main>
+  <dialog id="lz33-email-preview" class="lz33-email-dialog" aria-labelledby="lz33-email-dialog-title">
+    <div class="lz33-email-dialog-header"><strong id="lz33-email-dialog-title">LZ 33 / INTERNAL EMAIL PREVIEW</strong><button id="lz33-email-preview-close" type="button" aria-label="Close email preview">Close ×</button></div>
+    <small>Draft only · No recipients · Nothing is sent</small>
+    <p class="lz33-email-subject-label">SUBJECT</p><p id="lz33-email-subject" class="lz33-email-subject">LZ 33 | Next landing coming soon</p>
+    <div class="lz33-email-message"><strong>AREA 33 ARMORY / LZ 33</strong><h2 id="lz33-email-heading">Landing Zone 33</h2><p id="lz33-email-body"></p><p id="lz33-email-footer"></p></div>
+  </dialog>
   <div class="side-counter-backdrop" id="area33-side-backdrop" hidden></div>
   <button id="area33-reopen-counter" class="side-counter-reopen" type="button" hidden>YOUR COUNTER ↗</button>
   <aside id="area33-side-counter" class="area33-side-counter" aria-label="Your Area 33 product counter" aria-hidden="true" hidden>
