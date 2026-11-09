@@ -205,6 +205,7 @@ function renderReceipt(){
  }
  $("package-total").textContent="Quote pending";
  $("package-note").textContent=pkg.notice+" Accessory combinations, mounting hardware, taxes and fulfillment require review.";
+ window.dispatchEvent(new CustomEvent("area33:counter-update",{detail:{productId:selected.id,selectedAccessories:[...chosen]}}));
 }
 function localMap(){
  if(!localByProduct.has(selected.id))localByProduct.set(selected.id,new Map());

@@ -4,12 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0b0d">
-  <meta name="description" content="Area 33 Armory is a veteran-owned Missouri firearms business focused on personal service, clear answers, and responsible sourcing.">
+  <meta name="description" content="Area 33 Armory is a discovery-first firearms showroom: explore, compare, ask product-aware questions, and understand our commitment to transparent all-in pricing.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Area 33 Armory | Equipping Patriots • Supporting Heroes">
   <meta property="og:description" content="Veteran-owned. Missouri-based. Built on service and straight answers.">
   <meta property="og:url" content="https://area33armory.com/">
   <title>Area 33 Armory | Veteran-Owned • Missouri</title>
+  <link rel="stylesheet" href="assets/featured-opportunities.css">
+  <link rel="stylesheet" href="assets/side-counter.css">
+  <script type="module" src="assets/side-counter-ui.js"></script>
+  <script type="module" src="assets/featured-opportunities-ui.js"></script>
   <style>
     :root {
       color-scheme: dark;
@@ -131,6 +135,8 @@
   </style>
   <link rel="stylesheet" href="assets/site-polish.css">
   <link rel="stylesheet" href="assets/ecosystem.css">
+  <link rel="stylesheet" href="assets/retail-finish.css">
+  <link rel="stylesheet" href="assets/lz33.css">
 </head>
 <body>
   <a class="skip-site" href="#top">Skip to main content</a>
@@ -138,14 +144,18 @@
     <div class="container nav">
       <a class="identity" href="#top" aria-label="Area 33 Armory home"><img class="site-logo" src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="240" height="57"></a>
       <nav class="desktop-nav" aria-label="Main navigation">
-        <a href="six-view-counter.html">Interactive Product Counter</a><a href="product-room.html">Real Product Room</a><a href="experience-bay.html">Concept Bay</a><a href="studio.html">Concept Studio</a><a href="showroom.html">Real-Media Showroom</a><a href="portfolio.html">Work portfolios</a><a href="ffl-finder.html">FFL Finder</a><a href="explore.html">Explore</a>
+        <a href="#shop-departments" data-shop-department="pistols">Pistols</a>
+        <a href="#shop-departments" data-shop-department="rifles">Rifles</a>
+        <a href="#shop-departments" data-shop-department="shotguns">Shotguns</a>
+        <a href="#lz33">LZ 33</a>
+        <a href="catalog.html">Catalog</a>
+        <a href="#shop-departments" data-side-counter-product="glock-g19-gen5-mos" data-side-counter-tab="eva">Ask EVA</a>
         <a class="small-cta" href="contact.html">Contact</a>
-      </nav>
-      <details class="mobile-menu">
+      </nav>     <details class="mobile-menu">
         <summary>Menu</summary>
         <nav aria-label="Mobile navigation">
           <a href="product-room.html">Real Product Room</a><a href="experience-bay.html">Concept Bay</a><a href="studio.html">Concept Studio</a><a href="showroom.html">Real-Media Showroom</a><a href="portfolio.html">Work portfolios</a><a href="ffl-finder.html">FFL Finder</a>
-          <a href="explore.html">Explore</a><a href="catalog.html">Catalog preview</a><a href="experience-lab.html">Experience Lab</a><a href="#services">Services</a><a href="#about">Our story</a><a href="contact.html">Contact</a>
+          <a href="explore.html">Explore</a><a href="catalog.html">Browse catalog</a><a href="#services">Services</a><a href="#about">Our story</a><a href="contact.html">Contact</a>
         </nav>
       </details>
     </div>
@@ -155,17 +165,73 @@
       <div class="container hero-grid">
         <div>
           <div class="eyebrow"><span class="accent">●</span> Veteran-owned · Missouri-based</div>
-          <h1>Walk in curious.<br>Leave <span class="accent">inspired.</span></h1>
-          <p>Explore. Interact. Discover. Area 33 is building a new kind of online showroom—an experience worth visiting even when you’re just looking around.</p>
-          <div class="actions"><a class="button button-primary" href="six-view-counter.html">Explore the new real-photo counter <span aria-hidden="true">↗</span></a><a class="button button-secondary" href="product-room.html?product=ruger-precision-308-gen1&amp;accessory=meopta-optika6-3-18x56-rd-sfp">Explore our first real-photo showcase <span aria-hidden="true">↗</span></a><a class="button button-secondary" href="explore.html">Explore &amp; learn</a></div>
-          <p class="hero-note">No online checkout or unverified inventory claims. Talk with us directly.</p>
+          <h1>Find your next<br><span class="accent">favorite.</span></h1>
+          <p>Browse the collection. Discover a model you never considered. Inspect it beside the storefront, and ask EVA when you want to know more.</p>
+          <div class="actions">
+           <a class="button button-primary" href="catalog.html">Browse the catalog ↗</a>
+           <a class="button button-secondary" href="#shop-departments" data-side-counter-product="glock-g19-gen5-mos" data-side-counter-tab="eva">Meet EVA ↗</a>
+
+          </div>
+          <p class="hero-note">Manufacturer research preview · No live inventory, verified deals or checkout yet · Receiving FFL fee separate from eventual Area 33 price.</p>
         </div>
-        <div class="hero-visual" aria-label="Area 33 Armory brand">
-          <img class="hero-logo" src="assets/area33-logo-dark.svg" alt="Area 33 Armory" width="550" height="129">
-          <span class="visual-label">Equipping Patriots · Supporting Heroes</span>
-        </div>
+        <aside class="lz33-hero" id="lz33" aria-label="LZ 33 Landing Zone 33 featured promotion">
+          <div class="lz33-hero-top"><span>AREA 33 ARMORY / SIGNATURE LANDING ZONE</span><span id="lz33-hero-state">AWAITING APPROVED LANDING</span></div>
+          <div class="lz33-masthead" aria-label="LZ 33"><span>LZ</span> <strong>33</strong></div>
+          <p class="lz33-tagline">Where the best deals land.</p>
+          <div class="lz33-spotlight">
+            <div class="lz33-spotlight-label">TODAY'S LANDING</div>
+            <h2 id="lz33-hero-headline">Something worth landing for.</h2>
+            <p id="lz33-hero-description">No verified feature has landed yet. When an exceptional Area 33 offer passes product, pricing, availability and owner review, you'll find it here.</p>
+            <p id="lz33-hero-terms" class="lz33-terms">An Area 33 delivered quote will include applicable tax, shipping and Area 33 charges. Receiving FFL transfer fee separate.</p>
+            <a id="lz33-hero-inspect" class="lz33-inspect" href="#shop-departments" hidden>Inspect this landing ↗</a>
+          </div>
+          <div class="lz33-hero-foot"><span>EXACT PRODUCT · VERIFIED OFFER · OWNER APPROVAL</span><span>NO UNVERIFIED PRICE CLAIMS</span></div>
+        </aside>
       </div>
     </div>
+    <section class="featured-home" id="featured-opportunities" data-featured-mode="deals" aria-label="Area 33 featured deals and specials">
+      <div class="featured-header"><div><span class="eyebrow">LZ 33 / MORE APPROVED LANDINGS</span>
+        <h2>Just Landed.</h2>
+        <p>Additional verified offers land here, after the featured landing above. No invented discounts, inventory or prices.</p></div>
+      </div>
+      <div id="featured-products" class="featured-products" aria-live="polite"></div>
+      <p id="featured-coverage" class="featured-coverage">No additional offers have been approved for public release.</p>
+    </section>
+    <section class="shop-departments" id="shop-departments" aria-label="Shop Area 33 by category">
+      <div class="department-heading"><div><span class="eyebrow">THE COLLECTION</span>
+        <h2>Shop by Department.</h2>
+        <p>Know what you want to explore? Pick a department and see its products. Open a firearm at your side counter to inspect it or ask EVA.</p></div></div>
+      <div class="department-grid">
+        <button class="department-card department-pistols" type="button" data-department-pick="pistols">
+          <span class="department-emblem" aria-hidden="true">01</span><span class="department-card-copy"><strong>Pistols</strong><small>Handguns and optic-ready models</small></span><span class="department-arrow" aria-hidden="true">↗</span></button>
+        <button class="department-card department-rifles" type="button" data-department-pick="rifles">
+          <span class="department-emblem" aria-hidden="true">02</span><span class="department-card-copy"><strong>Rifles</strong><small>Precision, sporting and more</small></span><span class="department-arrow" aria-hidden="true">↗</span></button>
+        <button class="department-card department-shotguns" type="button" data-department-pick="shotguns">
+          <span class="department-emblem" aria-hidden="true">03</span><span class="department-card-copy"><strong>Shotguns</strong><small>Explore models and configurations</small></span><span class="department-arrow" aria-hidden="true">↗</span></button>
+        <button class="department-card department-suppressors" type="button" data-department-pick="suppressors">
+          <span class="department-emblem" aria-hidden="true">04</span><span class="department-card-copy"><strong>Suppressors</strong><small>Research and NFA product discovery</small></span><span class="department-arrow" aria-hidden="true">↗</span></button>
+        <button class="department-card department-optics" type="button" data-department-pick="optics">
+          <span class="department-emblem" aria-hidden="true">05</span><span class="department-card-copy"><strong>Optics</strong><small>Scopes and reflex sights</small></span><span class="department-arrow" aria-hidden="true">↗</span></button>
+        <button class="department-card department-accessories" type="button" data-department-pick="accessories">
+          <span class="department-emblem" aria-hidden="true">06</span><span class="department-card-copy"><strong>Accessories</strong><small>Lights, holsters and essentials</small></span><span class="department-arrow" aria-hidden="true">↗</span></button>
+      </div>
+    </section>
+    <section class="home-firearms-section" id="home-firearms" aria-label="Selected department products" hidden>
+      <div class="home-firearms-head">
+        <div><span class="eyebrow">AREA 33 / SELECTED DEPARTMENT</span>
+          <h2 id="home-firearms-title">Browse products.</h2>
+          <p id="home-firearms-description">Research examples only. Full authorized distributor catalog and current variants are not connected yet.</p></div>
+        <div class="home-firearms-tools"><input id="home-firearms-query" type="search" maxlength="120" placeholder="Search models…" aria-label="Search the selected department">
+          <select id="home-firearms-category" aria-label="Filter the selected department">
+            <option value="all">All firearms</option><option value="pistols">Pistols</option>
+            <option value="rifles">Rifles</option><option value="shotguns">Shotguns</option>
+            <option value="suppressors">Suppressors</option><option value="optics">Optics</option>
+            <option value="accessories">Accessories</option>
+          </select></div>
+      </div>
+      <p id="home-firearms-count" class="home-firearms-count">Select a department above to explore.</p>
+      <div id="home-firearms-gallery" class="home-firearms-gallery" aria-live="polite"></div>
+    </section>
     <div class="values" aria-label="What sets us apart">
       <div class="value"><strong>Veteran-owned</strong><span>Service is part of who we are.</span></div>
       <div class="value"><strong>Personal attention</strong><span>Real conversations, clear next steps.</span></div>
@@ -173,11 +239,11 @@
     </div>
     <section class="discovery" id="discover" aria-labelledby="discover-title">
       <div class="container">
-        <div class="section-top"><div><div class="eyebrow">Find your starting point</div><h2 id="discover-title">A better way to<br>find your answers.</h2></div><p class="section-lede">Explore useful information or reach us directly. You don't need a sales pitch to start a conversation.</p></div>
+        <div class="section-top"><div><div class="eyebrow">Come in curious — no account required</div><h2 id="discover-title">More than another<br>product grid.</h2></div><p class="section-lede">Browse for the fun of it. Every click should lead to a clearer choice, a new discovery or a better question—not a dead-end product page.</p></div>
         <div class="discovery-grid">
-          <a class="discovery-card" href="studio.html"><span class="discovery-index">01 / INTERACTIVE EXPERIENCE</span><span class="discovery-art" aria-hidden="true">CREATE<span class="red">.</span></span><strong>Try different looks</strong><span class="discovery-copy">Choose visual accessory styles and see an illustrated concept change in real time.</span><span class="discovery-arrow">Enter Interactive Studio ↗</span></a>
-          <a class="discovery-card" href="catalog.html"><span class="discovery-index">02 / PUBLIC RESEARCH</span><span class="discovery-art" aria-hidden="true">DISCOVER<span class="red">.</span></span><strong>Catalog preview</strong><span class="discovery-copy">The public product catalog is being prepared. No unverified stock or pricing is presented.</span><span class="discovery-arrow">See the preview ↗</span></a>
-          <a class="discovery-card" href="contact.html"><span class="discovery-index">03 / PERSONAL SERVICE</span><span class="discovery-art" aria-hidden="true">CONNECT<span class="red">.</span></span><strong>Contact Area 33</strong><span class="discovery-copy">Ask a general product research or service question directly.</span><span class="discovery-arrow">Get in touch ↗</span></a>
+          <a class="discovery-card" href="six-view-counter.html#discover-counter"><span class="discovery-index">01 / DISCOVERY ENGINE</span><span class="discovery-art" aria-hidden="true">FIND<span class="red">.</span></span><strong>Surprise me. Show me around.</strong><span class="discovery-copy">Search real research references, discover unexpected models and bring your favorites to the counter.</span><span class="discovery-arrow">Start exploring ↗</span></a>
+          <a class="discovery-card" href="six-view-counter.html#ask-eva"><span class="discovery-index">02 / EVA / RANDBECK INTELLIGENCE</span><span class="discovery-art" aria-hidden="true">ASK<span class="red">.</span></span><strong>Ask EVA, Your Firearms Expert.</strong><span class="discovery-copy">Keep a product at the counter while you explore known variants, compatibility evidence and comparisons. Current answers are an offline research preview.</span><span class="discovery-arrow">Ask EVA ↗</span></a>
+          <a class="discovery-card" href="six-view-counter.html#all-in"><span class="discovery-index">03 / ONE-PRICE VISION</span><span class="discovery-art" aria-hidden="true">CLEAR<span class="red">.</span></span><strong>Know the whole price.</strong><span class="discovery-copy">Our goal: one Area 33 delivered price including merchandise, tax, shipping and Area 33 charges. Your receiving dealer’s separate transfer fee is excluded and disclosed upfront.</span><span class="discovery-arrow">See how all-in will work ↗</span></a>
         </div>
       </div>
     </section>
@@ -230,7 +296,40 @@
         </div>
       </div>
     </section>
+    <div class="lz33-owner-tools container" aria-label="Owner preview tools" hidden>
+      <button id="lz33-email-preview-open" class="lz33-owner-email" type="button">Owner: Preview LZ 33 email</button>
+      <span>Preview only · No subscribers or sending connected</span>
+    </div>
   </main>
+  <dialog id="lz33-email-preview" class="lz33-email-dialog" aria-labelledby="lz33-email-dialog-title">
+    <div class="lz33-email-dialog-header"><strong id="lz33-email-dialog-title">LZ 33 / INTERNAL EMAIL PREVIEW</strong><button id="lz33-email-preview-close" type="button" aria-label="Close email preview">Close ×</button></div>
+    <small>Draft only · No recipients · Nothing is sent</small>
+    <p class="lz33-email-subject-label">SUBJECT</p><p id="lz33-email-subject" class="lz33-email-subject">LZ 33 | Next landing coming soon</p>
+    <div class="lz33-email-message"><strong>AREA 33 ARMORY / LZ 33</strong><h2 id="lz33-email-heading">Landing Zone 33</h2><p id="lz33-email-body"></p><p id="lz33-email-footer"></p></div>
+  </dialog>
+  <div class="side-counter-backdrop" id="area33-side-backdrop" hidden></div>
+  <button id="area33-reopen-counter" class="side-counter-reopen" type="button" hidden>YOUR COUNTER ↗</button>
+  <aside id="area33-side-counter" class="area33-side-counter" aria-label="Your Area 33 product counter" aria-hidden="true" hidden>
+    <div class="side-counter-header">
+      <div class="side-counter-heading"><div class="side-counter-brand"><small>AREA 33 · YOUR SIDE COUNTER</small><strong>Explore without leaving the store.</strong></div>
+        <button id="side-counter-close" type="button" class="side-counter-close">Close ✕</button></div>
+      <h2 id="side-counter-product-name">Selected firearm</h2>
+      <p id="side-counter-product-meta">Research reference · Not live inventory</p>
+    </div>
+    <div class="side-tabs" role="tablist" aria-label="Product counter sections">
+      <button id="side-tab-inspect" role="tab" aria-selected="true" type="button">Inspect</button>
+      <button id="side-tab-models" role="tab" aria-selected="false" type="button">Models</button>
+      <button id="side-tab-accessories" role="tab" aria-selected="false" type="button">Accessories</button>
+      <button id="side-tab-eva" role="tab" aria-selected="false" type="button">Ask EVA</button>
+    </div>
+    <div id="side-counter-body" class="side-counter-content" role="tabpanel" aria-label="Selected product information"></div>
+    <div class="side-counter-footer">
+      <div class="side-counter-actions"><button type="button" id="side-save">☆ Save</button><button type="button" id="side-compare">+ Compare</button></div>
+      <p id="side-saved-status">Saved here for this visit only.</p>
+      <div id="side-comparison-list" class="side-comparison-list"></div>
+      <a id="side-full-counter" class="side-full-link" href="six-view-counter.html">Open full product counter ↗</a>
+    </div>
+  </aside>
   <footer>
     <div class="container">
       <div class="footer-inner"><div class="footer-brand">AREA 33 ARMORY</div><nav class="footer-links" aria-label="Footer navigation"><a href="product-room.html">Real Product Room</a><a href="experience-bay.html">Concept Bay</a><a href="studio.html">Concept Studio</a><a href="showroom.html">Real-Media Showroom</a><a href="portfolio.html">Work portfolios</a><a href="ffl-finder.html">FFL Finder</a><a href="explore.html">Explore</a><a href="catalog.html">Catalog preview</a><a href="experience-lab.html">Experience Lab</a><a href="#services">Services</a><a href="#about">About</a><a href="contact.html">Contact</a></nav></div>

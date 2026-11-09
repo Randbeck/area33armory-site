@@ -44,5 +44,5 @@ assert.match(html,/Photograph by/);
 assert.match(html,/CC BY-SA 4\.0/);
 assert.match(html,/ONE VIEW/);
 assert.match(style,/\.room-photo-viewport/);
-assert.match(home,/product-room\.html\?product=ruger-precision-308-gen1/);
+assert.match(home,/id="lz33-hero-inspect"/,"LZ33 now owns hero real estate and links to reviewed exact products");
 console.log("Flagship real-photo viewer: exact identity, open-license credit, photo/gallery isolation, zoom/pan boundaries and spotlight entry verified.");

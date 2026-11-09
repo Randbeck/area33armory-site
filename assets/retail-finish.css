@@ -1,0 +1,139 @@
+/* Area 33 / Retail refinement v1
+   Editorial retail typography, deliberate whitespace, clean grayscale,
+   restrained red accent and consistent customer-facing controls.
+   This sheet is loaded last on the homepage and after catalog.css on catalog.
+   It does not alter product identity, rights, source data or checkout rules. */
+:root{
+ --retail-ink:#141619;
+ --retail-white:#ffffff;
+ --retail-page:#f3f4f5;
+ --retail-border:#dee0e2;
+ --retail-muted:#666d72;
+ --retail-red:#c52c36;
+ --retail-charcoal:#171b1e;
+}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{background:var(--retail-page);color:var(--retail-ink);font-family:Inter,"Segoe UI",Arial,sans-serif;letter-spacing:-.005em}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--retail-red);outline-offset:3px}
+header{background:#111417!important;border-bottom:1px solid #343a3d!important}
+header .nav{min-height:76px;gap:26px}
+header .desktop-nav a{font-size:.84rem;letter-spacing:0;font-weight:650;color:#d9dde0}
+header .desktop-nav .small-cta{border-color:#5f6669;color:#fff}
+header .site-logo{width:205px}
+header .desktop-nav a:hover{color:#fff}
+body .hero{background:var(--retail-page)!important;border-bottom:0;color:var(--retail-ink)}
+body .hero::before{display:none}
+body .hero-grid{padding-block:44px!important;min-height:370px!important;grid-template-columns:minmax(0,1.02fr) minmax(350px,.98fr)!important;gap:clamp(24px,5vw,72px)!important}
+body .hero .eyebrow{font-size:.7rem;letter-spacing:.135em;color:#545c61}
+body .hero .eyebrow .accent{color:var(--retail-red)}
+body .hero h1{font-size:clamp(2.7rem,4.7vw,5.1rem);line-height:1.015;max-width:780px;letter-spacing:-.071em;font-weight:820;margin:12px 0 18px}
+body .hero h1 .accent{color:var(--retail-ink)}
+body .hero p{font-size:clamp(.94rem,1.15vw,1.09rem);line-height:1.6;color:#50575c;max-width:540px}
+body .hero .actions{margin-top:26px;gap:10px}
+body .hero .button{min-height:43px;font-size:.79rem;border-radius:5px;padding:11px 17px;box-shadow:none;transition:background .16s,color .16s}
+body .hero .button-primary{background:#181b1e;color:#fff}
+body .hero .button-primary:hover{background:#353a3e}
+body .hero .button-secondary{color:#16191b;border:1px solid #b8bfc3;background:#fff}
+body .hero .button-secondary:hover{background:#e9ebed}
+body .hero .hero-note{color:#70787d!important;font-size:.7rem!important;line-height:1.5;margin-top:18px!important}
+body .hero-visual{background:#dfe2e3!important;border:1px solid #d5d9dc!important;border-radius:7px!important;box-shadow:none!important;min-height:285px}
+body .hero-visual::before,body .hero-visual::after{display:none}
+body .hero-feature-photo{height:300px;border:0;border-radius:5px;background:radial-gradient(ellipse at center,#eff1f2,#dfe3e5);justify-content:center;padding:16px}
+body .hero-feature-photo img{width:100%;max-height:210px;max-width:100%;object-fit:contain;mix-blend-mode:multiply}
+body .hero-feature-photo p{font-size:.62rem!important;color:#636d72!important;max-width:none;margin:5px auto!important;text-align:center}
+body .hero-feature-open{background:#191c1e;color:#fff;border-radius:5px;margin:5px;padding:10px 16px;font-weight:750}
+body .hero-feature-open:hover{background:#35383b}
+body .featured-home[data-featured-mode=deals]{width:min(1280px,calc(100% - 48px));margin:0 auto 28px;padding:26px 29px!important;background:#181c1f!important;color:#fff;border:1px solid #282e32;border-radius:8px;box-shadow:none}
+body .featured-home[data-featured-mode=deals] .featured-header{margin-bottom:12px;align-items:center}
+body .featured-home[data-featured-mode=deals] .featured-header h2{font-size:clamp(1.6rem,2.8vw,2.5rem);letter-spacing:-.052em;margin:5px 0 8px}
+body .featured-home[data-featured-mode=deals] .featured-header p{font-size:.81rem;line-height:1.5;color:#bfc6ca;max-width:800px}
+body .featured-home[data-featured-mode=deals] .featured-header .eyebrow{font-size:.61rem;color:#e5a2a5;letter-spacing:.15em}
+body .featured-home[data-featured-mode=deals] .featured-browse{color:#fff;font-size:.78rem;font-weight:700;text-decoration:underline;text-underline-offset:5px}
+body .featured-home[data-featured-mode=deals] .deal-empty{min-height:105px;padding:16px 20px;border:1px solid #343c40;background:#22272a;border-radius:5px}
+body .featured-home[data-featured-mode=deals] .deal-empty h3{font-size:1.12rem;letter-spacing:-.02em;margin:3px 0 2px}
+body .featured-home[data-featured-mode=deals] .deal-empty p{margin:2px 0 4px;font-size:.78rem;line-height:1.48}
+body .featured-home[data-featured-mode=deals] .deal-empty-eyebrow{font-size:.61rem;letter-spacing:.14em;color:#d6dadd}
+body .featured-home[data-featured-mode=deals] .deal-shop-link{font-size:.72rem;color:#16191b;background:#fff;border-radius:4px;padding:8px 12px}
+body .featured-home[data-featured-mode=deals] .featured-coverage{color:#b6bdc0;font-size:.66rem;margin-top:11px}
+body .shop-departments{width:min(1280px,calc(100% - 48px));margin:0 auto 37px;padding:28px 0 0!important;background:transparent!important;color:var(--retail-ink)!important;border:0;border-top:1px solid #d7dade;border-radius:0}
+body .department-heading{margin-bottom:19px}
+body .department-heading .eyebrow{color:#ad2731;font-size:.65rem;letter-spacing:.14em}
+body .department-heading h2{font-size:clamp(1.85rem,3.25vw,2.95rem);letter-spacing:-.054em;margin:5px 0}
+body .department-heading p{max-width:700px;color:#687077;font-size:.83rem;line-height:1.55}
+body .department-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+body .department-card{background:#fff!important;color:#181a1d!important;border:1px solid #d8dce0!important;min-height:148px;padding:22px 22px 19px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:21px;border-radius:6px;box-shadow:0 2px 8px #10182006;transform:none!important;transition:border-color .14s,box-shadow .14s}
+body .department-card:hover,body .department-card:focus-visible{background:#fff!important;border-color:#959da3!important;box-shadow:0 11px 30px #151b211c}
+body .department-card[aria-pressed=true]{border-color:var(--retail-red)!important}
+body .department-emblem{width:57px;height:67px;border:0;border-right:1px solid #d5d9dc;border-radius:0;background:none!important;color:#a6afb5!important;font-size:1.55rem;font-weight:500;letter-spacing:-.07em;flex-shrink:0}
+body .department-card-copy strong{font-size:1.11rem;font-weight:760;letter-spacing:-.04em}
+body .department-card-copy small{font-size:.71rem;color:#747c82;line-height:1.35}
+body .department-arrow{position:absolute;right:15px;top:15px;color:#aab0b5;font-size:1.06rem}
+body .home-firearms-section{width:min(1280px,calc(100% - 48px));margin:0 auto 42px;padding:27px!important;background:#fff;color:#16191a;border:1px solid #e0e3e5;border-radius:8px}
+body .home-firearms-head h2{color:#1a1d1f}
+body .home-firearms-head p{color:#606a71}
+body .home-firearms-tools input,body .home-firearms-tools select{background:#fff;color:#151719;border:1px solid #c4cbd0;border-radius:5px}
+body .home-firearms-gallery{grid-template-columns:repeat(4,minmax(0,1fr))}
+body .home-firearm-card{background:#fff;border:1px solid #e0e4e7;color:#16191a;border-radius:5px}
+body .browse-product-photo{background:#edeff0;height:152px}
+body .browse-product-photo img{mix-blend-mode:multiply}
+body .home-firearm-copy h3{color:#15191b}
+body .home-firearm-copy p{color:#666e73}
+body .home-counter-button{border-radius:4px;background:#171b1e;color:#fff;line-height:1.25}
+body .home-counter-button:hover{background:#3a4145}
+body .home-card-price{color:#8b4a4f}
+body .home-product-category{color:#626a71}
+body .home-firearms-count{color:#6b7277}
+body .home-empty-department{grid-column:1/-1;padding:28px;background:#f2f3f4;color:#202529;border:1px solid #d9dee1;border-radius:6px}
+body .home-empty-department p{color:#5b6269}
+body .home-empty-department a{display:inline-block;text-decoration:none;margin-top:10px}
+body .values{border-block:1px solid #dedfe0;background:#d7d9da}
+body .values .value{background:#fff;color:#202427}
+body .values .value span{color:#6a7278}
+body .discovery{background:#fafafa}
+body .discovery-card{border-radius:6px}
+body .discovery-art{border-radius:3px}
+body .intelligence,body .ecosystem{background:#15191c}
+body .service-card{border-radius:6px}
+body .area33-side-counter{background:#171b1f;color:#f6f6f6;border-left:1px solid #444c50}
+body .area33-side-counter .side-tabs button[aria-selected=true]{border-bottom-color:var(--retail-red)}
+body .area33-side-counter .side-eva-intro{background:#24292d;border:1px solid #50565a}
+body .area33-side-counter .side-eva-intro-eyebrow{color:#f1b1b4}
+body .area33-side-counter .side-primary{background:#f1f1f1;color:#14191c}
+body .area33-side-counter .side-price{background:#22272b;border-color:#555a5d}
+body .area33-side-counter .side-price small{color:#f1b1b4}
+body .area33-side-counter .side-related button{background:#2f363b;border-color:#747d82;color:#fafafa}
+body .area33-side-counter .counter-source-link{color:#e1e4e6!important}
+body .area33-side-counter .side-eva-user{background:#394149}
+body .area33-side-counter .side-eva-answer{background:#252b30}
+body .side-counter-reopen{background:#171c20;color:#fff;border-color:#656b71}
+body .side-counter-footer .side-full-link{color:#f0eeee}
+body .side-counter-header{background:#20262a}
+body .side-tabs{background:#1d2327}
+body .area33-side-counter .side-counter-footer{background:#23282c}
+body .area33-side-counter .side-counter-actions button{background:#30383e;border-color:#626c73;color:#f2f2f2}
+@media(max-width:1100px){
+ body .hero-grid{grid-template-columns:minmax(0,1fr) minmax(300px,.85fr)!important}
+ body .department-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body .home-firearms-gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:900px){
+ body .hero-grid{grid-template-columns:1fr!important;min-height:0!important;padding:36px 0!important}
+ body .hero-visual{display:none!important}
+ body .featured-home[data-featured-mode=deals],body .shop-departments,body .home-firearms-section{width:calc(100% - 28px)}
+ body .home-firearms-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:600px){
+ body .hero h1{font-size:clamp(2.75rem,10vw,3.75rem)}
+ body .hero .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ body .hero .actions .button{padding:10px 8px;text-align:center;font-size:.71rem}
+ body .featured-home[data-featured-mode=deals]{padding:20px!important}
+ body .shop-departments{padding:21px 0 0!important}
+ body .department-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ body .department-card{min-height:135px;padding:14px 12px;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+ body .department-emblem{width:100%;height:auto;min-height:28px;justify-content:flex-start;border-right:0;border-bottom:1px solid #dfe3e5;font-size:1.11rem}
+ body .department-card-copy strong{font-size:.97rem}
+ body .department-card-copy small{font-size:.66rem}
+ body .home-firearms-section{padding:18px!important}
+ body .home-firearms-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){body .department-card{transition:none}}

@@ -52,6 +52,6 @@ assert.match(script,/Long Guns.*cannot safely be assumed/);
 assert.doesNotMatch(script,/dealer_cost|private_supplier|source_sku|localStorage|sessionStorage/);
 assert.doesNotMatch(html,/<iframe|<script\b(?![^>]*\bsrc=)[^>]*>[\s\S]*<\/script>/i);
 assert.match(homepage,/href="product-room\.html"/);
-assert.match(catalog,/href="product-room\.html"/);
+assert.match(catalog,/id="research-catalog-grid"/,"Catalog now provides a dedicated first-class research gallery");
 assert.match(stylesheet,/\.room-stage/);
 console.log("Real product room: categories, manufacturer references, explicit accessory selection, image rights gate, source links, DOM contracts and safe statuses verified.");
