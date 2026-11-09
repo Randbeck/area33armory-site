@@ -32,7 +32,10 @@ for(const change of [
 assert.equal(validatePublicDeals(manifest([approved,approved]),{now}),null,"Duplicate offer forbidden");
 assert.equal(validatePublicDeals({schema:DEALS_SCHEMA,items:[],supplierCosts:[]},{now}),null);
 assert.match(home,/id="featured-opportunities" data-featured-mode="deals"/);
-assert.match(home,/Featured Deals &amp; Specials/);
+assert.match(home,/Just Landed\./);
+assert.match(home,/id="lz33"/);
+assert.match(home,/Where the best deals land\./);
+assert.doesNotMatch(home,/hero-feature-photo|Deals &amp; Specials ↗/);
 assert.match(home,/Shop by Department/);
 assert.doesNotMatch(home,/Firearms worth exploring\.|Something worth a closer look\./);
 assert.ok(home.indexOf('id="featured-opportunities"')<home.indexOf('id="shop-departments"'));
