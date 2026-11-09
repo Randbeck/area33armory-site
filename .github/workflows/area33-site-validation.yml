@@ -28,6 +28,7 @@ jobs:
           node --check assets/customer-experience.mjs
           node --check assets/featured-opportunities.mjs
           node --check assets/deals-public-contract.mjs
+          node --check assets/lz33-campaign.mjs
           node --input-type=module --check < assets/featured-opportunities-ui.js
           node --input-type=module --check < assets/customer-experience-ui.js
           node --input-type=module --check < assets/side-counter-ui.js
@@ -64,6 +65,8 @@ jobs:
         run: node scripts/test_deals_departments_eva.mjs
       - name: Validate approved featured opportunities
         run: node scripts/test_featured_opportunities.mjs
+      - name: Validate LZ33 approved promotion and unsent email preview
+        run: node scripts/test_lz33_campaign.mjs
       - name: Validate integrated intelligent customer storefront
         run: node scripts/test_customer_experience.mjs
       - name: Validate six-view product counter
