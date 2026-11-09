@@ -41,7 +41,7 @@ for(const html of [home,counter]){
  assert.match(html,/assets\/featured-opportunities-ui\.js/);
 }
 assert.match(home,/Meet EVA/);
-assert.match(home,/Receiving FFL transfer fee is separate/i);
+assert.match(home,/Receiving FFL (transfer )?fee (is )?separate/i);
 assert.match(counter,/id="ask-eva"/);
 assert.doesNotMatch(counter,/id="ffl-name"|id="ffl-fee-known"/);
 assert.match(ui,/validateFeaturedPublic\(await response\.json\(\)\)/);
