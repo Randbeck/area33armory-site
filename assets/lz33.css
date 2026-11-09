@@ -1,0 +1,69 @@
+/* LZ 33 — signature landing zone. Deliberately not a generic hero photo.
+   Site-wide customer offer blocks read only reviewed public deal records. */
+body .lz33-hero{
+ min-width:0;position:relative;isolation:isolate;overflow:hidden;
+ background:#15191c;border:1px solid #394046;border-radius:10px;
+ color:#f6f7f8;padding:clamp(20px,3.3vw,38px);
+ box-shadow:0 14px 40px #18212710;
+ display:flex;flex-direction:column;min-height:350px;
+}
+body .lz33-hero:before{
+ content:"";position:absolute;z-index:-1;inset:0;
+ background:linear-gradient(120deg,#101316 0%,#1e262b 68%,#171b20 100%),
+ repeating-linear-gradient(0deg,transparent 0,transparent 45px,#ffffff08 46px);
+}
+body .lz33-hero:after{
+ content:"";position:absolute;z-index:-1;right:-132px;top:-152px;
+ width:390px;height:390px;border:1px solid #ffffff16;border-radius:50%;
+ box-shadow:0 0 0 45px #ffffff05,0 0 0 93px #ffffff03;
+ pointer-events:none;
+}
+.lz33-hero-top,.lz33-hero-foot{display:flex;justify-content:space-between;align-items:start;gap:16px;font-size:.58rem;line-height:1.5;font-weight:800;letter-spacing:.09em;color:#abb3b7}
+#lz33-hero-state{color:#ffa3a9;text-align:right}
+.lz33-masthead{font-weight:950;letter-spacing:-.105em;font-size:clamp(4.6rem,7vw,7.7rem);line-height:.96;margin:28px 0 4px;color:#fff}
+.lz33-masthead strong{font-weight:950;color:#ed4e60}
+body .hero .lz33-tagline{font-size:clamp(.94rem,1.4vw,1.17rem);color:#d2dade;letter-spacing:-.025em;font-weight:650;margin:0 0 26px;max-width:none}
+.lz33-spotlight{border-top:1px solid #ffffff30;padding-top:18px;margin-top:auto}
+.lz33-spotlight-label{font-size:.64rem;letter-spacing:.14em;color:#ffaeb2;font-weight:850;margin-bottom:6px}
+body .hero .lz33-spotlight h2{font-size:clamp(1.32rem,2.35vw,2.1rem);line-height:1.1;letter-spacing:-.055em;margin:0 0 8px}
+body .hero .lz33-spotlight p{color:#d5dadd;max-width:590px;font-size:.79rem;line-height:1.55;margin:0}
+body .hero .lz33-spotlight .lz33-terms{font-size:.66rem;line-height:1.4;color:#aeb7bc;margin-top:11px}
+.lz33-hero-foot{margin-top:20px;gap:10px;border-top:1px solid #ffffff19;padding-top:12px;font-size:.54rem;color:#99a3a9}
+.lz33-hero-foot span:last-child{text-align:right}
+.lz33-inspect{display:inline-flex;background:#fff;color:#151719;font-size:.79rem;font-weight:850;margin-top:15px;padding:10px 14px;border-radius:5px}
+.lz33-inspect[hidden]{display:none}
+.lz33-inspect:hover{background:#e7eaeb}
+body .featured-home[data-featured-mode=deals]{background:#fff!important;color:#181e20;border:1px solid #dfe4e6;padding:24px 29px!important}
+body .featured-home[data-featured-mode=deals] .featured-header h2{color:#182025}
+body .featured-home[data-featured-mode=deals] .featured-header p{color:#60696f}
+body .featured-home[data-featured-mode=deals] .featured-header .eyebrow{color:#b53540}
+body .featured-home[data-featured-mode=deals] .featured-coverage{color:#677178;margin-top:0}
+body .featured-home[data-featured-mode=deals] .featured-products:not(:empty){margin-bottom:16px}
+body .featured-home[data-featured-mode=deals] .featured-header{margin-bottom:12px}
+.lz33-owner-tools{display:flex;flex-wrap:wrap;align-items:center;gap:15px;padding-block:16px 28px}
+.lz33-owner-tools span{font-size:.7rem;color:#6e777c}
+.lz33-owner-email{border:1px solid #c5cbcf;border-radius:6px;background:#fff;padding:8px 12px;font-size:.72rem;font-weight:740;color:#22282b;cursor:pointer}
+.lz33-owner-email:hover{background:#e8ecee}
+.lz33-email-dialog{width:min(580px,calc(100vw - 25px));max-height:90vh;overflow:auto;background:#fff;color:#161a1d;border:1px solid #c2c7ca;border-radius:12px;padding:24px;box-shadow:0 35px 90px #0008}
+.lz33-email-dialog::backdrop{background:#090b0dbd}
+.lz33-email-dialog-header{display:flex;justify-content:space-between;align-items:center;gap:15px;font-size:.8rem}
+.lz33-email-dialog-header button{background:#151a1e;color:#fff;border:0;padding:9px 12px;border-radius:5px;cursor:pointer}
+.lz33-email-dialog small{font-size:.68rem;color:#777e82}
+.lz33-email-subject-label{font-size:.62rem;letter-spacing:.14em;color:#747d80;margin-top:26px}
+.lz33-email-subject{font-weight:760;font-size:.98rem;padding-bottom:18px;border-bottom:1px solid #dbe0e2}
+.lz33-email-message{padding:25px;background:#15191d;color:#fff;border-radius:7px}
+.lz33-email-message>strong{font-size:.64rem;letter-spacing:.13em;color:#f18e99}
+.lz33-email-message h2{color:#fff;font-size:clamp(1.9rem,4vw,2.7rem);margin:18px 0}
+.lz33-email-message p{white-space:pre-line;color:#d5dadd;font-size:.86rem;line-height:1.7}
+@media(max-width:900px){
+ body .lz33-hero{min-height:325px}
+ .lz33-masthead{font-size:clamp(4.3rem,10vw,6.5rem)}
+}
+@media(max-width:720px){
+ body .hero-grid{gap:20px!important}
+ body .lz33-hero{min-height:380px}
+ .lz33-masthead{font-size:5.7rem}
+ .lz33-hero-top,.lz33-hero-foot{font-size:.56rem}
+ body .featured-home[data-featured-mode=deals]{padding:21px!important}
+}
+@media(prefers-reduced-motion:reduce){.lz33-hero *{transition:none!important}}
