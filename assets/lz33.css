@@ -41,6 +41,7 @@ body .featured-home[data-featured-mode=deals] .featured-coverage{color:#677178;m
 body .featured-home[data-featured-mode=deals] .featured-products:not(:empty){margin-bottom:16px}
 body .featured-home[data-featured-mode=deals] .featured-header{margin-bottom:12px}
 .lz33-owner-tools{display:flex;flex-wrap:wrap;align-items:center;gap:15px;padding-block:16px 28px}
+.lz33-owner-tools[hidden]{display:none!important}
 .lz33-owner-tools span{font-size:.7rem;color:#6e777c}
 .lz33-owner-email{border:1px solid #c5cbcf;border-radius:6px;background:#fff;padding:8px 12px;font-size:.72rem;font-weight:740;color:#22282b;cursor:pointer}
 .lz33-owner-email:hover{background:#e8ecee}
